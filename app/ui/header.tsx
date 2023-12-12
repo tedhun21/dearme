@@ -1,3 +1,5 @@
+import NotificationIcon from "@/public/header/NotificationIcon";
+import SettingIcon from "@/public/header/SettingIcon";
 import Image from "next/image";
 
 export default function Header() {
@@ -9,21 +11,11 @@ export default function Header() {
         height={20}
         alt="logo"
         quality={80}
+        priority
       />
       <div className="flex flex-row gap-2 p-1">
-        <Image
-          src="/header/notification.svg"
-          width={14}
-          height={12}
-          alt="notification"
-          quality={80}
-        />
-        <Image
-          src="/header/settings.svg"
-          width={14}
-          height={14}
-          alt="settings"
-        />
+        <NotificationIcon className="h-4 w-4" />
+        <SettingIcon className="h-4 w-4" />
       </div>
     </header>
   );

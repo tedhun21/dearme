@@ -1,7 +1,14 @@
 import Image from "next/image";
 import Header from "../ui/header";
-import BackArrowIcon from "@/public/me/back-arrow";
-import RememberIcon from "@/public/me/remember";
+import BackArrowIcon from "@/public/me/BackArrowIcon";
+import RememberIcon from "@/public/me/RememberIcon";
+import PostIcon from "@/public/me/PostIcon";
+import FriendIcon from "@/public/me/FriendIcon";
+import DownDropdownIcon from "@/public/me/DownDropdownIcon";
+import CheckActiveIcon from "@/public/me/CheckActiveIcon";
+import ThreeDots from "@/public/me/ThreeDots";
+import CheckInactiveIcon from "@/public/me/CheckInactiveIcon";
+import LockIcon from "@/public/me/LockIcon";
 
 export default function Me() {
   return (
@@ -9,34 +16,60 @@ export default function Me() {
       <div className="flex min-w-[360px] max-w-[600px] flex-col bg-default-200">
         <Header />
         <div className="px-6">
-          {/* <Image src="/me/back-arrow.svg" width={8} height={12} alt="back" /> */}
-          <BackArrowIcon className="hover:text-default-800 h-3 w-3 fill-current text-default-500" />
+          <BackArrowIcon className="h-3 w-3 fill-current text-default-500 hover:text-default-700" />
         </div>
         <section className="px-5 py-3">
-          <div className="flex gap-1 pb-3">
-            <Image src="/me/lock.svg" width={14} height={16} alt="lock" />
-            <span className="text-base font-semibold">doe</span>
+          <div className="pb-10">
+            <div className="flex items-center gap-1 pb-3">
+              <LockIcon className="h-4 w-4" />
+              <span className="text-base font-semibold">doe</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 justify-center rounded-full bg-gray-300">
+                <Image src="/me/user.svg" width={18} height={20} alt="user" />
+              </div>
+              <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
+                <RememberIcon className="h-5 w-5 fill-current" />
+                <span className="text-xs font-semibold">3 Remember</span>
+              </div>
+              <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
+                <PostIcon className="h-5 w-5 fill-current" />
+                <span className="text-xs font-semibold">3 Posts</span>
+              </div>
+              <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
+                <FriendIcon className="h-5 w-5 fill-current" />
+                <span className="text-xs font-semibold">4 Friends</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex h-12 w-12 justify-center rounded-full bg-gray-300">
-              <Image src="/me/user.svg" width={18} height={20} alt="user" />
+          <div className="flex items-center justify-between pb-2">
+            <div className="flex items-center gap-2">
+              <DownDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
+              <span className="text-base font-semibold text-default-700">
+                Daily
+              </span>
             </div>
-            <div className="hover:text-default-700 flex flex-col items-center gap-1">
-              <RememberIcon className="hover:text-default-700 h-5 w-5 fill-current text-default-500" />
-              <span className="text-xs font-semibold">3 Remember</span>
+            <div>달성률</div>
+            <span className="text-xs font-semibold text-default-600">3/5</span>
+          </div>
+          <div>
+            <div className="flex justify-between rounded-xl bg-default-100 px-3 py-2">
+              <div className="flex gap-3">
+                <CheckActiveIcon className="h-5 w-5 fill-current text-default-600" />
+                <span className="text-semibold text-sm text-default-700">
+                  스터디
+                </span>
+              </div>
+              <ThreeDots className="h-5 w-5 fill-current text-default-600" />
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <Image src="/me/posts.svg" width={20} height={20} alt="posts" />
-              <span className="text-xs font-semibold">3 Posts</span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <Image
-                src="/me/friends.svg"
-                width={20}
-                height={18}
-                alt="friends"
-              />
-              <span className="text-xs font-semibold">4 Friends</span>
+            <div className="flex justify-between rounded-xl bg-default-100 px-3 py-2">
+              <div className="flex gap-3">
+                <CheckInactiveIcon className="h-5 w-5" />
+                <span className="text-semibold text-sm text-default-600">
+                  스터디
+                </span>
+              </div>
+              <ThreeDots className="h-5 w-5 fill-current text-default-600" />
             </div>
           </div>
         </section>

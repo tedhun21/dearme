@@ -7,10 +7,10 @@ assignees: ''
 
 ---
 
-🙏 Describe the pull request
+🧐 What to do?
 ---
 - 최대한 자세히 적어주세요.
 
-✅ Checklist
+✅ To do Checklist
 ---
 - [ ] 최대한 자세히 적어주세요.

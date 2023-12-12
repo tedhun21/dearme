@@ -9,6 +9,8 @@ import CheckActiveIcon from "@/public/me/CheckActiveIcon";
 import ThreeDots from "@/public/me/ThreeDots";
 import CheckInactiveIcon from "@/public/me/CheckInactiveIcon";
 import LockIcon from "@/public/me/LockIcon";
+import { LinearProgress, Stack } from "@mui/material";
+import { useState } from "react";
 
 export default function Me() {
   return (
@@ -49,7 +51,20 @@ export default function Me() {
                 Daily
               </span>
             </div>
-            <div>달성률</div>
+
+            <LinearProgress
+              sx={{
+                height: "12px",
+                borderRadius: "12px",
+                width: "100%",
+                color: "#143422",
+                mx: 2,
+              }}
+              variant="determinate"
+              value={(2 / 5) * 100}
+              color="inherit"
+            />
+
             <span className="text-xs font-semibold text-default-600">3/5</span>
           </div>
           <div>

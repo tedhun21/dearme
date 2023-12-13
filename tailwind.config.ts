@@ -6,6 +6,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       backgroundImage: {
@@ -27,6 +28,9 @@ const config: Config = {
           700: "#505050",
           800: "#143422",
         },
+      },
+      fontSize: {
+        "2xs": ["0.625rem", "0.8rem"],
       },
     },
   },

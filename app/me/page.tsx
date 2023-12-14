@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Header from "../ui/header";
-import BackArrowIcon from "@/public/me/BackArrowIcon";
 import RememberIcon from "@/public/me/RememberIcon";
 import PostIcon from "@/public/me/PostIcon";
 import FriendIcon from "@/public/me/FriendIcon";
@@ -10,24 +9,33 @@ import ThreeDots from "@/public/me/ThreeDots";
 import CheckInactiveIcon from "@/public/me/CheckInactiveIcon";
 import LockIcon from "@/public/me/LockIcon";
 import { LinearProgress } from "@mui/material";
+import Link from "next/link";
+import BackButton from "../ui/backbutton";
+import UserIcon from "@/public/me/UserIcon";
 
 export default function Me() {
   return (
     <main className="flex min-h-screen justify-center">
-      <div className="flex min-w-[360px] flex-col bg-default-200 shadow-lg sm:w-[360px] md:w-[480px] lg:w-[600px]">
+      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
-        <div className="px-6">
-          <BackArrowIcon className="h-3 w-3 fill-current text-default-500 hover:text-default-700" />
+        <div className="flex items-center justify-between px-6">
+          <BackButton />
+          <Link
+            href="/me/edit"
+            className="text-xs font-semibold text-default-600 hover:text-default-700"
+          >
+            프로필 수정
+          </Link>
         </div>
-        <section className="px-5 py-3">
-          <div className="pb-10">
+        <article className="px-5 py-3">
+          <section className="pb-10">
             <div className="flex items-center gap-1 pb-3">
               <LockIcon className="h-4 w-4" />
               <span className="text-base font-semibold">doe</span>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex h-12 w-12 justify-center rounded-full bg-gray-300">
-                <Image src="/me/user.svg" width={18} height={20} alt="user" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
+                <UserIcon />
               </div>
               <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
                 <RememberIcon className="h-5 w-5 fill-current" />
@@ -42,13 +50,13 @@ export default function Me() {
                 <span className="text-xs font-semibold">4 Friends</span>
               </div>
             </div>
-          </div>
-          <div className="flex items-center justify-between pb-2">
+          </section>
+          <section className="flex items-center justify-between pb-2">
             <div className="flex items-center gap-2">
               <DownDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
-              <span className="text-base font-semibold text-default-700">
+              <h1 className="text-base font-semibold text-default-700">
                 Daily
-              </span>
+              </h1>
             </div>
 
             <LinearProgress
@@ -60,15 +68,15 @@ export default function Me() {
                 mx: 2,
               }}
               variant="determinate"
-              value={(5 / 5) * 100}
+              value={(3 / 5) * 100}
               color="inherit"
             />
 
             <span className="mx-1 whitespace-nowrap text-xs font-semibold text-default-600">
               3 / 5
             </span>
-          </div>
-          <div className="relative flex flex-col gap-4">
+          </section>
+          <section className="relative flex flex-col gap-4 pb-3">
             <div className="flex justify-between rounded-xl bg-default-100 px-3 py-2">
               <div className="flex gap-3">
                 <CheckActiveIcon className="h-5 w-5 fill-current text-default-600" />
@@ -88,8 +96,8 @@ export default function Me() {
               </div>
               <ThreeDots className="h-5 w-5 fill-current text-default-600" />
             </div>
-          </div>
-          <div>
+          </section>
+          <section>
             <div className="font-semibold text-default-700">목표</div>
             <div className="flex flex-col gap-3 rounded-xl bg-default-100 px-4 py-3">
               <div className="flex justify-between">
@@ -123,8 +131,8 @@ export default function Me() {
               </div>
               <div></div>
             </div>
-          </div>
-        </section>
+          </section>
+        </article>
       </div>
     </main>
   );

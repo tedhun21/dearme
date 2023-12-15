@@ -21,7 +21,7 @@ export default function MeNav() {
         </Link>
       </div>
       <div className="flex items-center justify-between">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-300">
           <UserIcon />
         </div>
         <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">

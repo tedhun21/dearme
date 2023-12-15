@@ -16,11 +16,11 @@ export default function MePost() {
           <h1 className="mx-5 mb-3 text-base font-semibold">포스트</h1>
           <section>
             <div className="grid grid-cols-3 xxs:grid-cols-4 xs:grid-cols-5">
-              <div className="flex items-center justify-center">
+              <div className="relative flex items-center justify-center">
                 <Image
+                  fill
                   src="/me/chu.png"
-                  width={500}
-                  height={500}
+                  style={{ objectFit: "cover" }}
                   alt="user"
                   // sizes="(max-width:400px) 33vw (max-width:500px) 25vw (max-width:600px) 20vw"
                 />
@@ -28,8 +28,8 @@ export default function MePost() {
               <div className="flex items-center justify-center">
                 <Image
                   src="/me/petmily.png"
-                  width={500}
-                  height={500}
+                  width={200}
+                  height={200}
                   alt="petmily"
                 />
               </div>

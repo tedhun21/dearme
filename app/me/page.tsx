@@ -1,56 +1,22 @@
-import Image from "next/image";
 import Header from "../ui/header";
-import RememberIcon from "@/public/me/RememberIcon";
-import PostIcon from "@/public/me/PostIcon";
-import FriendIcon from "@/public/me/FriendIcon";
 import DownDropdownIcon from "@/public/me/DownDropdownIcon";
 import CheckActiveIcon from "@/public/me/CheckActiveIcon";
 import ThreeDots from "@/public/me/ThreeDots";
 import CheckInactiveIcon from "@/public/me/CheckInactiveIcon";
-import LockIcon from "@/public/me/LockIcon";
 import { LinearProgress } from "@mui/material";
-import Link from "next/link";
 import BackButton from "../ui/backbutton";
-import UserIcon from "@/public/me/UserIcon";
+import MeNav from "../ui/me/MeNav";
 
 export default function Me() {
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
-        <div className="flex items-center justify-between px-6">
+        <div className="flex items-center px-6">
           <BackButton />
-          <Link
-            href="/me/edit"
-            className="text-xs font-semibold text-default-600 hover:text-default-700"
-          >
-            프로필 수정
-          </Link>
         </div>
+        <MeNav />
         <article className="px-5 py-3">
-          <section className="pb-10">
-            <div className="flex items-center gap-1 pb-3">
-              <LockIcon className="h-4 w-4" />
-              <span className="text-base font-semibold">doe</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
-                <UserIcon />
-              </div>
-              <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
-                <RememberIcon className="h-5 w-5 fill-current" />
-                <span className="text-xs font-semibold">3 Remember</span>
-              </div>
-              <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
-                <PostIcon className="h-5 w-5 fill-current" />
-                <span className="text-xs font-semibold">3 Posts</span>
-              </div>
-              <div className="group flex flex-col items-center gap-1 text-default-500 hover:text-default-700">
-                <FriendIcon className="h-5 w-5 fill-current" />
-                <span className="text-xs font-semibold">4 Friends</span>
-              </div>
-            </div>
-          </section>
           <section className="flex items-center justify-between pb-2">
             <div className="flex items-center gap-2">
               <DownDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />

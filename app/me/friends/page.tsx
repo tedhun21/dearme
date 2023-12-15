@@ -29,7 +29,7 @@ export default function MeFriend() {
           </div>
         </div>
         <div className="flex justify-between gap-5 px-6 py-3">
-          <input className="w-full rounded-lg border-2 border-default-400 px-3 text-base font-semibold" />
+          <input className="w-full rounded-lg border-2 border-default-400 px-3 text-base font-normal hover:border-default-500 focus:border-default-500 focus:outline-none" />
           <button>
             <SearchIcon className="h-5 w-5 fill-current text-default-400 hover:text-default-500 active:text-default-700" />
           </button>

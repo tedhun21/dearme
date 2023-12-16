@@ -2,7 +2,7 @@ type IconProps = {
   className?: string;
 };
 
-export default function CheckInactiveIcon({ className }: IconProps) {
+export default function TodoCheckFalseIcon({ className }: IconProps) {
   return (
     <svg
       className={className}

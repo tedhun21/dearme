@@ -1,5 +1,5 @@
 type IconProps = {
-  className: string;
+  className?: string;
 };
 
 export default function RememberIcon({ className }: IconProps) {
@@ -7,6 +7,7 @@ export default function RememberIcon({ className }: IconProps) {
     <svg
       className={className}
       viewBox="0 0 18 21"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M0 6.25V17.7083C0 20.001 1.794 20.8333 3 20.8333H18V18.75H3.012C2.55 18.7375 2 18.5479 2 17.7083C2 16.8687 2.55 16.6792 3.012 16.6667H18V2.08333C18 0.934375 17.103 0 16 0H3C1.794 0 0 0.832292 0 3.125V6.25ZM3 2.08333H16V14.5833H2V3.125C2 2.28542 2.55 2.09583 3 2.08333Z" />

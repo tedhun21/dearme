@@ -67,7 +67,7 @@ export default function MeEdit() {
                 이름
               </label>
               <input
-                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700"
+                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 focus:outline-none"
                 defaultValue="김코딩"
                 readOnly
               />
@@ -77,7 +77,7 @@ export default function MeEdit() {
                 닉네임
               </label>
               <input
-                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:outline-none"
+                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
                 value="코딩맨"
               />
             </div>
@@ -86,7 +86,7 @@ export default function MeEdit() {
                 연락처
               </label>
               <input
-                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:outline-none"
+                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
                 value="010839405552"
               />
             </div>
@@ -95,7 +95,7 @@ export default function MeEdit() {
                 주소
               </label>
               <input
-                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:outline-none"
+                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
                 value="서울시 중구"
               />
             </div>
@@ -104,14 +104,14 @@ export default function MeEdit() {
                 상세주소
               </label>
               <input
-                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:outline-none"
+                className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
                 value="새록새록아파트 202동 1105호"
               />
             </div>
           </section>
           <section className="flex w-full flex-col items-center p-5">
             <div className="flex w-2/3 flex-col">
-              <button className="w-full rounded-lg border-2 border-default-500 bg-default-100 p-2 text-xs font-semibold hover:border-default-700 hover:bg-default-500 hover:text-default-300">
+              <button className="w-full rounded-lg border-2 border-default-500 bg-default-100 p-2 text-xs font-semibold hover:border-default-700 hover:bg-default-500 hover:text-default-300 active:border-default-800">
                 수정하기
               </button>
               <div className="flex justify-between pt-4">

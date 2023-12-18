@@ -1,3 +1,5 @@
+import CheckFalseIcon from "@/public/me/CheckFalseIcon";
+import CheckTrueIcon from "@/public/me/CheckTrueIcon";
 import ThreeDots from "@/public/me/ThreeDots";
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
 import TodoCheckTrueIcon from "@/public/me/TodoCheckTureIcon";
@@ -12,7 +14,7 @@ interface TodoProps {
 }
 
 export default function Todo({ todo }: TodoProps) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState("비공개");
   const [popup, setPopup] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -65,9 +67,39 @@ export default function Todo({ todo }: TodoProps) {
         {popup && (
           <div
             ref={modalRef}
-            className="absolute right-2 top-3 w-32 rounded-lg bg-white"
+            className="z-100 absolute right-2 top-3 flex w-32 flex-col items-start rounded-xl bg-white"
           >
-            hi
+            <div className="p-2 text-2xs font-semibold">공개 설정</div>
+            <div className="flex w-full items-center gap-2 border-b-2 px-3 py-1">
+              <button onClick={() => setIsChecked("모두")}>
+                {isChecked === "모두" ? (
+                  <CheckTrueIcon className="h-4 w-4 fill-current text-default-700" />
+                ) : (
+                  <CheckFalseIcon className="h-4 w-4 fill-current text-default-700" />
+                )}
+              </button>
+              <div className="text-2xs font-semibold">모두</div>
+            </div>
+            <div className="flex w-full items-center gap-2 border-b-2 px-3 py-1">
+              <button onClick={() => setIsChecked("친구만")}>
+                {isChecked === "친구만" ? (
+                  <CheckTrueIcon className="h-4 w-4 fill-current text-default-700" />
+                ) : (
+                  <CheckFalseIcon className="h-4 w-4 fill-current text-default-700" />
+                )}
+              </button>
+              <div className="text-2xs font-semibold">친구만</div>
+            </div>
+            <div className="flex w-full items-center gap-2 px-3 py-1">
+              <button onClick={() => setIsChecked("비공개")}>
+                {isChecked === "비공개" ? (
+                  <CheckTrueIcon className="h-4 w-4 fill-current text-default-700" />
+                ) : (
+                  <CheckFalseIcon className="h-4 w-4 fill-current text-default-700" />
+                )}
+              </button>
+              <div className="text-2xs font-semibold">비공개</div>
+            </div>
           </div>
         )}
         <ThreeDots className="h-5 w-5 fill-current text-default-600 hover:text-default-700" />

@@ -9,9 +9,13 @@ import Todo from "../ui/me/Todo";
 import { useState } from "react";
 
 const todos = [
-  { id: 1, body: "스터티", checked: true },
+  { id: 1, body: "스터디", checked: true },
   { id: 2, body: "퇴근", checked: false },
   { id: 3, body: "잠자기", checked: true },
+  { id: 4, body: "잠자기", checked: true },
+  { id: 5, body: "잠자기", checked: true },
+  { id: 6, body: "잠자기", checked: true },
+  { id: 7, body: "잠자기", checked: true },
 ];
 
 export default function Me() {

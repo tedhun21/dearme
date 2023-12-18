@@ -28,6 +28,9 @@ const config: Config = {
           800: "#143422",
         },
       },
+      fontSize: {
+        "2xs": ["0.625rem", "0.8rem"],
+      },
     },
   },
   plugins: [],

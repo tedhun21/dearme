@@ -5,6 +5,31 @@ import Button from "@mui/joy/Button";
 import GoogleLogo from "@/public/login/GoogleLogo";
 
 export default function Login() {
+  // const [id, setId] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [remember, setRemember] = useState(false);
+
+  // const handleLogin = () => {
+  //   if (remember) {
+  //     localStorage.setItem("id", id);
+  //     localStorage.setItem("password", password);
+  //     localStorage.setItem("remember", remember);
+  //   } else {
+  //     localStorage.removeItem("id");
+  //     localStorage.removeItem("password");
+  //     localStorage.removeItem("remember");
+  //   }
+  //   // 로그인 처리 로직
+  // };
+
+  // useEffect(() => {
+  //   if (localStorage.getItem("remember") === "true") {
+  //     setId(localStorage.getItem("id"));
+  //     setPassword(localStorage.getItem("password"));
+  //     setRemember(true);
+  //   }
+  // }, []);
+
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -27,6 +52,8 @@ export default function Login() {
               </label>
               <Input
                 variant="plain"
+                // value={id}
+                // onChange={(e) => setId(e.target.value)}
                 sx={{
                   "--Input-radius": "0px",
                   borderBottom: "2px solid #DED0B6",
@@ -59,7 +86,9 @@ export default function Login() {
               </label>
               <Input
                 type="password"
+                // value={password}
                 variant="plain"
+                // onChange={(e) => setPassword(e.target.value)}
                 sx={{
                   "--Input-radius": "0px",
                   borderBottom: "2px solid #DED0B6",
@@ -85,7 +114,18 @@ export default function Login() {
             </div>
           </section>
           <section className="mt-4 flex w-full flex-col items-center gap-4">
-            <div className="mt-8 flex w-full min-w-[220px] max-w-[280px] flex-col">
+            <div className="flex w-full min-w-[220px] max-w-[280px]">
+              <input
+                className="mr-2"
+                type="checkbox"
+                // checked={remember}
+                // onChange={(e) => setRemember(e.target.checked)}
+              />
+              <label htmlFor="remember" className="text-defalut-800 text-sm">
+                로그인 상태 유지
+              </label>
+            </div>
+            <div className="mt-4 flex w-full min-w-[220px] max-w-[280px] flex-col">
               <Button
                 variant="outlined"
                 className="text-default-800 border-default-800 rounded-sm border-2 border-solid py-2 hover:bg-default-300"

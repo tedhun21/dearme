@@ -1,14 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import Divider from "@mui/material/Divider";
+// TODO: 메뉴 디자인 수정 (라디오 버튼, 호버링)
+
 import React, { useState } from "react";
 
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import Divider from "@mui/material/Divider";
+
+import Comments from "@/public/social/Commets";
+import Delete from "@/public/social/Delete";
+import Edit from "@/public/social/Edit";
+import User from "@/public/social/User";
+import FriendRequest from "@/public/social/FriendRequest";
+import Report from "@/public/social/Report";
+
 // 나의 게시물 / 친구 게시물 : isMyPost(boolean)
-// TODO: 메뉴 디자인 수정 (라디오 버튼, 호버링)
-// TODO: 컴포넌트 파일 ui로 옮기기 (ui > social > Components)
 
 export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
   // 게시물 (···)
@@ -60,11 +67,8 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
         {isMyPost ? (
           <div className="flex flex-col pb-3 pl-5 pr-5 pt-3">
             <div className="mb-3 flex items-center">
-              <img
-                src="/social/comments.svg"
-                alt="Comments Setting"
-                className="pr-2"
-              />
+              <Comments className="mr-1 h-5 w-5 fill-current text-default-600" />
+
               <div className="text-sm font-semibold text-default-700">
                 댓글 설정
               </div>
@@ -93,22 +97,15 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
             <Divider />
 
             <div className="mb-3 mt-3 flex items-center">
-              <img
-                src="/social/edit.svg"
-                alt="Comments Setting"
-                className="pr-2"
-              />
+              <Edit className="mr-1 h-5 w-6 fill-current text-default-600" />
+
               <div className="text-sm font-semibold text-default-700">
                 게시물 수정
               </div>
             </div>
 
             <div className="mt-2 flex items-center">
-              <img
-                src="/social/delete.svg"
-                alt="Comments Setting"
-                className="pr-2"
-              />
+              <Delete className="mr-1 h-5 w-6 fill-current text-default-600" />
               <div className="text-sm font-semibold text-default-700">
                 게시물 삭제
               </div>
@@ -117,33 +114,24 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
         ) : (
           <div className="flex flex-col pb-3 pl-5 pr-5 pt-3">
             <div className="mb-3 flex items-center">
-              <img
-                src="/social/user.svg"
-                alt="Comments Setting"
-                className="pr-2"
-              />
+              <User className="mr-1 h-5 w-5 fill-current text-default-600" />
+
               <div className="text-sm font-semibold text-default-700">
                 이 계정 정보
               </div>
             </div>
 
             <div className="mb-3 mt-3 flex items-center">
-              <img
-                src="/social/friendrequest.svg"
-                alt="Comments Setting"
-                className="pr-2"
-              />
+              <FriendRequest className="mr-1 h-5 w-5 fill-current text-default-600" />
+
               <div className="text-sm font-semibold text-default-700">
                 친구 신청
               </div>
             </div>
 
             <div className="mt-2 flex items-center">
-              <img
-                src="/social/report.svg"
-                alt="Comments Setting"
-                className="pr-2"
-              />
+              <Report className="mr-1 h-4 w-4 fill-current text-default-600" />
+
               <div className="text-sm font-semibold text-default-700">신고</div>
             </div>
           </div>

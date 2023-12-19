@@ -1,75 +1,123 @@
-import Image from "next/image";
+import BackIcon from "@/public/login/BackIcon";
+import DearmeLogo from "@/public/login/DearmeLogo";
+import Input from "@mui/joy/Input";
+import Button from "@mui/joy/Button";
+import GoogleLogo from "@/public/login/GoogleLogo";
 
 export default function Login() {
   return (
     <main className="flex min-h-screen justify-center">
-      <div className="flex min-w-[360px] max-w-[600px] flex-col bg-default-200">
-        <div className="pl-4 pt-4">
-          <Image
-            className="h-4 w-4 object-contain"
-            src="/login/backIcon.svg"
-            alt="BackIcon"
-            width={4}
-            height={4}
-          />
+      <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+        <header className="pl-8 pt-8">
+          <a href="/">
+            <BackIcon />
+          </a>
+        </header>
+        <div className="flex justify-center pt-[66px]">
+          <DearmeLogo />
         </div>
-        <div className="flex justify-center pt-[84px]">
-          <Image
-            className="h-32 w-32 object-contain"
-            src="/login/dearmeLogo.svg"
-            alt="Logo"
-            width={32}
-            height={32}
-          />
-        </div>
-        <div className="flex-col justify-center">
-          <div className="mt-[-28px] flex justify-center">
-            <div className="min-h-screen w-[220px] flex-col items-center justify-center">
+        <article className="flex w-full flex-col items-center">
+          <section className="flex w-full flex-col items-center gap-4">
+            <div className="w-full min-w-[220px] max-w-[280px] flex-col items-center">
               <label
                 htmlFor="ID"
                 className="font-small block text-sm leading-8 text-gray-500"
               >
                 ID
               </label>
-              <div className="relative rounded-md shadow-sm">
-                <input
-                  type="text"
-                  name="input"
-                  id="id input"
-                  className="block w-full border-b-2 border-black bg-transparent py-1.5 pl-8 pr-8 text-default-500 sm:text-sm sm:leading-6"
-                />
-              </div>
+              <Input
+                variant="plain"
+                sx={{
+                  "--Input-radius": "0px",
+                  borderBottom: "2px solid #DED0B6",
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    borderColor: "neutral.outlinedHoverBorder",
+                  },
+                  "&::before": {
+                    border: "2px solid #000000", // focusedHighlight색상
+                    transform: "scaleX(0)",
+                    left: 0,
+                    right: 0,
+                    bottom: "-2px",
+                    top: "unset",
+                    transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                    borderRadius: 0,
+                  },
+                  "&:focus-within::before": {
+                    transform: "scaleX(1)",
+                  },
+                }}
+              />
             </div>
-          </div>
-          <div className="mt-[-580px] flex justify-center">
-            <div className="min-h-screen w-[220px] flex-col items-center justify-center">
+            <div className="w-full min-w-[220px] max-w-[280px] flex-col items-center">
               <label
                 htmlFor="Password"
                 className="font-small block text-sm leading-8 text-gray-500"
               >
                 PW
               </label>
-              <div className="relative rounded-md shadow-sm">
-                <input
-                  type="password"
-                  name="input"
-                  id="password input"
-                  className="block w-full border-b-2 border-black bg-transparent py-1.5 pl-8 pr-8 text-default-500 sm:text-sm sm:leading-6"
-                />
-              </div>
-              <input
-                type="checkbox"
-                id="checkbox"
-                name="checkbox"
-                className="mt-4"
+              <Input
+                type="password"
+                variant="plain"
+                sx={{
+                  "--Input-radius": "0px",
+                  borderBottom: "2px solid #DED0B6",
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    borderColor: "neutral.outlinedHoverBorder",
+                  },
+                  "&::before": {
+                    border: "2px solid #000000", // focusedHighlight색상
+                    transform: "scaleX(0)",
+                    left: 0,
+                    right: 0,
+                    bottom: "-2px",
+                    top: "unset",
+                    transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                    borderRadius: 0,
+                  },
+                  "&:focus-within::before": {
+                    transform: "scaleX(1)",
+                  },
+                }}
               />
             </div>
-          </div>
-          {/* <div className="mt-[-884px] flex min-h-screen w-[220px] items-center justify-center text-default-500 ring-2">
-            log in
-          </div> */}
-        </div>
-      </div>
+          </section>
+          <section className="mt-4 flex w-full flex-col items-center gap-4">
+            <div className="mt-8 flex w-full min-w-[220px] max-w-[280px] flex-col">
+              <Button
+                variant="outlined"
+                className="text-default-800 border-default-800 rounded-sm border-2 border-solid py-2 hover:bg-default-300"
+              >
+                Log in
+              </Button>
+            </div>
+            <div className="flex w-full min-w-[220px] max-w-[280px] flex-col justify-center">
+              <Button
+                variant="plain"
+                className="bg-default-800 hover:bg-default-700 rounded-sm py-2 text-default-100"
+              >
+                <div className="mr-2">
+                  <GoogleLogo />
+                </div>
+                Log in with Google
+              </Button>
+            </div>
+          </section>
+          <article className="mt-2 flex w-full min-w-[220px] max-w-[280px] justify-center text-sm">
+            <h1 className="text-default-800 flex w-full justify-center">
+              회원이 아니신가요?
+            </h1>
+            <a
+              href="/signup"
+              className="text-default-600 flex w-full justify-center"
+            >
+              회원가입 하기
+            </a>
+          </article>
+        </article>
+      </article>
     </main>
   );
 }

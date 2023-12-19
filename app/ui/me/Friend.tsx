@@ -1,6 +1,7 @@
 "use client";
 
 import UserIcon from "@/public/me/UserIcon";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Friend({ friend, myId }: any) {
@@ -19,9 +20,11 @@ export default function Friend({ friend, myId }: any) {
   return (
     <div className="group flex items-center justify-between rounded-lg p-2 hover:bg-default-300">
       <div className="flex items-center gap-6">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-default-500">
-          <UserIcon />
-        </div>
+        <Link href={`/profile/${friend.id}`}>
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-default-500">
+            <UserIcon />
+          </div>
+        </Link>
         <div className="text-base font-semibold">{friend.username}</div>
       </div>
       {isFriend ? (

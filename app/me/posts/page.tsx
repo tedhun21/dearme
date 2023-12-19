@@ -1,6 +1,6 @@
 import BackButton from "@/app/ui/backbutton";
 import Header from "@/app/ui/header";
-import MeNav from "@/app/ui/me/MeNav";
+import MeNav from "@/app/ui/me/UserNav";
 import Image from "next/image";
 
 export default function MePost() {

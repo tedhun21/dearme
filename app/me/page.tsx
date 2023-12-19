@@ -2,11 +2,21 @@
 
 import Header from "../ui/header";
 import BackButton from "../ui/backbutton";
-import MeNav from "../ui/me/MeNav";
 import TodoRate from "../ui/me/TodoRate";
 import MeGoal from "../ui/me/MeGoal";
 import Todo from "../ui/me/Todo";
 import { useState } from "react";
+import UserNav from "../ui/me/UserNav";
+
+const me = {
+  id: 1,
+  username: "doe",
+  posts: [
+    { id: 1, title: "하이" },
+    { id: 2, title: "바이" },
+  ],
+  friends: [{ id: 2, username: "ryan" }],
+};
 
 const todos = [
   { id: 1, body: "스터디", checked: true },
@@ -27,7 +37,7 @@ export default function Me() {
         <div className="flex items-center px-6">
           <BackButton />
         </div>
-        <MeNav />
+        <UserNav user={me} myId={me.id} />
         <article className="flex flex-col px-5 py-3">
           <TodoRate todos={todos} isDrop={isDrop} setIsDrop={setIsDrop} />
           {isDrop && (

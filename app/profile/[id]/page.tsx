@@ -3,7 +3,7 @@
 import BackButton from "@/app/ui/backbutton";
 import Header from "@/app/ui/header";
 import MeGoal from "@/app/ui/me/MeGoal";
-import MeNav from "@/app/ui/me/MeNav";
+import MeNav from "@/app/ui/me/UserNav";
 import Todo from "@/app/ui/me/Todo";
 import TodoRate from "@/app/ui/me/TodoRate";
 import { useParams } from "next/navigation";
@@ -17,6 +17,16 @@ const me = {
     { id: 2, title: "바이" },
   ],
   friends: [{ id: 2, username: "ryan" }],
+};
+
+const other = {
+  id: 2,
+  username: "ryan",
+  posts: [
+    { id: 1, title: "안녕하세요" },
+    { id: 2, title: "안녕히계세요" },
+  ],
+  friends: [{ id: 1, username: "doe" }],
 };
 
 const todos = [
@@ -41,7 +51,7 @@ export default function Profile() {
         <div className="flex items-center px-6">
           <BackButton />
         </div>
-        <MeNav />
+        <MeNav user={other} myId={me.id} />
         <article className="flex flex-col gap-8 px-5 py-3">
           <TodoRate todos={todos} isDrop={isDrop} setIsDrop={setIsDrop} />
           {isDrop && (

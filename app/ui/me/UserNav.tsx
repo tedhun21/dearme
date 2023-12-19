@@ -1,27 +1,22 @@
+"use client";
+
 import FriendIcon from "@/public/me/FriendIcon";
 import LockIcon from "@/public/me/LockIcon";
 import PostIcon from "@/public/me/PostIcon";
 import RememberIcon from "@/public/me/RememberIcon";
 import UserIcon from "@/public/me/UserIcon";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const me = {
-  id: 1,
-  username: "doe",
-  posts: [
-    { id: 1, title: "하이" },
-    { id: 2, title: "바이" },
-  ],
-  friends: [{ id: 2, username: "ryan" }],
-};
-
-export default function MeNav() {
+export default function UserNav({ user, myId }: any) {
+  const [isMe, setIsMe] = useState(false);
+  useEffect(() => {}, []);
   return (
     <section className="mx-5 mb-10 mt-3">
       <div className="flex items-center justify-between gap-1 pb-3">
         <div className="flex items-center gap-1">
           <LockIcon className="h-4 w-4" />
-          <span className="text-base font-semibold">{me.username}</span>
+          <span className="text-base font-semibold">{user.username}</span>
         </div>
         <Link
           href="/me/edit"
@@ -47,9 +42,9 @@ export default function MeNav() {
         >
           <PostIcon className="h-5 w-5 fill-current" />
           <span className="text-xs font-semibold">
-            {me.posts.length > 1
-              ? `${me.posts.length} Posts`
-              : `${me.posts.length} Post`}
+            {user.posts.length > 1
+              ? `${user.posts.length} Posts`
+              : `${user.posts.length} Post`}
           </span>
         </Link>
         <Link
@@ -58,9 +53,9 @@ export default function MeNav() {
         >
           <FriendIcon className="h-5 w-5 fill-current" />
           <span className="text-xs font-semibold">
-            {me.friends.length > 1
-              ? `${me.friends.length} Friends`
-              : `${me.friends.length} Friend`}
+            {user.friends.length > 1
+              ? `${user.friends.length} Friends`
+              : `${user.friends.length} Friend`}
           </span>
         </Link>
       </div>

@@ -1,10 +1,14 @@
 "use client";
+// TODO: CreatePost 플로팅 버튼 위치 수정
+// TODO: 헤더 검색 버튼 추가
+// TODO: 검색 페이지 만들기
+
 import "../globals.css";
 import React, { useState } from "react";
 import Header from "../ui/header";
 import SocialPost from "../ui/social/SocialPost";
+import CreatePost from "../ui/social/CreatePost";
 
-// 전체 & 친구 탭
 interface TabsProps {
   onTabChange: (selectedTab: string) => void;
 }
@@ -21,7 +25,7 @@ const Tabs: React.FC<TabsProps> = ({ onTabChange }) => {
     <div className="mb-5 flex justify-center">
       <div
         className={` cursor-pointer  ${
-          selectedTab === "all" ? "border-b-4 border-black" : ""
+          selectedTab === "all" ? "border-b-4 border-black" : "text-default-500"
         } flex-1 transition duration-300 ease-in-out`}
         onClick={() => handleTabChange("all")}
       >
@@ -29,7 +33,9 @@ const Tabs: React.FC<TabsProps> = ({ onTabChange }) => {
       </div>
       <div
         className={` cursor-pointer  ${
-          selectedTab === "friends" ? "border-b-4 border-black" : ""
+          selectedTab === "friends"
+            ? "border-b-4 border-black"
+            : "text-default-500"
         } duration-30 flex-1 transition ease-in-out`}
         onClick={() => handleTabChange("friends")}
       >
@@ -42,14 +48,18 @@ const Tabs: React.FC<TabsProps> = ({ onTabChange }) => {
 export default function Social() {
   const handleTabChange = (selectedTab: string) => {};
   return (
-    <main className="flex min-h-screen justify-center">
-      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+    <main className="relative flex min-h-screen justify-center">
+      <div className=" flex min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
         {/* 탭 -> 전체 / 친구 게시물 */}
         <Tabs onTabChange={handleTabChange} />
         {/* 소셜 포스트 수 만큼 */}
         <SocialPost />
         <SocialPost />
+      </div>
+      {/* 게시물 작성 버튼 */}
+      <div className="fixed bottom-20 right-5">
+        <CreatePost />
       </div>
     </main>
   );

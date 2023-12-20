@@ -29,7 +29,7 @@ export default function Footer() {
               href="/"
               className="flex flex-col items-center text-gray-600 hover:text-gray-900"
             >
-              <div className="rounded-full bg-default-300 p-6 shadow-lg hover:bg-default-400">
+              <div className="rounded-full bg-default-300 p-7 shadow-lg hover:bg-default-400">
                 <Home />
               </div>
             </Link>

@@ -2,7 +2,7 @@ import CheckFalseIcon from "@/public/me/CheckFalseIcon";
 import CheckTrueIcon from "@/public/me/CheckTrueIcon";
 import ThreeDots from "@/public/me/ThreeDots";
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
-import TodoCheckTrueIcon from "@/public/me/TodoCheckTureIcon";
+import TodoCheckTrueIcon from "@/public/me/TodoCheckTrueIcon";
 import { useEffect, useRef, useState } from "react";
 
 interface TodoProps {
@@ -45,10 +45,7 @@ export default function Todo({ todo }: TodoProps) {
   }, [popup]);
 
   return (
-    <div
-      key={todo.id}
-      className="flex justify-between rounded-xl bg-default-100 px-3 py-2"
-    >
+    <div className="flex justify-between rounded-xl bg-default-100 px-3 py-2">
       <div className="flex gap-3">
         {todo.checked ? (
           <button onClick={() => handleToggleClick()}>

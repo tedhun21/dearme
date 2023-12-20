@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Footer from "./footer/page";
 
 export const metadata: Metadata = {
   title: "Dearme",

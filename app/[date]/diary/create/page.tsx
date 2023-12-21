@@ -15,8 +15,10 @@ import CirclePlus from "@/public/diary/CirclePlus";
 import Weather from "@/public/diary/Weather";
 import PhotoIcon from "@/public/diary/PhotoIcon";
 import BlackPlus from "@/public/diary/BlackPlus";
+import DiaryCreateModal from "@/public/diary/DiaryCreateModal";
 
 export default function Create() {
+  const [open, setOpen] = useState(false);
   const params = useParams();
   const [formattedDate, setFormattedDate] = useState("");
 
@@ -118,21 +120,8 @@ export default function Create() {
             ))}
           </span>
         </section>
-        <section className="relative my-4 flex flex-col rounded bg-default-100 px-8 py-28 shadow-xl">
-          <span className="flex justify-center">
-            <CirclePlus />
-          </span>
-          <h3 className="flex items-center justify-center px-4 text-base font-medium text-default-800">
-            당신의 소중한 이야기를 기록해주세요:)
-          </h3>
-          <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
-            <span className="mr-2">
-              <Weather />
-            </span>
-            <h4 className="flex justify-end text-xs font-medium text-default-800">
-              서울 마포구, 9.2°C
-            </h4>
-          </section>
+        <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
+          <DiaryCreateModal />
         </section>
         <section className="flex flex-col bg-default-300">
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
@@ -164,8 +153,8 @@ export default function Create() {
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-default-100">
             오늘의 PICK
           </h2>
-          <span className="mb-8 mt-2 flex justify-center gap-2 border-2 border-dashed border-black px-6">
-            <button className="w-full rounded-lg bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300">
+          <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
+            <button className="w-full rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300">
               <span className="mb-2 flex justify-center">
                 <BlackPlus />
               </span>

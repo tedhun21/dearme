@@ -4,6 +4,8 @@ import GoogleLogo from "@/public/login/GoogleLogo";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 
+import Footer from "@/app/footer/page";
+
 export default function Signup() {
   return (
     <main className="flex min-h-screen justify-center">
@@ -233,7 +235,7 @@ export default function Signup() {
             <div className="mt-8 flex w-full flex-col">
               <Button
                 variant="outlined"
-                className="text-default-800 border-default-800 rounded-sm border-2 border-solid py-2 hover:bg-default-300"
+                className="rounded-sm border-2 border-solid border-default-800 py-2 text-default-800 hover:bg-default-300"
               >
                 Sign up
               </Button>
@@ -241,7 +243,7 @@ export default function Signup() {
             <div className="flex w-full flex-col justify-center">
               <Button
                 variant="plain"
-                className="bg-default-800 hover:bg-default-700 rounded-sm py-2 text-default-100"
+                className="rounded-sm bg-default-800 py-2 text-default-100 hover:bg-default-700"
               >
                 <div className="mr-2">
                   <GoogleLogo />
@@ -251,18 +253,19 @@ export default function Signup() {
             </div>
           </section>
           <section className="mb-4 flex w-full min-w-[220px] max-w-[280px] justify-center text-xs">
-            <h1 className="text-default-800 flex w-full justify-center">
+            <h1 className="flex w-full justify-center text-default-800">
               이미 회원이신가요?
             </h1>
             <a
               href="/login"
-              className="text-default-600 flex w-full justify-center"
+              className="flex w-full justify-center text-default-600"
             >
               로그인 하기
             </a>
           </section>
         </article>
       </article>
+      <Footer />
     </main>
   );
 }

@@ -4,6 +4,8 @@ import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import GoogleLogo from "@/public/login/GoogleLogo";
 
+import Footer from "@/app/footer/page";
+
 export default function Login() {
   // const [id, setId] = useState("");
   // const [password, setPassword] = useState("");
@@ -128,7 +130,7 @@ export default function Login() {
             <div className="mt-4 flex w-full min-w-[220px] max-w-[280px] flex-col">
               <Button
                 variant="outlined"
-                className="text-default-800 border-default-800 rounded-sm border-2 border-solid py-2 hover:bg-default-300"
+                className="rounded-sm border-2 border-solid border-default-800 py-2 text-default-800 hover:bg-default-300"
               >
                 Log in
               </Button>
@@ -136,7 +138,7 @@ export default function Login() {
             <div className="flex w-full min-w-[220px] max-w-[280px] flex-col justify-center">
               <Button
                 variant="plain"
-                className="bg-default-800 hover:bg-default-700 rounded-sm py-2 text-default-100"
+                className="rounded-sm bg-default-800 py-2 text-default-100 hover:bg-default-700"
               >
                 <div className="mr-2">
                   <GoogleLogo />
@@ -146,18 +148,19 @@ export default function Login() {
             </div>
           </section>
           <article className="mt-2 flex w-full min-w-[220px] max-w-[280px] justify-center text-sm">
-            <h1 className="text-default-800 flex w-full justify-center">
+            <h1 className="flex w-full justify-center text-default-800">
               회원이 아니신가요?
             </h1>
             <a
               href="/signup"
-              className="text-default-600 flex w-full justify-center"
+              className="flex w-full justify-center text-default-600"
             >
               회원가입 하기
             </a>
           </article>
         </article>
       </article>
+      <Footer />
     </main>
   );
 }

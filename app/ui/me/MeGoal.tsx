@@ -1,8 +1,39 @@
-export default function MeGoal() {
+"use client";
+
+import clsx from "clsx";
+import dayjs, { Dayjs } from "dayjs";
+
+type MeGoalProps = {
+  route?: string;
+};
+
+export default function MeGoal({ route }: MeGoalProps) {
+  const goalDate = (date: any): number | string => {
+    const today = dayjs();
+    const targetDate = dayjs(date);
+
+    if (targetDate.isAfter(today)) {
+      const diff = targetDate.diff(today, "day");
+      return `-${diff + 1}`;
+    } else if (targetDate.isSame(today, "day")) {
+      return "D-day";
+    } else {
+      const diff = today.diff(targetDate, "day");
+      return `+${diff}`;
+    }
+  };
+
   return (
     <section>
-      <div className="font-semibold text-default-700">목표</div>
-      <div className="flex flex-col gap-3 rounded-xl bg-default-100 px-4 py-3">
+      {route !== "home" ? (
+        <div className="font-semibold text-default-700">목표</div>
+      ) : null}
+      <div
+        className={clsx(
+          "flex flex-col gap-3 bg-default-100 px-4 py-3",
+          route === "home" ? "rounded-none" : "rounded-xl",
+        )}
+      >
         <div className="flex justify-between">
           <div className="flex flex-col">
             <span className="text-2xs font-bold text-red-600 dark:bg-red-300">
@@ -15,7 +46,7 @@ export default function MeGoal() {
           </div>
           <div className="flex items-center justify-center">
             <span className="rounded-lg border-2 border-default-700 px-2 font-semibold">
-              -21
+              {goalDate("2023-12-25")}
             </span>
           </div>
         </div>
@@ -26,7 +57,7 @@ export default function MeGoal() {
           </div>
           <div className="flex items-center justify-center">
             <span className="rounded-lg border-2 border-default-700 px-2 font-semibold">
-              -28
+              {goalDate("2024-01-01")}
             </span>
           </div>
         </div>

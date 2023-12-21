@@ -30,8 +30,8 @@ export default function MeGoal({ route }: MeGoalProps) {
       ) : null}
       <div
         className={clsx(
-          "flex flex-col gap-3 rounded-xl bg-default-100 px-4 py-3",
-          route === "home" && "rounded-none",
+          "flex flex-col gap-3 bg-default-100 px-4 py-3",
+          route === "home" ? "rounded-none" : "rounded-xl",
         )}
       >
         <div className="flex justify-between">

@@ -245,7 +245,7 @@ export default function CreatePost() {
           </div>
           <div className="flex items-center justify-between">
             <SelectPhotos className="h-7 w-7 " />
-            <button className="w-20 rounded-sm bg-default-800 p-1 text-sm font-medium text-white">
+            <button className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white">
               Post
             </button>
           </div>

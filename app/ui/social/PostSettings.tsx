@@ -8,7 +8,7 @@ import Menu from "@mui/material/Menu";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Divider from "@mui/material/Divider";
 
-import Comments from "@/public/social/Commets";
+import Comments from "@/public/social/Comments";
 import Delete from "@/public/social/Delete";
 import Edit from "@/public/social/Edit";
 import User from "@/public/social/User";

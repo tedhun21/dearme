@@ -7,14 +7,12 @@ import PostSettings from "./PostSettings";
 
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
 import Divider from "@mui/material/Divider";
 
 import EmptyHeart from "@/public/social/EmptyHeart";
 import FullHeart from "@/public/social/FullHeart";
-import Comments from "@/public/social/Commets";
+import Comments from "@/public/social/Comments";
 import Send from "@/public/social/Send";
 
 export default function SocialPost(): JSX.Element {
@@ -50,7 +48,6 @@ export default function SocialPost(): JSX.Element {
           alt="User Image"
           className="h-10  w-10 rounded-full"
         />
-
         <div className="flex-col pl-3">
           <div className="text-base font-bold text-default-700">do_e</div>
           <div className="text-sm font-semibold text-default-500">

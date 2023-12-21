@@ -1,7 +1,5 @@
 "use client";
 // TODO: CreatePost 플로팅 버튼 위치 수정
-// TODO: 헤더 검색 버튼 추가
-// TODO: 검색 페이지 만들기
 
 import "../globals.css";
 import React, { useState } from "react";

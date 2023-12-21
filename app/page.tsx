@@ -14,6 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 import { Badge } from "@mui/material";
+import MeGoal from "./ui/me/MeGoal";
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -51,12 +52,15 @@ export default function Home() {
   // 기록된 데이터가 있는 날짜 표시
   const [highlightedDays, setHighlightedDays] = useState([1, 2, 15, 25]);
 
+  // 캘린더 버튼 누를때 마다
   const handleMonthChange = (date: Dayjs) => {
     const firstDayOfMonth = date.startOf("month");
     const lastDayOfMonth = date.endOf("month");
     const firstDayOfWeek = firstDayOfMonth.startOf("week");
     const lastDayOfWeek = lastDayOfMonth.endOf("week");
     const weeksInMonth = lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
+
+    // 그 달 몇주인지 업데이트
     setWeekOfMonth(weeksInMonth);
 
     // setIsLoading(true);
@@ -64,6 +68,7 @@ export default function Home() {
     // fetchHighlightDays(date)
   };
 
+  // 첫 마운트될 때 그 달의 몇주인지
   useEffect(() => {
     const firstDayOfMonth = dayjs().startOf("month");
     const lastDayOfMonth = dayjs().endOf("month");
@@ -72,14 +77,6 @@ export default function Home() {
     const weeksInMonth = lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
 
     setWeekOfMonth(weeksInMonth);
-
-    // console.log(dayjs(lastDayOfMonth).week());
-    // console.log(
-    //   dayjs(lastDayOfMonth).week() - dayjs(firstDayOfMonth).week() + 1,
-    // );
-    // setWeekOfMonth(
-    //   dayjs(lastDayOfMonth).week() - dayjs(firstDayOfMonth).week() + 1,
-    // );
   }, []);
 
   return (
@@ -87,7 +84,7 @@ export default function Home() {
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
 
-        <div className=" relative mx-5 rounded-lg bg-default-300">
+        <div className=" relative mx-5 overflow-hidden rounded-xl bg-default-300 shadow-md">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
               sx={{
@@ -149,16 +146,8 @@ export default function Home() {
               slotProps={{ day: { highlightedDays } as any }}
             />
           </LocalizationProvider>
+          <MeGoal route="home" />
         </div>
-
-        <div>안녕하세요</div>
-        <div>안녕하세요</div>
-        <div>안녕하세요</div>
-        <div>안녕하세요</div>
-        <div>안녕하세요</div>
-        <div>안녕하세요</div>
-        <div>안녕하세요</div>
-        <div></div>
       </div>
     </main>
   );

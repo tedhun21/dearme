@@ -6,12 +6,11 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
+import { EffectCards } from "swiper/modules";
 
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import "swiper/css/effect-cards";
 
 // import dayjs from "dayjs";
 
@@ -63,8 +62,7 @@ export default function ReadDiary() {
 
   return (
     <article className="relative">
-      {/* 배경 넣기 */}
-      <section className="mb-5 flex w-full min-w-[360px] max-w-[600px] flex-col rounded bg-default-100">
+      <section className="mb-5 mt-5 flex w-full min-w-[360px] max-w-[600px] flex-col rounded ">
         {/* <div className="mb-[420px]"> */}
         {/* <Background className="absolute left-0 top-0 z-10 fill-current text-default-400" />
           <Background className="absolute left-2 top-2 z-10 fill-current text-default-300" /> */}
@@ -72,15 +70,28 @@ export default function ReadDiary() {
             className="absolute left-4 right-0 top-4 z-20"
             imageUrl="https://i.pinimg.com/564x/18/7e/66/187e66dd64de9f323ed7b7261fd29fc8.jpg"
           /> */}
+
+        {/* 이미지 있을 경우에만 (images &&)*/}
         <div>
           <Swiper
-            modules={[Mousewheel]}
+            effect={"cards"}
+            cardsEffect={{
+              perSlideOffset: 3,
+              perSlideRotate: 3,
+              rotate: true,
+              slideShadows: false,
+            }}
+            grabCursor={true}
+            modules={[EffectCards]}
             scrollbar={{ draggable: true }}
             mousewheel={true}
-            className="w-ful h-96"
+            className=" h-96 w-11/12 "
           >
             {images.map((image, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide
+                key={index}
+                className="flex items-center justify-center rounded-lg"
+              >
                 <img
                   src={image}
                   alt={`Diary Image ${index}`}
@@ -89,13 +100,14 @@ export default function ReadDiary() {
               </SwiperSlide>
             ))}
           </Swiper>
+          {/* 이미지 개수 -> text */}
           <Yellow
-            className="absolute right-10 top-[400px] z-50 h-10 w-10 fill-current text-default-900"
+            className="top-70 absolute right-10 z-30 h-10 w-10 -translate-y-1/2 transform fill-current text-default-900"
             text="+3"
           />
         </div>
 
-        <div className="p-5">
+        <div className="p-10">
           <div className="mb-3 mt-4 flex items-center">
             {remembered ? (
               <Remembered
@@ -114,7 +126,7 @@ export default function ReadDiary() {
           <h1 className="mb-3 text-lg font-bold">
             “새로운 시작, 일기 앱 개발의 설렘”
           </h1>
-          <div className="mb-3 text-base font-medium text-default-700">
+          <div className="mb-5 text-base font-medium text-default-700">
             오늘은 제 생애 첫 일기 앱 개발을 시작했습니다. 이 앱을 통해
             사용자들이 자신만의 소중한 추억을 기록하고 공유하는 경험을 제공할 수
             있기를 기대하며, 새로운 도전에 설레는 마음을 가지고
@@ -133,7 +145,7 @@ export default function ReadDiary() {
       </section>
 
       {/* Tag -> map으로 돌리기 */}
-      <section className="mb-5 bg-default-100 p-4">
+      <section className="mb-5 bg-default-100 pb-4 pl-10 pr-10 pt-4 ">
         {tags.slice(0, showAllTags ? tags.length : 3).map((tagItem, index) => (
           <div
             key={index}

@@ -1,9 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-// TODO: 헤더 넣기
-// TODO: 일기 작성 버튼
-
 import "../../globals.css";
 import React, { useState } from "react";
 

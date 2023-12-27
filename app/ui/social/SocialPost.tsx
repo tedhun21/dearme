@@ -2,7 +2,7 @@
 "use client";
 // TODO: 좋아요 목록 디자인 수정
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import PostSettings from "./PostSettings";
 
 import Modal from "@mui/material/Modal";
@@ -34,8 +34,8 @@ export default function SocialPost(): JSX.Element {
   };
 
   // 댓글 입력 상태
-  const [comment, setComment] = useState("");
-  const handleInputChange = (e) => {
+  const [comment, setComment] = useState<string>("");
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setComment(e.target.value);
   };
 
@@ -94,7 +94,7 @@ export default function SocialPost(): JSX.Element {
         </div>
 
         <div className="flex items-center" onClick={toggleComments}>
-          <Comments className="ml-1 h-6 w-6 fill-current text-default-600" />
+          <Comments className="ml-1 h-6 w-6 cursor-pointer fill-current text-default-600" />
         </div>
       </div>
 

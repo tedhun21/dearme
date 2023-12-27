@@ -23,7 +23,8 @@ export default function Search() {
         <div className="m-5">
           {/* 검색 */}
           <div className="mb-5 flex w-full items-center">
-            <div className="h-25 w-full items-center rounded-lg border-2 border-default-400 p-0.5">
+            <div className="h-25 flex w-full items-center rounded-lg border-2 border-default-400 p-0.5">
+              <Find className="ml-2 h-4 w-4 fill-current text-default-500" />
               <InputBase
                 sx={{
                   ml: 1,
@@ -35,7 +36,6 @@ export default function Search() {
                 //   value={search}
               />
             </div>
-            <Find className="ml-2 h-4 w-4 fill-current" />
           </div>
 
           {/* 검색 결과: 계정 / 목표 */}

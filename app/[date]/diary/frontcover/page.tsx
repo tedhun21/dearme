@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 
 import DiaryFrontCoverHead from "@/public/diary/DiaryFrontCoverHead";
-import DiaryFrontCoverBottom from "@/public/diary/DiaryFrontCoverBottom";
 import DiaryFrontCoverMark from "@/public/diary/DiaryFrontCoverMark";
 
 export default function FrontCover() {

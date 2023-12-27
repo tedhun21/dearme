@@ -4,7 +4,7 @@ import GoogleLogo from "@/public/login/GoogleLogo";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 
-import Footer from "@/app/footer/page";
+import Footer from "@/app/ui/footer";
 
 export default function Signup() {
   return (

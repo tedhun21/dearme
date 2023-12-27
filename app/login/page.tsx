@@ -4,7 +4,7 @@ import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import GoogleLogo from "@/public/login/GoogleLogo";
 
-import Footer from "@/app/footer/page";
+import Footer from "@/app/ui/footer";
 
 export default function Login() {
   // const [id, setId] = useState("");

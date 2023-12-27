@@ -11,14 +11,11 @@ import SadEmoji from "@/public/diary/SadEmoji";
 import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 import Tags from "@/public/diary/Tags";
 import Companions from "@/public/diary/Companions";
-import CirclePlus from "@/public/diary/CirclePlus";
-import Weather from "@/public/diary/Weather";
 import PhotoIcon from "@/public/diary/PhotoIcon";
 import BlackPlus from "@/public/diary/BlackPlus";
 import DiaryCreateModal from "@/public/diary/DiaryCreateModal";
 
 export default function Create() {
-  const [open, setOpen] = useState(false);
   const params = useParams();
   const [formattedDate, setFormattedDate] = useState("");
 

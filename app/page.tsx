@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./ui/header";
 import dayjs, { Dayjs } from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
@@ -15,6 +15,7 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 import { Badge, Switch } from "@mui/material";
 import MeGoal from "./ui/me/MeGoal";
+import Footer from "./ui/footer";
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -62,7 +63,7 @@ export default function Home() {
   };
 
   // Todo or Diary
-  const handleTodoChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTodoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsTodo(e.target.checked);
   };
 
@@ -197,6 +198,7 @@ export default function Home() {
           </LocalizationProvider>
           <MeGoal route="home" />
         </div>
+        <Footer />
       </div>
     </main>
   );

@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+
 // TODO: 좋아요 목록 디자인 수정
 
 import React, { ChangeEvent, useState } from "react";
@@ -87,14 +88,14 @@ export default function SocialPost(): JSX.Element {
           onClick={toggleLike}
         >
           {liked ? (
-            <EmptyHeart className="h-6 w-6 fill-current text-default-600" />
+            <EmptyHeart className="h-6 w-5 fill-current text-default-600" />
           ) : (
-            <FullHeart className="h-6 w-6 fill-current text-red-500" />
+            <FullHeart className="h-6 w-5 fill-current text-red-500" />
           )}
         </div>
 
         <div className="flex items-center" onClick={toggleComments}>
-          <Comments className="ml-1 h-6 w-6 cursor-pointer fill-current text-default-600" />
+          <Comments className="ml-1 h-6 w-5 cursor-pointer fill-current text-default-600" />
         </div>
       </div>
 

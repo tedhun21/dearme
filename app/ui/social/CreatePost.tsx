@@ -26,13 +26,13 @@ export default function CreatePost() {
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState("");
-  const handleGoalChange = (e) => {
+  const handleGoalChange = (e: any) => {
     setSelectedGoal(e.target.value);
   };
 
   // Select 댓글 옵션 선택
   const [selectedOption, setSelectedOption] = useState("전체");
-  const handleOptionChange = (e) => {
+  const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
   };
 
@@ -210,11 +210,11 @@ export default function CreatePost() {
               sx={{
                 "&.MuiOutlinedInput-root": {
                   borderRadius: "8px",
-                  width: "80px", // Set the width
-                  height: "25px", // Set the height
+                  width: "80px",
+                  height: "25px",
                   fontSize: "14px",
                   color: "black",
-                  "& fieldset": {
+                  "&.fieldset": {
                     borderColor: "#EBE3D5",
                   },
                   "&.Mui-focused fieldset": {

@@ -15,15 +15,15 @@ export default function SadEmoji() {
           d="M14.5 28C21.9561 28 28 21.9561 28 14.5C28 7.04395 21.9561 1 14.5 1C7.04395 1 1 7.04395 1 14.5C1 21.9561 7.04395 28 14.5 28Z"
           fill="white"
           stroke="white"
-          stroke-width="1.8"
-          stroke-linejoin="round"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
         />
         <path
           d="M19.2242 21.9234C19.2242 21.9234 17.8742 19.2234 14.4992 19.2234C11.1242 19.2234 9.77422 21.9234 9.77422 21.9234M21.9242 10.4484L17.1992 9.77344M20.5742 10.4484V16.5234M11.7992 9.77344L7.07422 10.4484M8.42422 10.4484V16.5234"
           stroke="black"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </mask>
       <g mask="url(#mask0_611_1424)">

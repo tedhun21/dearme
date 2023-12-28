@@ -15,9 +15,9 @@ export default function Send({ className }: IconProps) {
       <path
         d="M5.33337 10.0007L10 5.33398M10 5.33398L14.6667 10.0007M10 5.33398V14.6673"
         stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

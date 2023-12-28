@@ -22,7 +22,7 @@ export default function MonthlyDiary() {
     <Link href={monthlyDiaryLink}>
       <IconButton
         variant="solid"
-        className="fixed bottom-28 flex rounded-full bg-default-300 p-4 shadow-lg hover:bg-default-400"
+        className="fixed bottom-24 flex rounded-full bg-default-300 p-4 shadow-lg hover:bg-default-400"
       >
         <svg
           width="28"

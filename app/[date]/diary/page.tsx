@@ -56,7 +56,7 @@ export default function Diary() {
             <article className="absolute flex flex-col">
               <SentimentalQuotes />
               <section className="relative top-[-120px]">
-                <CreateDiaryButton />
+                <CreateDiaryButton currentPage="Diary" />
               </section>
               <section className="relative right-20 flex justify-end">
                 <MonthlyDiary />

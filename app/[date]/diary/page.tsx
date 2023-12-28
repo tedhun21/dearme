@@ -52,6 +52,7 @@ export default function Diary() {
         ) : (
           // 일기 데이터가 없을 경우 렌더링
           <>
+            <Header />
             <article className="absolute flex flex-col">
               <SentimentalQuotes />
               <section className="relative top-[-120px]">

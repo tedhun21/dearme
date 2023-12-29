@@ -1,34 +1,20 @@
 "use client";
 
+import { useState } from "react";
+import { useParams } from "next/navigation";
+
+import { Modal } from "@mui/joy";
+import { LinearProgress, Switch } from "@mui/material";
+import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+
 import Footer from "@/app/ui/footer";
 import Header from "@/app/ui/header";
-import Todo from "@/app/ui/me/Todo";
 import UserIcon from "@/public/me/UserIcon";
 import PlusIcon from "@/public/todo/PlusIcon";
 import XIcon from "@/public/todo/XIcon";
-import { Modal } from "@mui/joy";
-import { LinearProgress, Switch } from "@mui/material";
-import {
-  DateCalendar,
-  DatePicker,
-  LocalizationProvider,
-  PickersDay,
-  StaticDatePicker,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import { useParams } from "next/navigation";
-import { useState } from "react";
-
-const todos = [
-  { id: 1, body: "스터디", checked: true },
-  { id: 2, body: "퇴근", checked: false },
-  { id: 3, body: "잠자기", checked: true },
-  { id: 4, body: "잠자기", checked: true },
-  { id: 5, body: "잠자기", checked: true },
-  { id: 6, body: "잠자기", checked: true },
-  { id: 7, body: "잠자기", checked: true },
-];
+import DragTodo from "@/app/ui/todo/drag";
 
 export default function DailyTodo() {
   const { date: defaultDate } = useParams<{ date: string }>();
@@ -79,11 +65,8 @@ export default function DailyTodo() {
               </LocalizationProvider>
             </div>
           </section>
-          <section className="relative flex flex-col gap-4 px-5 pb-3">
-            {todos.map((todo) => (
-              <Todo key={todo.id} todo={todo} />
-            ))}
-            <div className="absolute mx-5 my-9 h-4 w-1 bg-default-400"></div>
+          <section>
+            <DragTodo />
           </section>
         </article>
 

@@ -15,10 +15,13 @@ interface TodoProps {
 
 export default function Todo({ todo }: TodoProps) {
   const [isChecked, setIsChecked] = useState("비공개");
-  const [popup, setPopup] = useState(false);
+  const [popup, setPopup] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const handleToggleClick = () => {};
+  const handleToggleClick = (e) => {
+    e.stopPropagation();
+    setIsChecked((prev) => !prev);
+  };
 
   const handleOpenClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // 이벤트 버블링 막기
@@ -45,14 +48,14 @@ export default function Todo({ todo }: TodoProps) {
   }, [popup]);
 
   return (
-    <div className="flex justify-between rounded-xl bg-default-100 px-3 py-2">
+    <>
       <div className="flex gap-3">
         {todo.checked ? (
-          <button onClick={() => handleToggleClick()}>
+          <button onClick={(e) => handleToggleClick(e)}>
             <TodoCheckTrueIcon className="hover:tedxt-default-700 h-5 w-5 fill-current text-default-600" />
           </button>
         ) : (
-          <button onClick={() => handleToggleClick()}>
+          <button onClick={(e) => handleToggleClick(e)}>
             <TodoCheckFalseIcon className="hover:tedxt-default-700 h-5 w-5 fill-current text-default-600" />
           </button>
         )}
@@ -101,6 +104,6 @@ export default function Todo({ todo }: TodoProps) {
         )}
         <ThreeDots className="h-5 w-5 fill-current text-default-600 hover:text-default-700" />
       </button>
-    </div>
+    </>
   );
 }

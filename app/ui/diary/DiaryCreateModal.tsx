@@ -9,8 +9,8 @@ import DialogContent from "@mui/joy/DialogContent";
 import Input from "@mui/joy/Input";
 import Textarea from "@mui/joy/Textarea";
 
-import CirclePlus from "./CirclePlus";
-import Weather from "./Weather";
+import CirclePlus from "../../../public/diary/CirclePlus";
+import Weather from "../../../public/diary/Weather";
 
 export default function DiaryCreateModal() {
   const [open, setOpen] = React.useState<boolean>(false);
@@ -86,7 +86,10 @@ export default function DiaryCreateModal() {
                 />
               </DialogContent>
               <section className="flex justify-center gap-8 px-4 py-2">
-                <Button className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800">
+                <Button
+                  className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800 hover:bg-default-400"
+                  onClick={() => setOpen(false)}
+                >
                   취소
                 </Button>
                 <Button className="flex bg-default-800 px-5 text-default-100">

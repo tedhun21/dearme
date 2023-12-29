@@ -1,6 +1,12 @@
 export default function Exit() {
+  const navigateBack = () => {
+    window.history.back();
+  };
+
   return (
     <svg
+      onClick={navigateBack} // 이전 페이지로 이동 이벤트핸들러
+      style={{ cursor: "pointer" }} // 마우스 커서를 포인터로 변경합니다.
       width="12"
       height="12"
       viewBox="0 0 12 12"

@@ -14,7 +14,7 @@ import Header from "@/app/ui/header";
 import UserIcon from "@/public/me/UserIcon";
 import PlusIcon from "@/public/todo/PlusIcon";
 import XIcon from "@/public/todo/XIcon";
-import DragTodo from "@/app/ui/todo/drag";
+import DragTodo from "@/app/ui/todo/Drag";
 
 export default function DailyTodo() {
   const { date: defaultDate } = useParams<{ date: string }>();
@@ -28,7 +28,7 @@ export default function DailyTodo() {
 
   return (
     <main className="flex min-h-screen justify-center">
-      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 pb-[52px] shadow-lg">
         <Header />
         <article className="flex flex-col py-3">
           <section>
@@ -69,7 +69,7 @@ export default function DailyTodo() {
             <DragTodo />
           </section>
         </article>
-
+        {/* Floating create todo button */}
         <div className="fixed bottom-0 w-full max-w-[600px] cursor-pointer">
           <button
             onClick={() => setModalOpen(true)}
@@ -78,7 +78,7 @@ export default function DailyTodo() {
             <PlusIcon />
           </button>
         </div>
-
+        {/* create todo modal */}
         <Modal
           className="flex items-center justify-center"
           open={modalOpen}

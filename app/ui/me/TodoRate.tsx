@@ -18,13 +18,13 @@ interface Todo {
 export default function TodoRate({ todos, isDrop, setIsDrop }: TodoRateProps) {
   const checkedTodos = todos.filter((todo) => todo.checked === true);
   return (
-    <section className="flex items-center justify-between pb-2">
+    <section className="flex items-center justify-between px-4 pb-2">
       <div className="flex items-center gap-2">
         <button onClick={() => setIsDrop((prev) => !prev)}>
           {isDrop ? (
-            <DownDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
-          ) : (
             <UpDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
+          ) : (
+            <DownDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
           )}
         </button>
         <h1 className="text-base font-semibold text-default-700">Daily</h1>

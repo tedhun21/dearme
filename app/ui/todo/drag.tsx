@@ -4,7 +4,7 @@ import {
   DropResult,
   Droppable,
 } from "react-beautiful-dnd";
-import Todo from "../me/Todo";
+import Todo from "./Todo";
 import { useEffect, useState } from "react";
 
 const defaultTodo = [
@@ -23,6 +23,7 @@ type Todo = {
   checked: boolean;
 };
 
+// 배열 순서 바꾸는 함수
 const reorder = (list: Object[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
   // 배열에서 startIndex에 있는 한 개 요소 제거
@@ -33,6 +34,7 @@ const reorder = (list: Object[], startIndex: number, endIndex: number) => {
   return result;
 };
 
+// drappable style
 const getListStyle = (isDraggingOver) => ({
   padding: 20,
   display: "flex",
@@ -43,13 +45,13 @@ const getListStyle = (isDraggingOver) => ({
   background: isDraggingOver ? "#143422" : "#F5F3EB",
 });
 
+// draggable style
 const getTodoStyle = (isDragging, draggableStyle) => ({
   userSelect: "none",
-  display: "flex",
-  justifyContent: "space-between",
-  padding: 16,
   borderRadius: 12,
 
+  boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+  border: isDragging ? "solid #928C7F 2px" : "none",
   background: isDragging ? "#EDA323" : "#FBFAF2",
   ...draggableStyle,
 });

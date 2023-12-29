@@ -24,7 +24,7 @@ export default function MeGoal({ route }: MeGoalProps) {
   };
 
   return (
-    <section>
+    <section className={clsx(route === "home" ? "" : "px-4")}>
       {route !== "home" ? (
         <div className="font-semibold text-default-700">목표</div>
       ) : null}

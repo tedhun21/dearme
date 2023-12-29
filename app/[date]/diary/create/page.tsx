@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import Exit from "@/public/diary/Exit";
-import PhotoIcon from "@/public/diary/PhotoIcon";
-import BlackPlus from "@/public/diary/BlackPlus";
 import DiaryCreateModal from "@/app/ui/diary/DiaryCreateModal";
 import ChooseMood from "@/app/ui/diary/ChooseMood";
 import ChooseEmotionTags from "@/app/ui/diary/ChooseEmotionTags";
 import ChooseCompanions from "@/app/ui/diary/ChooseCompanions";
+import SleepRecord from "@/app/ui/diary/SleepRecord";
+import UploadPhoto from "@/app/ui/diary/UploadPhoto";
+import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
 
 export default function Create() {
   const params = useParams();
@@ -75,43 +76,19 @@ export default function Create() {
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
             수면
           </h2>
-          <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
-            <button className="w-full rounded-lg bg-default-100 py-6 text-base font-semibold text-gray-400 hover:bg-gray-300">
-              수면을 기록해주세요
-            </button>
-          </span>
+          <SleepRecord />
         </section>
         <section className="flex flex-col bg-default-400">
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
             오늘의 사진
           </h2>
-          <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
-            <button className="w-full rounded-lg bg-default-100 py-16 py-6 text-base font-semibold text-gray-400 hover:bg-gray-300">
-              <span className="mb-2 flex justify-center">
-                <PhotoIcon />
-              </span>
-              사진을 등록해주세요
-              <h3 className="flex justify-center text-xs font-medium text-gray-400">
-                (최대 3장)
-              </h3>
-            </button>
-          </span>
+          <UploadPhoto />
         </section>
         <section className="flex flex-col bg-default-800">
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-default-100">
             오늘의 PICK
           </h2>
-          <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
-            <button className="w-full rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300">
-              <span className="mb-2 flex justify-center">
-                <BlackPlus />
-              </span>
-              오늘의 문화생활을
-              <h3 className="flex justify-center text-base font-medium text-gray-400">
-                기록해봐요!
-              </h3>
-            </button>
-          </span>
+          <UploadTodayPick />
         </section>
       </article>
     </main>

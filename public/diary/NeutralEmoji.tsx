@@ -35,7 +35,6 @@ export default function NeutralEmoji({ selected, onClick }) {
                 box-shadow: none;
             }
             .neutral-emoji:hover {
-              fill: #EDA323; /* 호버 시 색상 변경 */
               box-shadow: 0 0 14px rgba(0, 0, 0, 0.25); /* 그림자 추가 */
               border-radius: 50%; /* 모서리를 둥글게 */
             }

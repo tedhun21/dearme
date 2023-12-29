@@ -4,47 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import Exit from "@/public/diary/Exit";
-import HappyEmoji from "@/public/diary/HappyEmoji";
-import JoyfulEmoji from "@/public/diary/JoyfulEmoji";
-import NeutralEmoji from "@/public/diary/NeutralEmoji";
-import SadEmoji from "@/public/diary/SadEmoji";
-import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
-import Tags from "@/public/diary/Tags";
-import Companions from "@/public/diary/Companions";
 import PhotoIcon from "@/public/diary/PhotoIcon";
 import BlackPlus from "@/public/diary/BlackPlus";
-import DiaryCreateModal from "@/public/diary/DiaryCreateModal";
+import DiaryCreateModal from "@/app/ui/diary/DiaryCreateModal";
+import ChooseMood from "@/app/ui/diary/ChooseMood";
+import ChooseEmotionTags from "@/app/ui/diary/ChooseEmotionTags";
+import ChooseCompanions from "@/app/ui/diary/ChooseCompanions";
 
 export default function Create() {
   const params = useParams();
   const [formattedDate, setFormattedDate] = useState("");
-
-  const tags = [
-    "#상쾌한",
-    "#피곤한",
-    "#행복한",
-    "#의욕적인",
-    "#짜증나는",
-    "#외로운",
-    "#신나는",
-    "#뿌듯한",
-    "#불안한",
-    "#우울한",
-    "#설레는",
-    "#편안한",
-    "#화남",
-    "#슬픈",
-    "#기대되는",
-    "#부담되는",
-  ];
-
-  const companions = ["가족", "연인", "친구", "지인", "안만남"];
-
-  // 각 태그를 클릭했을 때의 핸들러
-  const handleTagClick = (tag) => {
-    console.log("Clicked on tag:", tag);
-    // 여기서 태그 클릭에 대한 로직을 추가할 수 있습니다.
-  };
 
   // 최상단 날짜 표시
   useEffect(() => {
@@ -82,13 +51,7 @@ export default function Create() {
           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
             기분
           </h2>
-          <span className="flex items-center justify-between px-20">
-            <JoyfulEmoji />
-            <HappyEmoji />
-            <NeutralEmoji />
-            <UnhappyEmoji />
-            <SadEmoji />
-          </span>
+          <ChooseMood />
           <h3 className="flex justify-center text-sm font-medium text-gray-400">
             오늘 하루는 어땠나요?
           </h3>
@@ -97,25 +60,13 @@ export default function Create() {
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
             감정태그
           </h2>
-          <span className="mb-8 mt-2 flex flex-wrap gap-2 px-6">
-            {tags.map((tag) => (
-              <Tags key={tag} text={tag} onClick={() => handleTagClick(tag)} />
-            ))}
-          </span>
+          <ChooseEmotionTags />
         </section>
         <section className="flex flex-col bg-default-300">
           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
             함께한 사람
           </h2>
-          <span className="mb-8 mt-2 flex flex-wrap gap-2 px-6">
-            {companions.map((tag) => (
-              <Companions
-                key={tag}
-                text={tag}
-                onClick={() => handleTagClick(tag)}
-              />
-            ))}
-          </span>
+          <ChooseCompanions />
         </section>
         <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
           <DiaryCreateModal />

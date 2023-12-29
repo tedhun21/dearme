@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 
-export default function JoyfulEmoji() {
-  const [isSelected, setIsSelected] = useState(false);
-
-  const selectHandler = () => {
-    setIsSelected(!isSelected);
-  };
-
+export default function JoyfulEmoji({ selected, onClick }) {
   // Selected 상태일 때의 SVG path
   const selectedPath = (
     <path
@@ -36,7 +30,7 @@ export default function JoyfulEmoji() {
 
   return (
     <svg
-      onClick={selectHandler}
+      onClick={onClick}
       width="28"
       height="28"
       viewBox="0 0 28 28"
@@ -57,7 +51,7 @@ export default function JoyfulEmoji() {
           }
         `}</style>
 
-      {isSelected ? selectedPath : defaultPath}
+      {selected ? selectedPath : defaultPath}
     </svg>
   );
 }

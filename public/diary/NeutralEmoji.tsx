@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 
-export default function NeutralEmoji() {
-  const [isSelected, setIsSelected] = useState(false);
-
-  const selectHandler = () => {
-    setIsSelected(!isSelected);
-  };
-
+export default function NeutralEmoji({ selected, onClick }) {
   // Selected 상태일 때의 SVG path
   const selectedPath = (
     <path
@@ -26,7 +20,7 @@ export default function NeutralEmoji() {
 
   return (
     <svg
-      onClick={selectHandler}
+      onClick={onClick}
       width="28"
       height="28"
       viewBox="0 0 28 28"
@@ -47,7 +41,7 @@ export default function NeutralEmoji() {
             }
           `}</style>
 
-      {isSelected ? selectedPath : defaultPath}
+      {selected ? selectedPath : defaultPath}
     </svg>
   );
 }

@@ -9,8 +9,8 @@ import DialogContent from "@mui/joy/DialogContent";
 import Input from "@mui/joy/Input";
 import Textarea from "@mui/joy/Textarea";
 
-import CirclePlus from "./CirclePlus";
-import Weather from "./Weather";
+import CirclePlus from "../../../public/diary/CirclePlus";
+import Weather from "../../../public/diary/Weather";
 
 export default function DiaryCreateModal() {
   const [open, setOpen] = React.useState<boolean>(false);

@@ -6,6 +6,8 @@
 import React, { ChangeEvent, useState } from "react";
 import PostSettings from "./PostSettings";
 
+import { Post } from "@/app/social/page";
+
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import InputBase from "@mui/material/InputBase";
@@ -16,7 +18,11 @@ import FullHeart from "@/public/social/FullHeart";
 import Comments from "@/public/social/Comments";
 import Send from "@/public/social/Send";
 
-export default function SocialPost(): JSX.Element {
+interface SocialPostProps {
+  post: Post;
+}
+
+export default function SocialPost({ post }: SocialPostProps) {
   // 좋아요 상태
   const [liked, setLiked] = useState(false);
   const toggleLike = () => {
@@ -45,14 +51,14 @@ export default function SocialPost(): JSX.Element {
       {/* 유저 프로필 & 목표 */}
       <div className="flex items-center">
         <img
-          src="https://i.pinimg.com/736x/ed/dd/51/eddd515fa7790191a228fad0955a5300.jpg"
+          src={post.profile}
           alt="User Image"
-          className="h-10  w-10 rounded-full"
+          className="h-10  w-10 rounded-full object-cover"
         />
         <div className="flex-col pl-3">
           <div className="text-base font-bold text-default-700">do_e</div>
           <div className="text-sm font-semibold text-default-500">
-            #영화감상
+            {post.goal}
           </div>
         </div>
 
@@ -65,20 +71,20 @@ export default function SocialPost(): JSX.Element {
       {/* Image && 게시물 사진 */}
       <div className="mt-1">
         <img
-          src="https://i.pinimg.com/564x/ff/37/b6/ff37b63cc463faddda0f322cf37ad52a.jpg"
+          src={post.imageUrl}
           alt="Post Image"
-          className="h-auto w-full rounded-sm "
+          className="h-[500px] w-full rounded-sm  "
         />
       </div>
 
       {/* 게시물 body */}
       <div className="pt-2 text-sm font-medium text-default-700">
-        Happy Ending
+        {post.contents}
       </div>
 
       {/* 게시글 작성시간 */}
       <div className="flex justify-end text-xs  text-default-500">
-        18 mins ago
+        {post.time}
       </div>
 
       {/* 좋아요 & 댓글 */}
@@ -105,13 +111,13 @@ export default function SocialPost(): JSX.Element {
           className="mr-2 flex cursor-pointer text-xs font-medium text-default-500"
           onClick={handleOpen}
         >
-          3 Likes
+          {post.likes.length} Likes
         </div>
         <div
           className="cursor-pointer text-xs font-medium text-default-500"
           onClick={toggleComments}
         >
-          2 Comments
+          {post.comments.length} Comments
         </div>
       </div>
 
@@ -133,101 +139,54 @@ export default function SocialPost(): JSX.Element {
             p: 4,
           }}
         >
-          <div className="mb-3 flex items-center">
-            <div>
-              <img
-                src="https://i.pinimg.com/564x/40/61/31/406131eab417efa7d398693447b7d26f.jpg"
-                alt="User Image"
-                className="mr-3 h-8 w-8 rounded-full"
-              />
-            </div>
+          {post.likes.map((like, index) => (
+            <section key={index} className="mb-3 flex items-center">
+              <div>
+                <img
+                  src={like.profile}
+                  alt="User Image"
+                  className="mr-3 h-8 w-8 rounded-full"
+                />
+              </div>
 
-            <div className="text-base font-semibold text-default-700">
-              donut
-            </div>
-          </div>
-
-          <div className="mb-3 flex items-center">
-            <div>
-              <img
-                src="https://i.pinimg.com/564x/40/61/31/406131eab417efa7d398693447b7d26f.jpg"
-                alt="User Image"
-                className="mr-3 h-8 w-8 rounded-full"
-              />
-            </div>
-
-            <div className="text-base font-semibold text-default-700">
-              donut
-            </div>
-          </div>
-
-          <div className="mb-3 flex items-center">
-            <div>
-              <img
-                src="https://i.pinimg.com/564x/40/61/31/406131eab417efa7d398693447b7d26f.jpg"
-                alt="User Image"
-                className="mr-3 h-8 w-8 rounded-full"
-              />
-            </div>
-
-            <div className="text-base font-semibold text-default-700">
-              donut
-            </div>
-          </div>
+              <div className="text-base font-semibold text-default-700">
+                {like.user}
+              </div>
+            </section>
+          ))}
         </Box>
       </Modal>
 
       {/* 댓글 & 좋아요 보기 */}
       {showComments && (
-        <div className="mt-4 ">
+        <section className="mt-4 ">
           {/* 댓글 개수만큼 */}
 
-          <div className="mb-2 flex items-center">
-            <div>
-              <img
-                src="https://i.pinimg.com/564x/6d/06/25/6d0625c4b2296e06c05e2e0ecdc73ada.jpg"
-                alt="User Image"
-                className="h-8 w-8 rounded-full"
-              />
-            </div>
+          {post.comments.map((comment, index) => (
+            <div key={index} className="mb-2 flex items-center">
+              <div>
+                <img
+                  src={comment.profile}
+                  alt="User Image"
+                  className="h-8 w-8 rounded-full"
+                />
+              </div>
 
-            <div className="w-full flex-col pl-3">
-              <div className="flex  items-center justify-between">
-                <div className="text-base font-semibold text-default-700">
-                  teddy
+              <div className="w-full flex-col pl-3">
+                <div className="flex  items-center justify-between">
+                  <div className="text-base font-semibold text-default-700">
+                    {comment.user}
+                  </div>
+                  <div className="flex justify-end text-xs  text-default-500">
+                    {comment.time}
+                  </div>
                 </div>
-                <div className="flex justify-end text-xs  text-default-500">
-                  now
+                <div className="text-sm font-medium text-default-500">
+                  {comment.comment}
                 </div>
-              </div>
-              <div className="text-sm font-medium text-default-500">
-                화이팅입니다!
               </div>
             </div>
-          </div>
-
-          <div className="flex items-center">
-            <div>
-              <img
-                src="https://i.pinimg.com/564x/40/61/31/406131eab417efa7d398693447b7d26f.jpg"
-                alt="User Image"
-                className="h-8 w-8 rounded-full"
-              />
-            </div>
-            <div className="w-full flex-col pl-3">
-              <div className="flex  items-center justify-between">
-                <div className="text-base font-semibold text-default-700">
-                  donut
-                </div>
-                <div className="flex justify-end text-xs  text-default-500">
-                  now
-                </div>
-              </div>
-              <div className="text-sm font-medium text-default-500">
-                화이팅입니다!
-              </div>
-            </div>
-          </div>
+          ))}
 
           {/* 댓글 작성 */}
           <div className="mb-2 mt-5 flex items-center">
@@ -261,7 +220,7 @@ export default function SocialPost(): JSX.Element {
               </div>
             </div>
           </div>
-        </div>
+        </section>
       )}
       <Divider className="mt-5" />
     </div>

@@ -5,7 +5,6 @@
 // TODO: 요일 넣기
 // TODO: select 태그 위치 수정
 // TODO: 이미지 코너
-// TODO: 버튼 넣기
 
 import "../../globals.css";
 import React, { useState } from "react";
@@ -13,31 +12,14 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Divider } from "@mui/material";
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import IconButton from "@mui/material/IconButton";
-
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
-
-import { EffectCards } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/scrollbar";
-import "swiper/css/effect-cards";
+import MoodCards from "@/app/ui/remember/MoodCards";
+import RememberModal from "@/app/ui/remember/RememberModal";
 
 import Select from "@mui/material/Select";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import MenuItem from "@mui/material/MenuItem";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
 
-import WeatherCloudy from "@/public/diary/WeatherCloudy";
-import EditRemember from "@/public/remember/EditRemeber";
-import DeleteRemember from "@/public/remember/DeleteRemember";
-import CloseRemember from "@/public/remember/CloseRemember";
-
-interface RememberItem {
+export interface RememberItem {
   imageUrl: string[];
   date: string;
   mood: string;
@@ -49,7 +31,7 @@ interface RememberItem {
 
 export default function Remeber() {
   // 임시 Remember 데이터 (지우기)
-  const remembers = [
+  const remembers: RememberItem[] = [
     {
       imageUrl: [
         "https://i.pinimg.com/564x/67/1d/98/671d983412a9986a516c0a4fa6ce9a3a.jpg",
@@ -155,122 +137,23 @@ export default function Remeber() {
     },
   ];
 
-  // 월 -> Month
-  const getDate = (date: any) => {
-    const monthEng = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const [year, month, day] = date.split(".");
-    const monthIndex = parseInt(month, 10) - 1;
-    return {
-      year: year,
-      month: monthEng[monthIndex],
-      day: day,
-    };
-  };
-
   //   Select
   const [selectedMonth, setSelectedMonth] = useState("ALL");
   const handleMonthChange = (e: any) => {
     setSelectedMonth(e.target.value);
   };
 
-  const moods = Array.from(new Set(remembers.map((remember) => remember.mood)));
-
-  //   mood별 렌더링
-  const renderMoodItems = moods.map((mood, index) => (
-    <div key={index} className="mb-10">
-      <h2 className="mb-4 text-base font-semibold text-white">
-        {mood.charAt(0).toUpperCase() + mood.slice(1)} __
-      </h2>
-      {/* 리멤버 카드 컨테이너 */}
-      <div className="flex overflow-x-scroll whitespace-nowrap scrollbar-hide">
-        {remembers
-          .filter((remember) => remember.mood === mood)
-          .map((remember, subIndex) => (
-            // 리멤버 카드
-            <div
-              key={subIndex}
-              className="group relative mr-5 flex flex-shrink-0"
-            >
-              <div
-                className=" relative h-[300px] w-[240px]  cursor-pointer overflow-hidden rounded-2xl bg-white"
-                onClick={() => handleOpen(remember)}
-              >
-                {remember.imageUrl.length !== 0 ? (
-                  <img
-                    src={remember.imageUrl[0]}
-                    className="h-[300px] w-[240px]  rounded-2xl object-cover group-hover:opacity-50"
-                  />
-                ) : (
-                  <div className="h-[300px] w-[240px] rounded-2xl bg-default-800 group-hover:opacity-95"></div>
-                )}
-                {/* 호버링 컨테이너 */}
-                <div className=" absolute inset-0 z-10 hidden flex-col items-center  justify-center group-hover:flex">
-                  {/* date */}
-                  <div className="absolute left-0 top-0 m-2 flex items-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <span className="text-2xl font-semibold text-white">
-                        {getDate(remember.date).day}
-                      </span>
-                      <span className="font-base text-xl text-white">
-                        {getDate(remember.date).month}
-                      </span>
-                    </div>
-                  </div>
-                  {/* 일기 타이틀 */}
-                  <div className="absolute max-w-[240px] whitespace-pre-wrap break-words px-2 text-center text-base font-semibold text-white">
-                    {'"' + remember.title + '"'}
-                  </div>
-                  {/* 연도 & more */}
-                  <div className="absolute bottom-5 flex w-[180px] ">
-                    <div>
-                      <span className=" font-base text-lg font-light text-white">
-                        {getDate(remember.date).year}
-                      </span>
-                      <Divider className=" w-[160px] border-white px-2" />
-                    </div>
-                    <IconButton aria-label="more" id="long-button">
-                      <MoreVertRoundedIcon sx={{ color: "#ffffff" }} />
-                    </IconButton>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-      </div>
-    </div>
-  ));
-
   // modal
   const [selectedItem, setSelectedItem] = useState<RememberItem | null>(null);
 
   const [open, setOpen] = useState(false);
 
-  const handleOpen = (item: any) => {
+  const handleOpen = (item: RememberItem): void => {
     setSelectedItem(item);
     console.log(selectedItem);
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
-
-  // tags
-  const [showAllTags, setShowAllTags] = useState(false);
-
-  const handleShowMoreTags = () => {
-    setShowAllTags(true);
-  };
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -342,101 +225,17 @@ export default function Remeber() {
           </h3>
         </div>
 
-        <section className="ml-5 mr-5">{renderMoodItems}</section>
+        {/* Moods 카드 */}
+        <section className="ml-5 mr-5">
+          <MoodCards remembers={remembers} handleOpen={handleOpen} />
+        </section>
 
-        {/* 일기 카드 선택 -> 모달 */}
-        <Modal
+        {/* 모달*/}
+        <RememberModal
+          selectedItem={selectedItem}
           open={open}
-          onClose={handleClose}
-          sx={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
-        >
-          {/* <Box
-            sx={{
-              position: "relative",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 440,
-              bgcolor: "#000000",
-              borderRadius: "16px",
-            }}
-          > */}
-          <Box className="relative left-1/2 top-1/2 w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[16px] bg-black">
-            <div className="absolute right-3 top-3 ">
-              <IconButton onClick={handleClose}>
-                <CloseRemember fill-current text-white />
-              </IconButton>
-            </div>
-
-            {/* 일기 이미지 */}
-            {selectedItem && (
-              <article className="mb-5 mt-5 flex  w-full  flex-col rounded ">
-                {/* 이미지 있을 경우에만 (images &&)*/}
-                {selectedItem.imageUrl.length !== 0 && (
-                  <Swiper
-                    pagination={true}
-                    modules={[Pagination]}
-                    className=" mb-5 w-full object-cover"
-                  >
-                    {selectedItem.imageUrl.map((image: any, index: any) => (
-                      <SwiperSlide
-                        key={index}
-                        className="flex items-center justify-center "
-                      >
-                        <img
-                          src={image}
-                          alt={`Diary Image ${index}`}
-                          className="h-[400px] w-full cursor-pointer rounded-t-2xl object-cover"
-                        />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                )}
-
-                {/* 날짜 & 제목 & tags */}
-                <section className="m-5 ">
-                  <h1 className="mb-3  whitespace-pre-wrap text-base font-normal text-white">
-                    {selectedItem.date}
-                  </h1>
-                  <h1 className="mb-3 text-lg font-semibold text-white">
-                    {'"' + selectedItem.title + '"'}
-                  </h1>
-                  {selectedItem.tags
-                    .slice(0, showAllTags ? selectedItem.tags.length : 3)
-                    .map((tagItem, index) => (
-                      <div
-                        key={index}
-                        className="border-1 mb-2 mr-3 inline-block rounded-full border-default-400 bg-default-300 px-2 py-0.5 text-base font-semibold text-default-800"
-                      >
-                        {tagItem}
-                      </div>
-                    ))}
-                  {!showAllTags && selectedItem.tags.length > 3 && (
-                    <div
-                      className="mr-3 mt-1 inline-block cursor-pointer rounded-full border-2 border-default-400 bg-default-300 px-2 py-0.5 text-base font-semibold text-default-800 hover:bg-gray-300 focus:outline-none focus:ring-2"
-                      onClick={handleShowMoreTags}
-                    >
-                      +{selectedItem.tags.length - 3}
-                    </div>
-                  )}
-                </section>
-
-                {/* 일기 내용 */}
-                <section className="m-5">
-                  <div className="mb-5 text-base font-light text-white">
-                    {selectedItem.contents}
-                  </div>
-                  <div className="mb-5 flex w-full items-center justify-end">
-                    <WeatherCloudy className="mr-2 h-5 w-5 fill-current text-white" />
-                    <span className="text-sm font-medium text-white">
-                      서울 마포구 , 9.2°C
-                    </span>
-                  </div>
-                </section>
-              </article>
-            )}
-          </Box>
-        </Modal>
+          handleClose={handleClose}
+        />
       </div>
     </main>
   );

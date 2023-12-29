@@ -192,6 +192,7 @@ export default function Home() {
               onChange={(newValue) => setDate(newValue)}
               onMonthChange={handleMonthChange}
               renderLoading={() => <DayCalendarSkeleton />}
+              dayOfWeekFormatter={(_day, weekday) => `${weekday.format("ddd")}`}
               slots={{ day: ServerDay }}
               slotProps={{ day: { highlightedDays } as any }}
             />

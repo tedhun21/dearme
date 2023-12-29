@@ -4,9 +4,10 @@ import Header from "../ui/header";
 import BackButton from "../ui/backbutton";
 import TodoRate from "../ui/me/TodoRate";
 import MeGoal from "../ui/me/MeGoal";
-import Todo from "../ui/me/Todo";
+import Todo from "../ui/todo/Todo";
 import { useState } from "react";
 import UserNav from "../ui/me/UserNav";
+import DragTodo from "../ui/todo/Drag";
 
 const me = {
   id: 1,
@@ -38,14 +39,11 @@ export default function Me() {
           <BackButton />
         </div>
         <UserNav user={me} myId={me.id} />
-        <article className="flex flex-col px-5 py-3">
+        <article className="flex flex-col py-3">
           <TodoRate todos={todos} isDrop={isDrop} setIsDrop={setIsDrop} />
           {isDrop && (
-            <section className="relative flex flex-col gap-4 pb-3">
-              {todos.map((todo) => (
-                <Todo key={todo.id} todo={todo} />
-              ))}
-              <div className="absolute mx-5 my-9 h-4 w-1 bg-default-400"></div>
+            <section>
+              <DragTodo />
             </section>
           )}
           <MeGoal />

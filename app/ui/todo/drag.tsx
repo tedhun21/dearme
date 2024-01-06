@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { useQuery } from "@tanstack/react-query";
+
 import {
   DragDropContext,
   Draggable,
@@ -5,61 +9,57 @@ import {
   Droppable,
 } from "react-beautiful-dnd";
 import Todo from "./Todo";
-import { useEffect, useState } from "react";
 
-export interface TodoType {
-  id: number;
-  body: string;
-  checked: boolean;
-  private: string;
-}
+import { getTodos } from "@/store/api";
+import { ITodo, ITodos, todoListState } from "@/store/atoms";
 
-const defaultTodo = [
-  { id: 1, body: "스터디", checked: true, private: "all" },
-  { id: 2, body: "퇴근", checked: false, private: "private" },
-  { id: 3, body: "잠자기", checked: true, private: "all" },
-  { id: 5, body: "잠자기", checked: true, private: "friend" },
-  { id: 4, body: "잠자기", checked: true, private: "all" },
-  { id: 6, body: "잠자기", checked: true, private: "private" },
-  { id: 7, body: "잠자기", checked: true, private: "all" },
-];
+// 배열 순서 바꾸는 함수
+const reorder = (list: any, startIndex: number, endIndex: number) => {
+  const result = Array.from(list);
+  // 배열에서 startIndex에 있는 한 개 요소 제거
+  const [removed] = result.splice(startIndex, 1);
+  // 제거된 요소를 배열에 하나도 제거하지 않고 endIndex에 추가
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+// drappable style
+const getListStyle = (isDraggingOver: any) => ({
+  padding: 20,
+  display: "flex",
+  flexDirection: "column",
+  gap: 8,
+  width: "100%",
+
+  background: isDraggingOver ? "#143422" : "#F5F3EB",
+});
+
+// draggable style
+const getTodoStyle = (isDragging: any, draggableStyle: any) => ({
+  userSelect: "none",
+  borderRadius: 12,
+
+  boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+  border: isDragging ? "solid #928C7F 2px" : "none",
+  background: isDragging ? "#EDA323" : "#FBFAF2",
+  ...draggableStyle,
+});
 
 export default function DragTodo() {
   const [enabled, setEnabled] = useState(false);
-  const [todos, setTodos] = useState<TodoType[]>(defaultTodo);
+  const [todos, setTodos] = useRecoilState(todoListState);
 
-  // 배열 순서 바꾸는 함수
-  const reorder = (list: TodoType[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    // 배열에서 startIndex에 있는 한 개 요소 제거
-    const [removed] = result.splice(startIndex, 1);
-    // 제거된 요소를 배열에 하나도 제거하지 않고 endIndex에 추가
-    result.splice(endIndex, 0, removed);
-
-    return result;
-  };
-
-  // drappable style
-  const getListStyle = (isDraggingOver: any) => ({
-    padding: 20,
-    display: "flex",
-    flexDirection: "column",
-    gap: 8,
-    width: "100%",
-
-    background: isDraggingOver ? "#143422" : "#F5F3EB",
+  const { data } = useQuery({
+    queryKey: ["getTodos"],
+    queryFn: getTodos,
   });
 
-  // draggable style
-  const getTodoStyle = (isDragging: any, draggableStyle: any) => ({
-    userSelect: "none",
-    borderRadius: 12,
-
-    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-    border: isDragging ? "solid #928C7F 2px" : "none",
-    background: isDragging ? "#EDA323" : "#FBFAF2",
-    ...draggableStyle,
-  });
+  useEffect(() => {
+    if (data) {
+      setTodos(data.data.result);
+    }
+  }, []);
 
   const onDragEnd = ({ source, destination }: DropResult) => {
     // console.log(">>> source", source.index);
@@ -69,11 +69,7 @@ export default function DragTodo() {
       return;
     }
 
-    const _todos = reorder(
-      todos,
-      source.index,
-      destination.index,
-    ) as TodoType[];
+    const _todos = reorder(todos, source.index, destination.index) as ITodo[];
     setTodos(_todos);
   };
 
@@ -99,7 +95,7 @@ export default function DragTodo() {
             {...provided.droppableProps}
             style={getListStyle(snapshot.isDraggingOver) as any}
           >
-            {todos.map((todo, index) => (
+            {todos?.map((todo: any, index: any) => (
               <Draggable
                 key={todo.id}
                 draggableId={todo.id.toString()}

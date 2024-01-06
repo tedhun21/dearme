@@ -3,24 +3,27 @@ import UpDropdownIcon from "@/public/me/UpDropdownIcon";
 import { LinearProgress } from "@mui/material";
 import React, { useState } from "react";
 
-interface TodoRateProps {
-  todos: Todo[];
-  isDrop: boolean;
-  setIsDrop: React.Dispatch<React.SetStateAction<boolean>>;
-}
+// interface TodoRateProps {
+//   todos: Todo[];
+//   isDrop: boolean;
+//   setIsDrop: React.Dispatch<React.SetStateAction<boolean>>;
+// }
 
-interface Todo {
-  id: number;
-  body: string;
-  checked: boolean;
-}
+// interface Todo {
+//   id: number;
+//   body: string;
+//   checked: boolean;
+// }
 
-export default function TodoRate({ todos, isDrop, setIsDrop }: TodoRateProps) {
-  const checkedTodos = todos.filter((todo) => todo.checked === true);
+export default function TodoRate({ todos, isDrop, setIsDrop }: any) {
+  const checkedTodos = todos?.result?.filter(
+    (todo: any) => todo.checked === true,
+  );
+
   return (
     <section className="flex items-center justify-between px-4 pb-2">
       <div className="flex items-center gap-2">
-        <button onClick={() => setIsDrop((prev) => !prev)}>
+        <button onClick={() => setIsDrop((prev: any) => !prev)}>
           {isDrop ? (
             <UpDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
           ) : (
@@ -39,12 +42,12 @@ export default function TodoRate({ todos, isDrop, setIsDrop }: TodoRateProps) {
           mx: 2,
         }}
         variant="determinate"
-        value={(checkedTodos.length / todos.length) * 100}
+        value={(checkedTodos?.length / todos.length) * 100}
         color="inherit"
       />
 
       <span className="mx-1 whitespace-nowrap text-xs font-semibold text-default-600">
-        {checkedTodos.length} / {todos.length}
+        {checkedTodos?.length} / {todos.length}
       </span>
     </section>
   );

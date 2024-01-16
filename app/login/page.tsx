@@ -6,7 +6,6 @@ import BackIcon from "@/public/login/BackIcon";
 import DearmeLogo from "@/public/login/DearmeLogo";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
-import InputAdornment from "@mui/material/InputAdornment";
 
 import GoogleLogo from "@/public/login/GoogleLogo";
 import EyeOffIcon from "@/public/login/EyeOffIcon";
@@ -124,12 +123,6 @@ export default function Login() {
                   "&:focus-within::before": {
                     transform: "scaleX(1)",
                   },
-                  // '&:focus-within .password-icon': {
-                  //   visibility: 'visible',
-                  //   },
-                  //   '&.password-icon': {
-                  //     visibility:'hidden'
-                  //   },
                 }}
               />
               <button

@@ -5,11 +5,6 @@ import GoalIcon from "@/public/todo/GoalIcon";
 import { Divider, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import TodoSetting from "./TodoSetting";
-import { TodoType } from "./Drag";
-
-interface TodoProps {
-  todo: TodoType;
-}
 
 const todoSettingKeyword = [
   { value: "all", keyword: "모두" },
@@ -17,7 +12,7 @@ const todoSettingKeyword = [
   { value: "private", keyword: "비공개" },
 ];
 
-export default function TodoSettings({ todo }: TodoProps) {
+export default function TodoSettings({ todo }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 

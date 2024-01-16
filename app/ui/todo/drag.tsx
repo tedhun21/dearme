@@ -14,7 +14,7 @@ import { getTodos } from "@/store/api";
 import { ITodo, ITodos, todoListState } from "@/store/atoms";
 
 // 배열 순서 바꾸는 함수
-const reorder = (list: any, startIndex: number, endIndex: number) => {
+const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
   // 배열에서 startIndex에 있는 한 개 요소 제거
   const [removed] = result.splice(startIndex, 1);
@@ -95,7 +95,7 @@ export default function DragTodo() {
             {...provided.droppableProps}
             style={getListStyle(snapshot.isDraggingOver) as any}
           >
-            {todos?.map((todo: any, index: any) => (
+            {todos?.map((todo: ITodo, index: number) => (
               <Draggable
                 key={todo.id}
                 draggableId={todo.id.toString()}

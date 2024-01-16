@@ -38,8 +38,6 @@ export default function Me() {
     }
   }, []);
 
-  console.log(todos);
-
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -50,11 +48,11 @@ export default function Me() {
         <UserNav user={me} myId={me.id} />
         <article className="flex flex-col py-3">
           <TodoRate todos={todos} isDrop={isDrop} setIsDrop={setIsDrop} />
-          {isDrop && (
+          {isDrop ? (
             <section>
               <DragTodo />
             </section>
-          )}
+          ) : null}
           <MeGoal />
         </article>
       </div>

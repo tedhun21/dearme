@@ -1,24 +1,17 @@
 import DownDropdownIcon from "@/public/me/DownDropdownIcon";
 import UpDropdownIcon from "@/public/me/UpDropdownIcon";
+import { ITodo } from "@/store/atoms";
 import { LinearProgress } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 
-// interface TodoRateProps {
-//   todos: Todo[];
-//   isDrop: boolean;
-//   setIsDrop: React.Dispatch<React.SetStateAction<boolean>>;
-// }
+interface TodoRateProps {
+  todos: ITodo[];
+  isDrop: boolean;
+  setIsDrop: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-// interface Todo {
-//   id: number;
-//   body: string;
-//   checked: boolean;
-// }
-
-export default function TodoRate({ todos, isDrop, setIsDrop }: any) {
-  const checkedTodos = todos?.result?.filter(
-    (todo: any) => todo.checked === true,
-  );
+export default function TodoRate({ todos, isDrop, setIsDrop }: TodoRateProps) {
+  const checkedTodos = todos.filter((todo: ITodo) => todo.done === true);
 
   return (
     <section className="flex items-center justify-between px-4 pb-2">

@@ -1,10 +1,7 @@
 import BackIcon from "@/public/signup/BackIcon";
-import DearmeLogo from "@/public/signup/DearmeLogo";
-import GoogleLogo from "@/public/login/GoogleLogo";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
-
-import Footer from "@/app/ui/footer";
+import SignupTitle from "@/public/signup/SignupTitle";
 
 export default function Signup() {
   return (
@@ -15,14 +12,11 @@ export default function Signup() {
             <BackIcon />
           </a>
         </header>
-        <section className="flex w-full justify-center">
-          <DearmeLogo />
+        <section className="flex w-full pb-[40px] pl-[64px] pt-[36px]">
+          <SignupTitle />
         </section>
         <article className="flex w-full flex-col items-center gap-4">
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              이름
-            </div>
             <Input
               variant="plain"
               sx={{
@@ -50,9 +44,6 @@ export default function Signup() {
             />
           </section>
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              연락처
-            </div>
             <Input
               variant="plain"
               sx={{
@@ -80,9 +71,6 @@ export default function Signup() {
             />
           </section>
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              주소
-            </div>
             <Input
               variant="plain"
               sx={{
@@ -110,9 +98,6 @@ export default function Signup() {
             />
           </section>
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              상세주소
-            </div>
             <Input
               variant="plain"
               sx={{
@@ -140,9 +125,6 @@ export default function Signup() {
             />
           </section>
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              이메일
-            </div>
             <Input
               variant="plain"
               sx={{
@@ -170,9 +152,6 @@ export default function Signup() {
             />
           </section>
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              비밀번호
-            </div>
             <Input
               type="password"
               variant="plain"
@@ -201,9 +180,6 @@ export default function Signup() {
             />
           </section>
           <section className="flex w-full justify-center space-x-12 px-16">
-            <div className="flex w-1/3 items-center text-xs font-medium">
-              비밀번호 확인
-            </div>
             <Input
               type="password"
               variant="plain"
@@ -235,37 +211,25 @@ export default function Signup() {
             <div className="mt-8 flex w-full flex-col">
               <Button
                 variant="outlined"
-                className="rounded-sm border-2 border-solid border-default-800 py-2 text-default-800 hover:bg-default-300"
+                className="rounded-[20px] border-2 border-solid border-default-800 py-2 text-default-800 hover:bg-default-300"
               >
-                Sign up
-              </Button>
-            </div>
-            <div className="flex w-full flex-col justify-center">
-              <Button
-                variant="plain"
-                className="rounded-sm bg-default-800 py-2 text-default-100 hover:bg-default-700"
-              >
-                <div className="mr-2">
-                  <GoogleLogo />
-                </div>
-                Sign up with Google
+                Create account
               </Button>
             </div>
           </section>
           <section className="mb-4 flex w-full min-w-[220px] max-w-[280px] justify-center text-xs">
-            <h1 className="flex w-full justify-center text-default-800">
-              이미 회원이신가요?
+            <h1 className="flex w-full justify-center text-gray-500">
+              Already have an account?
             </h1>
             <a
               href="/login"
-              className="flex w-full justify-center text-default-600"
+              className="flex w-full justify-center text-default-900"
             >
-              로그인 하기
+              Login here
             </a>
           </section>
         </article>
       </article>
-      <Footer />
     </main>
   );
 }

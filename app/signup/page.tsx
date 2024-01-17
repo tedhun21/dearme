@@ -9,16 +9,44 @@ import SignupTitle from "@/public/signup/SignupTitle";
 
 export default function Signup() {
   const [FocusedInput, setFocusedInput] = useState("");
+  const [inputValues, setInputValues] = useState({
+    nameInput: "",
+    contactNumberInput: "",
+    addressInput: "",
+    detailedAddressInput: "",
+    emailInput: "",
+    nicknameInput: "",
+    passwordInput: "",
+    confirmPasswordInput: "",
+  });
 
+  // input이 focus되었을 때
   const handleFocus = (e: any) => {
     setFocusedInput(e.target.id);
   };
 
-  const handleBlur = (e: any) => {
-    // e.target.value가 없을 때만 (인풋 필드에 내용이 없을 때만) 포커스 상태를 초기화합니다.
-    if (!e.target.value) {
-      setFocusedInput("");
-    }
+  // input이 focus를 해제되었을 때
+  const handleBlur = () => {
+    setFocusedInput("");
+  };
+
+  // input의 value를 state에 저장
+  const handleChange = (e: any) => {
+    const { id, value } = e.target;
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [id]: value,
+    }));
+  };
+
+  // 라벨의 클래스를 동적으로 변경
+  const labelClass = (inputId: string) => {
+    return `absolute left-16 top-2 text-default-500 transition-all duration-300 ${
+      FocusedInput === inputId ||
+      inputValues[inputId as keyof typeof inputValues]
+        ? "left-[48px] top-[-16px] text-sm"
+        : ""
+    }`;
   };
 
   return (
@@ -29,19 +57,12 @@ export default function Signup() {
             <BackIcon />
           </a>
         </header>
-        <section className="flex w-full pb-[40px] pl-[64px] pt-[36px]">
+        <section className="flex w-full pb-[36px] pl-[64px] pt-[36px]">
           <SignupTitle />
         </section>
         <article className="flex w-full flex-col items-center gap-4">
-          <section className="relative flex w-full justify-center px-16">
-            <label
-              htmlFor="nameInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "nameInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
-            >
+          <section className="relative flex w-full justify-center px-12">
+            <label htmlFor="nameInput" className={labelClass("nameInput")}>
               name
             </label>
             <Input
@@ -49,6 +70,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.nameInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -75,14 +98,10 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
+          <section className="relative flex w-full justify-center px-12">
             <label
               htmlFor="contactNumberInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "contactNumberInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
+              className={labelClass("contactNumberInput")}
             >
               Contact Number
             </label>
@@ -91,6 +110,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.contactNumberInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -117,14 +138,10 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
+          <section className="relative flex w-full justify-center px-12">
             <label
               htmlFor="addressInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "addressInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
+              className={labelClass("addressInput")}
             >
               Address
             </label>
@@ -133,6 +150,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.addressInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -159,14 +178,10 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
+          <section className="relative flex w-full justify-center px-12">
             <label
               htmlFor="detailedAddressInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "detailedAddressInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
+              className={labelClass("detailedAddressInput")}
             >
               Detailed Address
             </label>
@@ -175,6 +190,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.detailedAddressInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -201,15 +218,8 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
-            <label
-              htmlFor="emailInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "emailInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
-            >
+          <section className="relative flex w-full justify-center px-12">
+            <label htmlFor="emailInput" className={labelClass("emailInput")}>
               Email
             </label>
             <Input
@@ -217,6 +227,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.emailInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -243,14 +255,10 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
+          <section className="relative flex w-full justify-center px-12">
             <label
               htmlFor="nicknameInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "nicknameInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
+              className={labelClass("nicknameInput")}
             >
               Nickname
             </label>
@@ -259,6 +267,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.nicknameInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -285,14 +295,10 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
+          <section className="relative flex w-full justify-center px-12">
             <label
               htmlFor="passwordInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "passwordInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
+              className={labelClass("passwordInput")}
             >
               Password
             </label>
@@ -302,6 +308,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.passwordInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -328,14 +336,10 @@ export default function Signup() {
             />
           </section>
 
-          <section className="relative flex w-full justify-center px-16">
+          <section className="relative flex w-full justify-center px-12">
             <label
               htmlFor="confirmPasswordInput"
-              className={`absolute left-20 top-2 text-default-500 transition-all duration-300 ${
-                FocusedInput === "confirmPasswordInput"
-                  ? "left-[64px] top-[-16px] text-sm"
-                  : ""
-              }`}
+              className={labelClass("confirmPasswordInput")}
             >
               Confirm Password
             </label>
@@ -345,6 +349,8 @@ export default function Signup() {
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.confirmPasswordInput}
               variant="plain"
               sx={{
                 width: "100%",
@@ -370,7 +376,18 @@ export default function Signup() {
               }}
             />
           </section>
-          <section className="flex w-full flex-col items-center gap-4 px-16">
+
+          <div className="flex w-full min-w-[220px] max-w-[280px] content-center justify-center">
+            <input className="mr-2" type="checkbox" />
+            <label
+              htmlFor="remember"
+              className="text-defalut-800 text-sm underline"
+            >
+              AGREE TO TERMS AND SERVICES
+            </label>
+          </div>
+
+          <section className="flex w-full flex-col items-center gap-4 px-12">
             <div className="mt-8 flex w-full flex-col">
               <Button
                 variant="outlined"

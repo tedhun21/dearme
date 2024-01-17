@@ -377,18 +377,22 @@ export default function Signup() {
             />
           </section>
 
-          <div className="flex w-full min-w-[220px] max-w-[280px] content-center justify-center">
-            <input className="mr-2" type="checkbox" />
+          <div className="flex w-full min-w-[220px] max-w-[280px] content-center justify-center pt-4">
+            <input
+              id="agreeToTermsAndServices"
+              className="mr-2"
+              type="checkbox"
+            />
             <label
-              htmlFor="remember"
-              className="text-defalut-800 text-sm underline"
+              htmlFor="agreeToTermsAndServices"
+              className="text-defalut-800 text-sm underline hover:text-default-600"
             >
               AGREE TO TERMS AND SERVICES
             </label>
           </div>
 
           <section className="flex w-full flex-col items-center gap-4 px-12">
-            <div className="mt-8 flex w-full flex-col">
+            <div className="mt-2 flex w-full flex-col">
               <Button
                 variant="outlined"
                 className="rounded-[20px] border-2 border-solid border-default-800 py-2 text-default-800 hover:bg-default-300"
@@ -397,14 +401,11 @@ export default function Signup() {
               </Button>
             </div>
           </section>
-          <section className="mb-4 flex w-full min-w-[220px] max-w-[280px] justify-center text-xs">
-            <h1 className="flex w-full justify-center text-gray-500">
+          <section className="mb-4 flex w-full min-w-[220px] max-w-[280px] justify-center space-x-16 text-xs">
+            <h1 className="flex w-full whitespace-nowrap text-gray-500">
               Already have an account?
             </h1>
-            <a
-              href="/login"
-              className="flex w-full justify-center text-default-900"
-            >
+            <a href="/login" className="flex w-full text-default-900">
               Login here
             </a>
           </section>

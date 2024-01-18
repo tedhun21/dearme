@@ -46,7 +46,7 @@ export default function Login() {
 
   return (
     <main className="flex min-h-screen justify-center">
-      <article className="bg-BGImg bg-top-custom bg-flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 bg-cover bg-no-repeat">
+      <article className="bg-flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 bg-BGImg bg-cover bg-top-custom bg-no-repeat">
         <header className="pl-8 pt-8">
           <a href="/">
             <BackIcon />
@@ -166,7 +166,10 @@ export default function Login() {
             </div>
           </section>
           <section className="flex w-full justify-center pt-12">
-            <a href="/forgot" className="text-sm font-medium text-default-900">
+            <a
+              href="/forgotpassword"
+              className="text-sm font-medium text-default-900"
+            >
               Forgot Password?
             </a>
           </section>

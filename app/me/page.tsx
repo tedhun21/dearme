@@ -16,27 +16,17 @@ import MeNav from "../ui/me/MeNav";
 
 import Footer from "../ui/footer";
 
-const todos = [
-  { id: 1, body: "스터디", checked: true },
-  { id: 2, body: "퇴근", checked: false },
-  { id: 3, body: "잠자기", checked: true },
-  { id: 4, body: "잠자기", checked: true },
-  { id: 5, body: "잠자기", checked: true },
-  { id: 6, body: "잠자기", checked: true },
-  { id: 7, body: "잠자기", checked: true },
-];
-
 export default function Me() {
   const [isDrop, setIsDrop] = useState(false);
   const [todos, setTodos] = useRecoilState(todoListState);
-  const { data } = useQuery({
+  const { data: todoData } = useQuery({
     queryKey: ["getTodos"],
     queryFn: getTodos,
   });
 
   useEffect(() => {
-    if (data) {
-      setTodos(data.data.result);
+    if (todoData) {
+      setTodos(todoData.data.result);
     }
   }, []);
 

@@ -2,7 +2,7 @@ type IconProps = {
   className?: string;
 };
 
-export default function FriendIcon({ className }: IconProps) {
+export default function FollowerIcon({ className }: IconProps) {
   return (
     <svg
       className={className}

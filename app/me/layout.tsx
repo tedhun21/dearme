@@ -9,12 +9,12 @@ export default function RootLayout({
 }) {
   return (
     <main className="flex min-h-screen justify-center">
-      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+      <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <UserProfile />
         <MeNav />
         {children}
         <Footer />
-      </div>
+      </article>
     </main>
   );
 }

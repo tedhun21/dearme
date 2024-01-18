@@ -15,7 +15,7 @@ export default function MeNav() {
 
   console.log(pathname);
   return (
-    <section className="flex justify-between">
+    <section className="mb-3 flex justify-between bg-default-300">
       <Link
         href="/me"
         className={clsx(
@@ -30,7 +30,7 @@ export default function MeNav() {
             "text-2xl font-extrabold",
             pathname === "/me"
               ? "text-default-900"
-              : "text-default-400 group-hover:text-default-600",
+              : "text-default-500 group-hover:text-default-600",
           )}
         >
           3
@@ -41,7 +41,7 @@ export default function MeNav() {
               "h-5 w-5 fill-current",
               pathname === "/me"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           />
           <span
@@ -49,7 +49,7 @@ export default function MeNav() {
               "text-sm font-extrabold",
               pathname === "/me"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           >
             Plans
@@ -68,7 +68,7 @@ export default function MeNav() {
             "text-2xl font-extrabold",
             pathname === "/me/posts"
               ? "text-default-900"
-              : "text-default-400 group-hover:text-default-600",
+              : "text-default-500 group-hover:text-default-600",
           )}
         >
           4
@@ -79,7 +79,7 @@ export default function MeNav() {
               "h-5 w-5 fill-current",
               pathname === "/me/posts"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           />
           <span
@@ -87,7 +87,7 @@ export default function MeNav() {
               "text-sm font-extrabold",
               pathname === "/me/posts"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           >
             Posts
@@ -106,7 +106,7 @@ export default function MeNav() {
             "text-2xl font-extrabold",
             pathname === "/me/followers"
               ? "text-default-900"
-              : "text-default-400 group-hover:text-default-600",
+              : "text-default-500 group-hover:text-default-600",
           )}
         >
           3
@@ -117,7 +117,7 @@ export default function MeNav() {
               "h-5 w-5 fill-current",
               pathname === "/me/followers"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           />
           <span
@@ -125,7 +125,7 @@ export default function MeNav() {
               "text-sm font-extrabold",
               pathname === "/me/followers"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           >
             Followers
@@ -146,7 +146,7 @@ export default function MeNav() {
             "text-2xl font-extrabold",
             pathname === "/diary/remember"
               ? "text-default-900"
-              : "text-default-400 group-hover:text-default-600",
+              : "text-default-500 group-hover:text-default-600",
           )}
         >
           3
@@ -157,7 +157,7 @@ export default function MeNav() {
               "h-5 w-5 fill-current",
               pathname === "/diary/remember"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           />
           <span
@@ -165,7 +165,7 @@ export default function MeNav() {
               "text-sm font-extrabold",
               pathname === "/diary/remember"
                 ? "text-black"
-                : "text-default-400 group-hover:text-default-600",
+                : "text-default-500 group-hover:text-default-600",
             )}
           >
             Remember

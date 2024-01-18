@@ -27,7 +27,7 @@ export default function Me() {
   }, []);
 
   return (
-    <section className="flex w-full flex-col py-3">
+    <section className="mb-20 flex flex-col">
       <TodoRate todos={todos} isDrop={isDrop} setIsDrop={setIsDrop} />
       {isDrop ? (
         <section>

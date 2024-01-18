@@ -1,41 +1,23 @@
-import { useEffect, useRef, useState } from "react";
-
-import { IconButton, Menu, MenuItem } from "@mui/material";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { useState } from "react";
 
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
 import TodoCheckTrueIcon from "@/public/me/TodoCheckTrueIcon";
-import GoalIcon from "@/public/todo/GoalIcon";
 
-interface TodoProps {
-  todo: {
-    id: number;
-    body: string;
-    checked: boolean;
-  };
-}
+import TodoSetting from "./TodoSettings";
+import { ITodo } from "@/store/atoms";
 
-export default function Todo({ todo }: TodoProps) {
-  const [checked, setChecked] = useState<boolean>(todo.checked);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const open = Boolean(anchorEl);
+// todo를 계속 하위 컴포넌트로 내려야하 하는 문제 발생(recoil로 해결 가능할까? 왜 이게 해결책이 되는가?)
+export default function Todo({ todo }: { todo: ITodo }) {
+  const [done, setDone] = useState<boolean>(todo.done);
 
   const handleToggleClick = () => {
-    setChecked((prev) => !prev);
-  };
-
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
+    setDone((prev) => !prev);
   };
 
   return (
     <div className="flex items-center justify-between px-4 py-2">
       <div className="flex gap-3">
-        {todo.checked ? (
+        {done ? (
           <button onClick={handleToggleClick}>
             <TodoCheckTrueIcon className="hover:tedxt-default-700 h-5 w-5 fill-current text-default-600" />
           </button>
@@ -48,23 +30,7 @@ export default function Todo({ todo }: TodoProps) {
           {todo.body}
         </span>
       </div>
-      <div>
-        <IconButton id="basic-button" onClick={handleClick}>
-          <MoreHorizIcon sx={{ color: "#2D2422" }} />
-        </IconButton>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-        >
-          <MenuItem>
-            <GoalIcon />
-            <span>목표 설정</span>
-          </MenuItem>
-          <MenuItem onClick={handleClose}></MenuItem>
-        </Menu>
-      </div>
+      <TodoSetting todo={todo} />
     </div>
   );
 }

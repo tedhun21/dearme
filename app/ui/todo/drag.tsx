@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { useQuery } from "@tanstack/react-query";
+
 import {
   DragDropContext,
   Draggable,
@@ -5,26 +9,12 @@ import {
   Droppable,
 } from "react-beautiful-dnd";
 import Todo from "./Todo";
-import { useEffect, useState } from "react";
 
-const defaultTodo = [
-  { id: 1, body: "스터디", checked: true },
-  { id: 2, body: "퇴근", checked: false },
-  { id: 3, body: "잠자기", checked: true },
-  { id: 5, body: "잠자기", checked: true },
-  { id: 4, body: "잠자기", checked: true },
-  { id: 6, body: "잠자기", checked: true },
-  { id: 7, body: "잠자기", checked: true },
-];
-
-type Todo = {
-  id: number;
-  body: string;
-  checked: boolean;
-};
+import { getTodos } from "@/store/api";
+import { ITodo, ITodos, todoListState } from "@/store/atoms";
 
 // 배열 순서 바꾸는 함수
-const reorder = (list: Object[], startIndex: number, endIndex: number) => {
+const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
   // 배열에서 startIndex에 있는 한 개 요소 제거
   const [removed] = result.splice(startIndex, 1);
@@ -35,7 +25,7 @@ const reorder = (list: Object[], startIndex: number, endIndex: number) => {
 };
 
 // drappable style
-const getListStyle = (isDraggingOver) => ({
+const getListStyle = (isDraggingOver: any) => ({
   padding: 20,
   display: "flex",
   flexDirection: "column",
@@ -46,7 +36,7 @@ const getListStyle = (isDraggingOver) => ({
 });
 
 // draggable style
-const getTodoStyle = (isDragging, draggableStyle) => ({
+const getTodoStyle = (isDragging: any, draggableStyle: any) => ({
   userSelect: "none",
   borderRadius: 12,
 
@@ -58,7 +48,18 @@ const getTodoStyle = (isDragging, draggableStyle) => ({
 
 export default function DragTodo() {
   const [enabled, setEnabled] = useState(false);
-  const [todos, setTodos] = useState<Todo[]>(defaultTodo);
+  const [todos, setTodos] = useRecoilState(todoListState);
+
+  const { data } = useQuery({
+    queryKey: ["getTodos"],
+    queryFn: getTodos,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setTodos(data.data.result);
+    }
+  }, []);
 
   const onDragEnd = ({ source, destination }: DropResult) => {
     // console.log(">>> source", source.index);
@@ -68,7 +69,7 @@ export default function DragTodo() {
       return;
     }
 
-    const _todos = reorder(todos, source.index, destination.index) as Todo[];
+    const _todos = reorder(todos, source.index, destination.index) as ITodo[];
     setTodos(_todos);
   };
 
@@ -92,9 +93,9 @@ export default function DragTodo() {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            style={getListStyle(snapshot.isDraggingOver)}
+            style={getListStyle(snapshot.isDraggingOver) as any}
           >
-            {todos.map((todo, index) => (
+            {todos?.map((todo: ITodo, index: number) => (
               <Draggable
                 key={todo.id}
                 draggableId={todo.id.toString()}

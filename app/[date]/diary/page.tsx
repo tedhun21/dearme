@@ -63,6 +63,7 @@ export default function Diary() {
               </section>
             </article>
             <Footer />
+            ㅂㅂㅈㄷㅂ
           </>
         )}
       </div>

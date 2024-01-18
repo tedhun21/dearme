@@ -3,7 +3,7 @@
 import BackButton from "@/app/ui/backbutton";
 import Header from "@/app/ui/header";
 import MeGoal from "@/app/ui/me/MeGoal";
-import MeNav from "@/app/ui/me/UserNav";
+import MeNav from "@/app/ui/me/UserProfile";
 import Todo from "@/app/ui/todo/Todo";
 import TodoRate from "@/app/ui/me/TodoRate";
 import { useParams } from "next/navigation";

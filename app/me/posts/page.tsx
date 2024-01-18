@@ -1,16 +1,15 @@
-import BackButton from "@/app/ui/backbutton";
-import Header from "@/app/ui/header";
-import MeNav from "@/app/ui/me/UserNav";
+"use client";
+
+import MeNav from "@/app/ui/me/MeNav";
+import UserProfile from "@/app/ui/me/UserProfile";
+
 import Image from "next/image";
 
 export default function MePost() {
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
-        <Header />
-        <div className="flex items-center px-6">
-          <BackButton />
-        </div>
+        <UserProfile />
         <MeNav />
         <article>
           <h1 className="mx-5 mb-3 text-base font-semibold">포스트</h1>

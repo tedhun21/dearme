@@ -56,8 +56,8 @@ export default function UserProfile() {
   }, []);
 
   return (
-    <section className="h-80">
-      <article className="relative flex h-full p-5">
+    <section className="h-80 w-full">
+      <div className="relative flex h-full p-5">
         <div className="z-10 flex w-full flex-col justify-between">
           <div className="flex justify-between">
             <Image
@@ -128,7 +128,7 @@ export default function UserProfile() {
           priority
           className="z-0"
         />
-      </article>
+      </div>
     </section>
   );
 }

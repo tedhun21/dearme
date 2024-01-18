@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -18,7 +20,9 @@ export default function MeNav() {
         href="/me"
         className={clsx(
           "group flex flex-1 flex-col items-center justify-center gap-2  py-4",
-          pathname === "/me" ? "border-b-4 border-b-default-800" : "",
+          pathname === "/me"
+            ? "border-b-4 border-b-default-800"
+            : "group-hover:border-b-default-500",
         )}
       >
         <span
@@ -94,13 +98,13 @@ export default function MeNav() {
         href="/me/followers"
         className={clsx(
           "group flex flex-1 flex-col items-center justify-center gap-2  py-4",
-          pathname === "/me/friends" ? "border-b-4 border-b-default-800" : "",
+          pathname === "/me/followers" ? "border-b-4 border-b-default-800" : "",
         )}
       >
         <span
           className={clsx(
             "text-2xl font-extrabold",
-            pathname === "/me/friends"
+            pathname === "/me/followers"
               ? "text-default-900"
               : "text-default-400 group-hover:text-default-600",
           )}
@@ -111,7 +115,7 @@ export default function MeNav() {
           <FollowerIcon
             className={clsx(
               "h-5 w-5 fill-current",
-              pathname === "/me/friends"
+              pathname === "/me/followers"
                 ? "text-black"
                 : "text-default-400 group-hover:text-default-600",
             )}
@@ -159,7 +163,7 @@ export default function MeNav() {
           <span
             className={clsx(
               "text-sm font-extrabold",
-              pathname === "/me/followers"
+              pathname === "/diary/remember"
                 ? "text-black"
                 : "text-default-400 group-hover:text-default-600",
             )}

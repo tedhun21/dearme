@@ -12,6 +12,8 @@ import PageLevel from "@/public/forgotpassword/PageLevel";
 import SelectedPhone from "@/public/forgotpassword/SelectedPhone";
 import SelectedEmail from "@/public/forgotpassword/SelectedEmail";
 import PageLevel2 from "@/public/forgotpassword/PageLevel2";
+import PhoneCodeTitle from "@/public/forgotpassword/PhoneCodeTitle";
+import EmailCodeTitle from "@/public/forgotpassword/EmailCodeTitle";
 
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
@@ -19,6 +21,11 @@ export default function ForgotPassword() {
   const [inputValues, setInputValues] = useState({
     emailInput: "",
   });
+
+  // 비밀번호 찾기 위한 선택한 옵션에 따라 다음 단계로 이동
+  const handleOptionClick = (method) => {
+    setCurrentstep(method === "sms" ? "sms단계" : "email단계");
+  };
 
   // input이 focus되었을 때
   const handleFocus = (e: any) => {
@@ -123,13 +130,15 @@ export default function ForgotPassword() {
               </div>
             </section>
 
-            <a
-              href="/login"
-              className="flex w-full items-center justify-center gap-4 pt-4 text-sm font-semibold text-default-500"
-            >
-              <Arrow />
-              Back to log in
-            </a>
+            <section className="flex justify-center">
+              <a
+                href="/login"
+                className="inline-flex items-center gap-4 pt-4 text-sm font-semibold text-default-500"
+              >
+                <Arrow />
+                Back to log in
+              </a>
+            </section>
             <section className="flex w-full justify-center pt-24">
               <PageLevel />
             </section>
@@ -158,14 +167,20 @@ export default function ForgotPassword() {
               <p className="text-lg font-normal text-default-800">password</p>
             </section>
             <section className="flex w-full flex-col justify-center gap-4 px-16">
-              <figure className="flex items-center justify-center gap-8 rounded-[20px] bg-default-400 pb-16 pr-8 pt-16 hover:bg-default-500">
+              <figure
+                className="flex items-center justify-center gap-8 rounded-[20px] bg-default-400 pb-16 pr-8 pt-16 hover:bg-default-500"
+                onClick={() => handleOptionClick("sms")}
+              >
                 <SelectedPhone />
                 <div className="flex flex-col">
                   <p className="text-default-100">via sms:</p>
                   <p>*** **** 1234</p>
                 </div>
               </figure>
-              <figure className="flex items-center justify-center gap-6 rounded-[20px] bg-default-400 pb-16 pl-8 pr-8 pt-16 hover:bg-default-500">
+              <figure
+                className="flex items-center justify-center gap-6 rounded-[20px] bg-default-400 pb-16 pl-8 pr-8 pt-16 hover:bg-default-500"
+                onClick={() => handleOptionClick("email")}
+              >
                 <SelectedEmail />
                 <div className="flex flex-col">
                   <p className="text-default-100">via email:</p>
@@ -174,6 +189,154 @@ export default function ForgotPassword() {
               </figure>
             </section>
           </article>
+          <section className="flex w-full justify-center pb-12 pt-12">
+            <PageLevel2 />
+          </section>
+        </article>
+      )}
+
+      {currentStep === "sms단계" && (
+        <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+          <header className="pl-8 pt-8">
+            <a href="/">
+              <BackIcon />
+            </a>
+          </header>
+          <section className="flex w-full pb-[32px] pl-[64px] pt-[36px]">
+            <PhoneCodeTitle />
+          </section>
+          <section className="flex w-full flex-col pb-[20px] pl-[64px]">
+            <p className="text-lg font-normal text-default-800">
+              The recovery code was sent to
+            </p>
+            <p className="text-lg font-normal text-default-800">
+              your mobile number.
+            </p>
+            <p className="text-lg font-normal text-default-800">
+              Please enter the code:
+            </p>
+          </section>
+
+          <section className="flex w-full justify-center gap-1 pb-12 pt-4">
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              1
+            </span>
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              4
+            </span>
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              3
+            </span>
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              8
+            </span>
+          </section>
+
+          <section className="flex w-full flex-col items-center gap-4 px-16">
+            <div className="mt-2 flex w-full flex-col">
+              <Button
+                variant="outlined"
+                onClick={() => setCurrentstep("2단계")}
+                className="rounded-[20px] border-2 border-solid border-default-800 bg-black  py-2 text-default-100 hover:bg-default-700"
+              >
+                Continue
+              </Button>
+            </div>
+          </section>
+
+          <section className="mt-4 flex w-full justify-center text-xs">
+            <span className="flex min-w-[220px] max-w-[280px] space-x-4">
+              <h1 className="flex w-full whitespace-nowrap text-default-500">
+                {`Didn't receive the code?`}
+              </h1>
+              <a href="/login" className="flex w-full font-semibold text-black">
+                Click to resend
+              </a>
+            </span>
+          </section>
+
+          <section className="flex justify-center">
+            <a
+              href="/login"
+              className="inline-flex items-center gap-4 pt-4 text-sm font-semibold text-default-500"
+            >
+              <Arrow />
+              Back to log in
+            </a>
+          </section>
+
+          <section className="flex w-full justify-center pb-12 pt-12">
+            <PageLevel2 />
+          </section>
+        </article>
+      )}
+
+      {currentStep === "email단계" && (
+        <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+          <header className="pl-8 pt-8">
+            <a href="/">
+              <BackIcon />
+            </a>
+          </header>
+          <section className="flex w-full pb-[32px] pl-[64px] pt-[36px]">
+            <EmailCodeTitle />
+          </section>
+          <section className="flex w-full flex-col pb-[20px] pl-[64px]">
+            <p className="text-lg font-normal text-default-800">
+              We sent a code to
+            </p>
+            <p className="text-lg font-semibold text-default-900">
+              amelie@gmail.com
+            </p>
+          </section>
+
+          <section className="flex w-full justify-center gap-1 pb-12 pt-8">
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              1
+            </span>
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              4
+            </span>
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              3
+            </span>
+            <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
+              8
+            </span>
+          </section>
+
+          <section className="flex w-full flex-col items-center gap-4 px-16">
+            <div className="mt-2 flex w-full flex-col">
+              <Button
+                variant="outlined"
+                onClick={() => setCurrentstep("2단계")}
+                className="rounded-[20px] border-2 border-solid border-default-800 bg-black py-2 text-default-100 hover:bg-default-700"
+              >
+                Continue
+              </Button>
+            </div>
+          </section>
+          <section className="mt-4 flex w-full justify-center text-xs">
+            <span className="flex min-w-[220px] max-w-[280px] space-x-4">
+              <h1 className="flex w-full whitespace-nowrap text-default-500">
+                {`Didn't receive the email?`}
+              </h1>
+              <a href="/login" className="flex w-full font-semibold text-black">
+                Click to resend
+              </a>
+            </span>
+          </section>
+
+          <section className="flex justify-center">
+            <a
+              href="/login"
+              className="inline-flex items-center gap-4 pt-4 text-sm font-semibold text-default-500"
+            >
+              <Arrow />
+              Back to log in
+            </a>
+          </section>
+
           <section className="flex w-full justify-center pb-12 pt-12">
             <PageLevel2 />
           </section>

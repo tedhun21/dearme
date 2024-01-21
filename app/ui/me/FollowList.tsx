@@ -7,15 +7,15 @@ export default function FollowList({ request }: { request?: boolean }) {
       </div>
       {request ? (
         <div className="flex gap-2">
-          <button className="rounded-lg bg-default-500 px-3 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
+          <button className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
             Confirm
           </button>
-          <button className="rounded-lg bg-default-500 px-3 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
+          <button className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
             Delete
           </button>
         </div>
       ) : (
-        <button className="rounded-lg bg-default-500 px-3 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
+        <button className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
           Block
         </button>
       )}

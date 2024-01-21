@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Footer from "../ui/footer";
 import MeNav from "../ui/me/MeNav";
 import UserProfile from "../ui/me/UserProfile";
@@ -7,11 +10,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
-        <UserProfile />
-        <MeNav />
+        {pathname !== "/me/friends" && <UserProfile />}
+        {pathname !== "/me/friends" && <MeNav />}
         {children}
         <Footer />
       </article>

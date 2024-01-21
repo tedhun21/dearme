@@ -6,10 +6,15 @@ export default function BackArrowIcon({ className }: IconProps) {
   return (
     <svg
       className={className}
-      viewBox="0 0 8 12"
+      viewBox="0 0 39 22"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M0.287964 6.00023L6.29796 12.0102L7.71196 10.5962L3.11196 5.99623L7.71196 1.39623L6.29796 -0.00976562L0.287964 6.00023Z" />
+      <circle cx="10" cy="10" r="10" fill="#EDA323" />
+      <path
+        d="M10 11L19 2M10 11L19 20M10 11H38.125"
+        stroke="black"
+        strokeWidth="3"
+      />
     </svg>
   );
 }

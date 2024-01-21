@@ -20,8 +20,8 @@ const me = {
 
 export default function MeFriend() {
   return (
-    <section className="mb-20">
-      <div className="px-4">
+    <section className="mb-20 mt-4">
+      <div className="flex flex-col gap-3 px-4">
         <div>
           <h1 className="mb-3 border-b-2 border-default-400 text-lg font-semibold">
             Follow Request
@@ -33,9 +33,17 @@ export default function MeFriend() {
           <FollowList request={true} />
         </div>
         <div>
-          <div className="mb-3 flex items-center gap-2 border-b-2 border-default-400">
-            <h1 className="text-lg font-semibold">Followers</h1>
-            <span className="text-lg font-semibold">4</span>
+          <div className="mb-3 flex items-center justify-between gap-2 border-b-2 border-default-400">
+            <div className="flex gap-1">
+              <h1 className="text-lg font-semibold">Followers</h1>
+              <span className="text-lg font-semibold">4</span>
+            </div>
+            <Link
+              href="/me/friends"
+              className="font-semibold text-default-700 hover:text-default-800 active:text-default-900"
+            >
+              View More
+            </Link>
           </div>
           <FollowList />
         </div>

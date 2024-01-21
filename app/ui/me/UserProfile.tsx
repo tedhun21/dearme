@@ -122,11 +122,9 @@ export default function UserProfile() {
           src="/me/DefaultBackground.png"
           alt="profile default image"
           fill
-          objectFit="cover"
-          objectPosition="center"
           quality={80}
           priority
-          className="z-0"
+          className="z-0 object-cover object-center"
         />
       </div>
     </section>

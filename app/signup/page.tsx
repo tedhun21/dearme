@@ -401,7 +401,7 @@ export default function Signup() {
               </Button>
             </div>
           </section>
-          <section className="mb-4 flex w-full min-w-[220px] max-w-[280px] justify-center space-x-16 text-xs">
+          <section className="mb-4 flex w-full min-w-[220px] max-w-[280px] justify-center space-x-16 pb-[36px] text-xs">
             <h1 className="flex w-full whitespace-nowrap text-gray-500">
               Already have an account?
             </h1>

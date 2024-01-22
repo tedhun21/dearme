@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 // TODO: 메뉴 디자인 수정 (라디오 버튼, 호버링)
-
+// FIXME: 세팅 메뉴 -> 푸터 이동
 import React, { useState } from "react";
 
 import IconButton from "@mui/material/IconButton";
@@ -69,46 +69,42 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
             <div className="mb-3 flex items-center">
               <Comments className="mr-1 h-5 w-5 fill-current text-default-600" />
 
-              <div className="text-sm font-semibold text-default-700">
-                댓글 설정
+              <div className="text-sm font-medium text-default-700">
+                Comments
               </div>
             </div>
 
             <div className=" ml-3  flex-col ">
               <div className="mb-2 flex items-center">
                 <input type="radio" name="radioOption" />
-                <span className="ml-2 text-sm font-semibold text-default-700">
-                  전체
+                <span className="text- ml-2 font-normal text-default-700">
+                  All
                 </span>
               </div>
               <div className="mb-2 flex items-center">
                 <input type="radio" name="radioOption" />
-                <span className="ml-2 text-sm font-semibold text-default-700">
-                  친구
+                <span className="ml-2 text-sm font-normal text-default-700">
+                  Friends
                 </span>
               </div>
               <div className="mb-2 flex items-center">
                 <input type="radio" name="radioOption" />
-                <span className="ml-2 text-sm font-semibold text-default-700">
-                  댓글 기능 해제
+                <span className="ml-2 text-sm font-normal text-default-700">
+                  Turn off
                 </span>
               </div>
             </div>
-            <Divider />
+            {/* <Divider sx={{ m: 0 }} /> */}
 
             <div className="mb-3 mt-3 flex items-center">
               <Edit className="mr-1 h-5 w-6 fill-current text-default-600" />
 
-              <div className="text-sm font-semibold text-default-700">
-                게시물 수정
-              </div>
+              <div className="text-sm font-medium text-default-700">Edit</div>
             </div>
 
             <div className="mt-2 flex items-center">
               <Delete className="mr-1 h-5 w-6 fill-current text-default-600" />
-              <div className="text-sm font-semibold text-default-700">
-                게시물 삭제
-              </div>
+              <div className="text-sm font-medium text-default-700">Delete</div>
             </div>
           </div>
         ) : (
@@ -116,16 +112,16 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
             <div className="mb-3 flex items-center">
               <User className="mr-1 h-5 w-5 fill-current text-default-600" />
 
-              <div className="text-sm font-semibold text-default-700">
-                이 계정 정보
+              <div className="text-sm font-medium text-default-700">
+                About the account
               </div>
             </div>
 
             <div className="mb-3 mt-3 flex items-center">
               <FriendRequest className="mr-1 h-5 w-5 fill-current text-default-600" />
 
-              <div className="text-sm font-semibold text-default-700">
-                친구 신청
+              <div className="text-sm font-medium text-default-700">
+                Friend Request
               </div>
             </div>
 

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function MePost() {
   return (
-    <section className="mb-20">
+    <section className="mb-20 mt-4">
       <h1 className="mx-5 mb-3 text-base font-semibold">포스트</h1>
       <section>
         <div className="grid grid-cols-3 xxs:grid-cols-4 xs:grid-cols-5">

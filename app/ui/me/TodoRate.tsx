@@ -1,16 +1,17 @@
 import DownDropdownIcon from "@/public/me/DownDropdownIcon";
 import UpDropdownIcon from "@/public/me/UpDropdownIcon";
-import { ITodo } from "@/store/atoms";
+import { ITodo, todoListState } from "@/store/atoms";
 import { LinearProgress } from "@mui/material";
 import React from "react";
+import { useRecoilState } from "recoil";
 
 interface TodoRateProps {
-  todos: ITodo[];
   isDrop: boolean;
   setIsDrop: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function TodoRate({ todos, isDrop, setIsDrop }: TodoRateProps) {
+export default function TodoRate({ isDrop, setIsDrop }: TodoRateProps) {
+  const [todos, setTodos] = useRecoilState(todoListState);
   const checkedTodos = todos.filter((todo: ITodo) => todo.done === true);
 
   return (
@@ -28,14 +29,16 @@ export default function TodoRate({ todos, isDrop, setIsDrop }: TodoRateProps) {
 
       <LinearProgress
         sx={{
-          height: "12px",
+          height: "16px",
           borderRadius: "12px",
           width: "100%",
           color: "#143422",
           mx: 2,
         }}
         variant="determinate"
-        value={(checkedTodos?.length / todos.length) * 100}
+        value={
+          todos.length !== 0 ? (checkedTodos?.length / todos.length) * 100 : 0
+        }
         color="inherit"
       />
 

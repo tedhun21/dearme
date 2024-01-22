@@ -14,12 +14,12 @@ export default function RootLayout({
 
   return (
     <main className="flex min-h-screen justify-center">
-      <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         {pathname !== "/me/friends" && <UserProfile />}
         {pathname !== "/me/friends" && <MeNav />}
         {children}
         <Footer />
-      </article>
+      </div>
     </main>
   );
 }

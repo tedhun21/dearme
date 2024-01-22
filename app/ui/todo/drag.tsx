@@ -10,8 +10,9 @@ import {
 } from "react-beautiful-dnd";
 import Todo from "./Todo";
 
-import { getTodos } from "@/store/api";
+import { getTodosWithDate } from "@/store/api";
 import { ITodo, ITodos, todoListState } from "@/store/atoms";
+import getToday from "@/util/getDate";
 
 // 배열 순서 바꾸는 함수
 const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
@@ -49,17 +50,6 @@ const getTodoStyle = (isDragging: any, draggableStyle: any) => ({
 export default function DragTodo() {
   const [enabled, setEnabled] = useState(false);
   const [todos, setTodos] = useRecoilState(todoListState);
-
-  const { data } = useQuery({
-    queryKey: ["getTodos"],
-    queryFn: getTodos,
-  });
-
-  useEffect(() => {
-    if (data) {
-      setTodos(data.data.result);
-    }
-  }, []);
 
   const onDragEnd = ({ source, destination }: DropResult) => {
     // console.log(">>> source", source.index);

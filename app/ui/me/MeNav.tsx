@@ -13,9 +13,8 @@ import RememberIcon from "@/public/me/RememberIcon";
 export default function MeNav() {
   const pathname = usePathname();
 
-  console.log(pathname);
   return (
-    <section className="mb-3 flex justify-between bg-default-300">
+    <section className="flex justify-between bg-default-300">
       <Link
         href="/me"
         className={clsx(

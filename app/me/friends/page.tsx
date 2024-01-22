@@ -5,7 +5,7 @@ import { Divider, IconButton, InputBase, Paper } from "@mui/material";
 
 export default function Friends() {
   return (
-    <div className="mb-20 px-4 py-3">
+    <section className="mb-20 px-4 py-3">
       <div className="flex flex-col items-start gap-3">
         <BackButton />
         <Paper
@@ -44,6 +44,6 @@ export default function Friends() {
       <FollowList />
       <FollowList />
       <FollowList />
-    </div>
+    </section>
   );
 }

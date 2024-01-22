@@ -20,7 +20,7 @@
     "@tanstack/react-query-devtools": "^5.17.1",
     "@types/react-beautiful-dnd": "^13.1.7",
     "apexcharts": "3.45.0",
-    "axios": "^1.6.4",
+    "axios": "^1.6.5",
     "clsx": "2.0.0",
     "dayjs": "1.11.10",
     "next": "14.0.4",

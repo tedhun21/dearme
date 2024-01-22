@@ -9,7 +9,7 @@ export default function Footer() {
   return (
     <footer className="fixed inset-x-0 bottom-0 flex justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] bg-default-100 shadow-lg">
-        <div className="mx-8 my-[-8px] flex w-full items-center justify-center justify-between">
+        <div className="mx-8 my-[-8px] flex w-full items-center justify-between">
           <Link // 소셜 버튼
             href="/social"
             className="flex flex-col items-center text-gray-600 hover:text-gray-900"

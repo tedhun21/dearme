@@ -16,6 +16,7 @@ import getToday from "@/util/getDate";
 export default function Me() {
   const [isDrop, setIsDrop] = useState(false);
   const [todos, setTodos] = useRecoilState(todoListState);
+
   const { data: todoData } = useQuery({
     queryKey: ["getTodosWithDate", { date: getToday(), isMe: true }],
     queryFn: getTodosWithDate,

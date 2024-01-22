@@ -1,11 +1,6 @@
-import BackButton from "@/app/ui/backbutton";
-import Header from "@/app/ui/header";
-import FollowList from "@/app/ui/me/FollowList";
-import Friend from "@/app/ui/me/Friend";
-import PlusFriendIcon from "@/public/me/PlusFriendIcon";
-import SearchIcon from "@/public/me/SearchIcon";
-import UserIcon from "@/public/me/UserIcon";
 import Link from "next/link";
+
+import FollowList from "@/app/ui/me/FollowList";
 
 const me = {
   id: 1,

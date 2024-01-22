@@ -15,3 +15,13 @@ export const getTodosWithDate = async ({ queryKey }: any) => {
   }
   return await axios.get(`${API_URL}/todos?date=${date}`);
 };
+
+export const getPostWithPage = async ({ tab, pageParam }: any) => {
+  try {
+    const {
+      data: { posts, pagination },
+    } = await axios.get(`${API_URL}/posts?page=${pageParam}&size=6`);
+
+    return posts;
+  } catch (e) {}
+};

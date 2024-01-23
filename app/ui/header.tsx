@@ -5,18 +5,18 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="flex w-full flex-row justify-between p-5">
+    <header className="flex w-full flex-row items-center justify-between p-5">
       <Link href="/">
         <Image
           src="/header/logo.png"
-          width={77}
+          width={80}
           height={20}
           alt="logo"
           quality={80}
           priority
         />
       </Link>
-      <div className="flex flex-row gap-2 p-1">
+      <div className="flex flex-row gap-2 p-3">
         <NotificationIcon className="h-4 w-4" />
         <SettingIcon className="h-4 w-4" />
       </div>

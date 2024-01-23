@@ -42,7 +42,7 @@ export default function Footer() {
             <span className="mt-2 text-xs font-semibold">분석</span>
           </Link>
           <Link // 마이페이지 버튼
-            href="/mypage"
+            href="/me"
             className="flex flex-col items-center text-gray-600 hover:text-gray-900"
           >
             <MypageIcon />

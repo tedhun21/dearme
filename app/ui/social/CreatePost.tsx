@@ -1,7 +1,9 @@
 "use client";
-// TODO: 메뉴 아이템 디자인 수정
 
 import React, { useState } from "react";
+
+import Image from "next/image";
+import Link from "next/link";
 
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
@@ -13,10 +15,9 @@ import Select from "@mui/material/Select";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuItem from "@mui/material/MenuItem";
 
-import EditPost from "@/public/social/EditPost";
 import Close from "@/public/social/Close";
-import Triangle from "@/public/social/Triangle";
 import SelectPhotos from "@/public/social/SelectPhotos";
+import EditPost from "@/public/social/EditPost";
 
 export default function CreatePost() {
   // modal
@@ -59,12 +60,23 @@ export default function CreatePost() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: "#FBFAF2",
+            backgroundColor: "#F5F3EB",
             borderRadius: "16px",
             p: 4,
           }}
         >
-          <div className="mb-4 flex items-center justify-end">
+          <div className="mb-4 flex items-center justify-between">
+            <Link href="/">
+              <Image
+                src="/header/logo.png"
+                width={77}
+                height={20}
+                alt="logo"
+                quality={80}
+                priority
+              />
+            </Link>
+
             {/* 게시물 수정 시에만 */}
             {/* <EditPost className="mr-2 h-4 w-4 cursor-pointer fill-current text-default-600" /> */}
             <button className="border-none" onClick={handleClose}>
@@ -75,18 +87,8 @@ export default function CreatePost() {
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center">
               <div className="text-base font-semibold text-default-500">In</div>
-              {/* <div
-                className="ml-2 rounded-full border  border-solid border-default-400 pl-2 pr-2 text-default-700"
-                font-base
-              >
-                <span className="text-sm font-medium ">새로운 시작</span>
-                <MoreHorizIcon
-                  sx={{ color: "#2D2422", marginLeft: 1, fontSize: "medium" }}
-                />
-              </div> */}
               <Select
                 // 스타일 안먹음..?
-
                 sx={{
                   marginLeft: 1,
                   "&.MuiOutlinedInput-root": {
@@ -117,20 +119,20 @@ export default function CreatePost() {
                 onChange={handleGoalChange}
               >
                 <MenuItem sx={{ fontSize: "14px" }} value="목표1">
-                  프로젝트 완성
+                  # Dearme
                 </MenuItem>
                 <MenuItem sx={{ fontSize: "14px" }} value="목표2">
-                  행복한 연말
+                  # Reading
                 </MenuItem>
                 <MenuItem sx={{ fontSize: "14px" }} value="목표3">
-                  새로운 시작
+                  # Workout
                 </MenuItem>
               </Select>
             </div>
 
             <div className="flex items-center">
               <span className="text-sm font-medium text-default-700">
-                포스트 공개
+                Private
               </span>
               <Switch
                 sx={{
@@ -171,6 +173,12 @@ export default function CreatePost() {
               />
             </div>
           </div>
+
+          {/* 사진 업로드 */}
+          <div className="flex h-72 items-center justify-center ">
+            <SelectPhotos className="h-7 w-7 " />
+          </div>
+
           {/* 날짜 선택 */}
           <div className="mb-1 flex items-center">
             <span className="text-sm font-medium text-default-700">
@@ -183,10 +191,15 @@ export default function CreatePost() {
             fullWidth
             multiline
             rows={4}
-            placeholder="내용을 입력해주세요."
+            placeholder="Please write a caption."
             sx={{
               backgroundColor: "#F5F3EB",
+              "& .MuiOutlinedInput-input": {
+                fontSize: "14px",
+              },
               "& .MuiOutlinedInput-root": {
+                py: "4px",
+                px: "8px",
                 "& fieldset": {
                   borderColor: "#EBE3D5",
                 },
@@ -202,25 +215,39 @@ export default function CreatePost() {
           />
           <div className="mb-4 flex items-center">
             <span className="mr-2 text-sm font-medium text-default-700">
-              댓글 옵션
+              Comments
             </span>
             <Select
               // 스타일 안먹음..?
-
               sx={{
+                marginLeft: 1,
                 "&.MuiOutlinedInput-root": {
-                  borderRadius: "8px",
-                  width: "80px",
-                  height: "25px",
+                  borderRadius: "20px",
+                  width: "100px", // Set the width
+                  height: "25px", // Set the height
                   fontSize: "14px",
                   color: "black",
-                  "&.fieldset": {
-                    borderColor: "#EBE3D5",
+                  "& fieldset": {
+                    borderColor: "#DED0B6",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#EBE3D5",
+                    borderColor: "#DED0B6",
                   },
                 },
+                // sx={{
+                //   "&.MuiOutlinedInput-root": {
+                //     borderRadius: "8px",
+                //     width: "80px",
+                //     height: "25px",
+                //     fontSize: "14px",
+                //     color: "black",
+                //     "&.fieldset": {
+                //       borderColor: "#EBE3D5",
+                //     },
+                //     "&.Mui-focused fieldset": {
+                //       borderColor: "#EBE3D5",
+                //     },
+                //   },
 
                 // "& .MuiSelect-select": {
                 //   padding: "0px",
@@ -233,18 +260,17 @@ export default function CreatePost() {
               onChange={handleOptionChange}
             >
               <MenuItem sx={{ fontSize: "14px" }} value="전체">
-                전체
+                All
               </MenuItem>
               <MenuItem sx={{ fontSize: "14px" }} value="친구">
-                친구
+                Friends
               </MenuItem>
               <MenuItem sx={{ fontSize: "14px" }} value="해제">
-                해제
+                Turn off
               </MenuItem>
             </Select>
           </div>
-          <div className="flex items-center justify-between">
-            <SelectPhotos className="h-7 w-7 " />
+          <div className="flex items-center justify-end">
             <button className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white">
               Post
             </button>

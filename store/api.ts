@@ -15,3 +15,12 @@ export const getTodosWithDate = async ({ queryKey }: any) => {
   }
   return await axios.get(`${API_URL}/todos?date=${date}`);
 };
+
+export const getPostsWithPage = async ({ queryKey }: any) => {
+  const { tab, pageParam } = queryKey;
+
+  console.log("tab:", tab);
+  console.log("pageParam:", pageParam);
+
+  return await axios.get(`${API_URL}/post?page=${pageParam}&size=3`);
+};

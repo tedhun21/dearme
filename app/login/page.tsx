@@ -21,7 +21,6 @@ export default function Login() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -43,7 +42,6 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -63,39 +61,18 @@ export default function Login() {
       if (status === 200) {
         document.cookie = `access_token=${data.jwt}; Max-age-3600; path=/;`;
         router.push("/");
-
-        // Remember me 처리
-        // if (remember) {
-        //   localStorage.setItem("rememberedEmail", email);
-        //   localStorage.setItem("rememberedPassword", password);
-        // } else {
-        //   localStorage.removeItem("rememberedEmail");
-        //   localStorage.removeItem("rememberedPassword");
-        // }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
 
         if (axiosError.response && axiosError.response.status === 400) {
-          alert("Please check your email and password");
+          alert("Please check your password");
         }
       }
       console.error("로그인에 실패했습니다", error);
     }
   };
-
-  // remember 체크 후 로그인 시 로컬스토리지에 저장
-  // useEffect(() => {
-  //   const rememberedEmail = localStorage.getItem("rememberedEmail");
-  //   const rememberedPassword = localStorage.getItem("rememberedPassword");
-
-  //   if (rememberedEmail && rememberedPassword) {
-  //     setValue("email", rememberedEmail);
-  //     setValue("password", rememberedPassword);
-  //     setRemember(true);
-  //   }
-  // }, [setValue]);
 
   return (
     <main className="flex min-h-screen justify-center">
@@ -109,7 +86,11 @@ export default function Login() {
           <DearmeLogo />
         </div>
         <article className="flex w-full flex-col items-center">
-          <form onSubmit={handleSubmit(onSubmit)} name="loginForm">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            name="loginForm"
+            autoComplete="on"
+          >
             <section className="flex w-full flex-col items-center gap-4">
               <div className="w-full items-center pb-4">
                 <FormControl error={!!errors.email}>
@@ -192,7 +173,7 @@ export default function Login() {
                     }}
                   />
                   <button
-                    type="button" // 이 부분을 추가하여 기본 submit 동작을 방지합니다.
+                    type="button" // 이 부분을 추가하여 기본 submit 동작을 방지.
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 flex items-center pr-3 pt-4 leading-5"
                   >
@@ -204,18 +185,7 @@ export default function Login() {
                 )}
               </FormControl>
             </section>
-            <section className="mt-4 flex w-full flex-col items-center gap-4">
-              <div className="flex w-full">
-                <input
-                  className="mr-2"
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                />
-                <label htmlFor="remember" className="text-defalut-800 text-sm">
-                  Remember me
-                </label>
-              </div>
+            <section className="mt-4 flex w-full min-w-[220px] max-w-[280px] flex-col items-center gap-4">
               <div className="mt-4 flex w-full flex-col">
                 <Button
                   type="submit"
@@ -237,29 +207,28 @@ export default function Login() {
                 </Button>
               </div>
             </section>
-            <section className="flex w-full justify-center pt-12">
-              <a
-                href="/forgotpassword"
-                className="text-sm font-medium text-default-900"
-              >
-                Forgot Password?
-              </a>
-            </section>
-            <article className="mt-2 flex w-full min-w-[220px] max-w-[280px] justify-center px-2 text-sm">
-              <h1 className="flex w-full min-w-[220px] max-w-[280px] pl-8 font-medium text-default-100">
-                {"Don't have an account?"}
-              </h1>
-              <a
-                href="/signup"
-                className="flex w-full justify-center whitespace-nowrap pr-12 font-medium text-default-800 underline"
-              >
-                Sign up
-              </a>
-            </article>
           </form>
+          <section className="flex w-full justify-center pt-12">
+            <a
+              href="/forgotpassword"
+              className="text-sm font-medium text-default-900"
+            >
+              Forgot Password?
+            </a>
+          </section>
+          <article className="mt-2 flex w-full min-w-[220px] max-w-[280px] justify-center px-2 text-sm">
+            <h1 className="flex w-full min-w-[220px] max-w-[280px] pl-8 font-medium text-default-100">
+              {"Don't have an account?"}
+            </h1>
+            <a
+              href="/signup"
+              className="flex w-full justify-center whitespace-nowrap pr-12 font-medium text-default-800 underline"
+            >
+              Sign up
+            </a>
+          </article>
         </article>
       </article>
-      {/* <Footer /> */}
     </main>
   );
 }

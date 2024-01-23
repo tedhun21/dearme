@@ -185,7 +185,7 @@ export default function Login() {
                 )}
               </FormControl>
             </section>
-            <section className="mt-4 flex w-full min-w-[220px] max-w-[280px] flex-col items-center gap-4">
+            <section className="mt-8 flex w-full flex-col items-center gap-4">
               <div className="mt-4 flex w-full flex-col">
                 <Button
                   type="submit"
@@ -195,7 +195,7 @@ export default function Login() {
                   Log in
                 </Button>
               </div>
-              <div className="flex w-full min-w-[220px] max-w-[280px] flex-col justify-center">
+              <div className="flex w-full flex-col justify-center">
                 <Button
                   variant="plain"
                   className="rounded-[20px] bg-default-800 py-2 text-default-100 hover:bg-default-700"

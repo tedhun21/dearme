@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+// TODO: 이미지 비율 -> 크기 조절
 // TODO: 좋아요 목록 디자인 수정
 
 import React, { useState } from "react";
@@ -81,14 +82,14 @@ export default function SocialPost({ post }: SocialPostProps) {
       {/* 유저 프로필 & 목표 */}
       <div className="relative flex items-center  pl-5 pr-5">
         <div className="h-10 w-10 rounded-full">
-          {post.user.photo?.url ? (
-            <Image
+          {post.user?.photo?.url ? (
+            <img
               src={`${BUCKET_URL}${post?.user?.photo?.url}`}
               alt="User Image"
               className="h-10  w-10 rounded-full object-cover"
               width={10}
               height={10}
-              objectFit="fill"
+              // objectFit={"fill"}
             />
           ) : (
             <div>hi</div>
@@ -96,7 +97,7 @@ export default function SocialPost({ post }: SocialPostProps) {
         </div>
         <div className="flex-col pl-3">
           <div className=" text-base font-bold text-default-700">
-            {post.user.nickname}
+            {post.user?.nickname || "Unknown User"}
           </div>
           <div className="text-xs font-semibold text-default-500">
             #{post.goal.body}
@@ -188,7 +189,10 @@ export default function SocialPost({ post }: SocialPostProps) {
 
       {/* 게시물 body */}
       <div className="mb-3 flex items-start px-5  text-sm font-medium text-default-700">
-        <span className="mr-3 text-sm font-semibold">{post.user.nickname}</span>
+        <span className="mr-3 text-sm font-semibold">
+          {" "}
+          {post.user?.nickname || "Unknown User"}
+        </span>
         <span
           className={`text-sm font-normal ${!isExpanded ? "line-clamp-1" : ""}`}
         >

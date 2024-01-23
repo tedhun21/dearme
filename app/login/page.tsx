@@ -1,7 +1,7 @@
 "use client";
 
 import * as yup from "yup";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -31,7 +31,7 @@ export default function Login() {
   const loginSchema = yup.object().shape({
     email: yup
       .string()
-      .email("유효한 이메일 주소가 아닙니다.")
+      .email("이메일 주소 양식이 아닙니다.")
       .required("이메일 주소를 입력해주세요."),
     password: yup
       .string()
@@ -65,20 +65,20 @@ export default function Login() {
         router.push("/");
 
         // Remember me 처리
-        if (remember) {
-          localStorage.setItem("rememberedEmail", email);
-          localStorage.setItem("rememberedPassword", password);
-        } else {
-          localStorage.removeItem("rememberedEmail");
-          localStorage.removeItem("rememberedPassword");
-        }
+        // if (remember) {
+        //   localStorage.setItem("rememberedEmail", email);
+        //   localStorage.setItem("rememberedPassword", password);
+        // } else {
+        //   localStorage.removeItem("rememberedEmail");
+        //   localStorage.removeItem("rememberedPassword");
+        // }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
 
         if (axiosError.response && axiosError.response.status === 400) {
-          alert("Email과 Password를 확인해주세요");
+          alert("Please check your email and password");
         }
       }
       console.error("로그인에 실패했습니다", error);
@@ -86,16 +86,16 @@ export default function Login() {
   };
 
   // remember 체크 후 로그인 시 로컬스토리지에 저장
-  useEffect(() => {
-    const rememberedEmail = localStorage.getItem("rememberedEmail");
-    const rememberedPassword = localStorage.getItem("rememberedPassword");
+  // useEffect(() => {
+  //   const rememberedEmail = localStorage.getItem("rememberedEmail");
+  //   const rememberedPassword = localStorage.getItem("rememberedPassword");
 
-    if (rememberedEmail && rememberedPassword) {
-      setValue("email", rememberedEmail);
-      setValue("password", rememberedPassword);
-      setRemember(true);
-    }
-  }, [setValue]);
+  //   if (rememberedEmail && rememberedPassword) {
+  //     setValue("email", rememberedEmail);
+  //     setValue("password", rememberedPassword);
+  //     setRemember(true);
+  //   }
+  // }, [setValue]);
 
   return (
     <main className="flex min-h-screen justify-center">
@@ -109,7 +109,7 @@ export default function Login() {
           <DearmeLogo />
         </div>
         <article className="flex w-full flex-col items-center">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} name="loginForm">
             <section className="flex w-full flex-col items-center gap-4">
               <div className="w-full items-center pb-4">
                 <FormControl error={!!errors.email}>
@@ -122,6 +122,7 @@ export default function Login() {
                   <Input
                     {...register("email")}
                     error={!!errors.email}
+                    autoComplete="username" // 웹 양식에서 사용자의 로그인 정보를 저장하고 자동으로 입력하도록 브라우저에 지시하는 기능
                     variant="plain"
                     sx={{
                       "--Input-radius": "0px",
@@ -163,6 +164,7 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     {...register("password")}
                     error={!!errors.password}
+                    autoComplete="current-password" // 웹 양식에서 사용자의 로그인 정보를 저장하고 자동으로 입력하도록 브라우저에 지시하는 기능
                     value={password}
                     variant="plain"
                     onChange={(e) => setPassword(e.target.value)}
@@ -190,6 +192,7 @@ export default function Login() {
                     }}
                   />
                   <button
+                    type="button" // 이 부분을 추가하여 기본 submit 동작을 방지합니다.
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 flex items-center pr-3 pt-4 leading-5"
                   >

@@ -24,4 +24,3 @@ export default function Test() {
     </div>
   );
 }
-// 보이시죠?

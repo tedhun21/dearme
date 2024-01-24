@@ -1,9 +1,18 @@
 "use client";
+// TODO In 목표 디자인 수정
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { AxiosResponse } from "axios";
+import { getGoals } from "@/store/api";
+import { createPost } from "@/store/api";
 
 import Image from "next/image";
 import Link from "next/link";
+
+import UploadPostImg from "./UploadPostImg";
 
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
@@ -16,14 +25,32 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuItem from "@mui/material/MenuItem";
 
 import Close from "@/public/social/Close";
-import SelectPhotos from "@/public/social/SelectPhotos";
 import EditPost from "@/public/social/EditPost";
 
+type PostDataType = {
+  selectedGoal: string;
+  isPrivate: string;
+  imageFile: File | null;
+  postText: string;
+  selectedOption: string;
+};
+
 export default function CreatePost() {
+  const queryClient = useQueryClient();
+
+  // ??
+
   // modal
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  // goals
+  const { data: goalsData } = useQuery({
+    queryKey: ["getGoals"],
+    queryFn: getGoals,
+  });
+  const goals = goalsData?.data?.results;
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState("");
@@ -31,10 +58,73 @@ export default function CreatePost() {
     setSelectedGoal(e.target.value);
   };
 
+  // Private
+  const [isPrivate, setIsPrivate] = useState<boolean>(true);
+  const handlePrivacyToggle = () => {
+    setIsPrivate((prevIsPrivate) => !prevIsPrivate);
+  };
+
+  // 게시물 사진
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const handleImageFileChange = (file: File) => {
+    setImageFile(file);
+  };
+
+  // Date
+  const date = new Date();
+  const formattedDate = date.toLocaleDateString("en-US", {
+    // weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  // Post Body
+  const [postText, setPostText] = useState("");
+  const handlePostTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPostText(e.target.value);
+    // console.log(postText);
+  };
+
   // Select 댓글 옵션 선택
-  const [selectedOption, setSelectedOption] = useState("전체");
+  const [selectedOption, setSelectedOption] = useState("PUBLIC");
   const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
+  };
+
+  // Post Request
+  // const mutation = useMutation({ mutationFn: createPost });
+
+  const { mutateAsync: addPostMutation } = useMutation({
+    mutationFn: createPost,
+    onSuccess: () => {
+      queryClient.invalidateQueries("getPosts");
+    },
+  });
+
+  const handlePost = async () => {
+    try {
+      const postData = {
+        selectedGoal,
+        isPrivate,
+        imageFile,
+        postText,
+        selectedOption,
+      };
+
+      // await mutation.mutateAsync(postData);
+      await addPostMutation(postData);
+
+      setSelectedGoal("");
+      setIsPrivate(true);
+      setImageFile(null);
+      setPostText("");
+      setSelectedOption("PUBLIC");
+
+      handleClose();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -118,15 +208,16 @@ export default function CreatePost() {
                 value={selectedGoal}
                 onChange={handleGoalChange}
               >
-                <MenuItem sx={{ fontSize: "14px" }} value="목표1">
-                  # Dearme
-                </MenuItem>
-                <MenuItem sx={{ fontSize: "14px" }} value="목표2">
-                  # Reading
-                </MenuItem>
-                <MenuItem sx={{ fontSize: "14px" }} value="목표3">
-                  # Workout
-                </MenuItem>
+                {Array.isArray(goals) &&
+                  goals.map((goal) => (
+                    <MenuItem
+                      key={goal.id}
+                      sx={{ fontSize: "14px" }}
+                      value={goal.id}
+                    >
+                      {`# ${goal.body}`}
+                    </MenuItem>
+                  ))}
               </Select>
             </div>
 
@@ -145,7 +236,7 @@ export default function CreatePost() {
                     padding: 0,
                     margin: "2px",
                     transitionDuration: "300ms",
-                    /// 체크될때
+                    /// 체크될 때
                     "&.Mui-checked": {
                       transform: "translateX(12px)",
                       color: "#fff",
@@ -170,23 +261,24 @@ export default function CreatePost() {
                     opacity: 1,
                   },
                 }}
+                onChange={handlePrivacyToggle}
               />
             </div>
           </div>
 
           {/* 사진 업로드 */}
-          <div className="flex h-72 items-center justify-center ">
-            <SelectPhotos className="h-7 w-7 " />
-          </div>
+          <UploadPostImg setImageFile={handleImageFileChange} />
 
-          {/* 날짜 선택 */}
-          <div className="mb-1 flex items-center">
+          {/* 날짜 */}
+          <div className="my-2 flex items-center">
             <span className="text-sm font-medium text-default-700">
-              December 25, 2023
+              {formattedDate}
             </span>
             {/* <Triangle className="text-default-900 ml-1 h-3 w-3 cursor-pointer fill-current" /> */}
             <ArrowDropDownRoundedIcon sx={{ color: "#EDA323" }} />
           </div>
+
+          {/* Post Body */}
           <TextField
             fullWidth
             multiline
@@ -212,7 +304,11 @@ export default function CreatePost() {
               },
               marginBottom: 3,
             }}
+            value={postText}
+            onChange={handlePostTextChange}
           />
+
+          {/* Comments Settings */}
           <div className="mb-4 flex items-center">
             <span className="mr-2 text-sm font-medium text-default-700">
               Comments
@@ -223,8 +319,8 @@ export default function CreatePost() {
                 marginLeft: 1,
                 "&.MuiOutlinedInput-root": {
                   borderRadius: "20px",
-                  width: "100px", // Set the width
-                  height: "25px", // Set the height
+                  width: "100px",
+                  height: "25px",
                   fontSize: "14px",
                   color: "black",
                   "& fieldset": {
@@ -234,24 +330,6 @@ export default function CreatePost() {
                     borderColor: "#DED0B6",
                   },
                 },
-                // sx={{
-                //   "&.MuiOutlinedInput-root": {
-                //     borderRadius: "8px",
-                //     width: "80px",
-                //     height: "25px",
-                //     fontSize: "14px",
-                //     color: "black",
-                //     "&.fieldset": {
-                //       borderColor: "#EBE3D5",
-                //     },
-                //     "&.Mui-focused fieldset": {
-                //       borderColor: "#EBE3D5",
-                //     },
-                //   },
-
-                // "& .MuiSelect-select": {
-                //   padding: "0px",
-                // },
               }}
               IconComponent={({ ...rest }) => (
                 <ArrowDropDownRoundedIcon {...rest} sx={{ fill: "#EDA323" }} />
@@ -259,19 +337,22 @@ export default function CreatePost() {
               value={selectedOption}
               onChange={handleOptionChange}
             >
-              <MenuItem sx={{ fontSize: "14px" }} value="전체">
+              <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
                 All
               </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="친구">
+              <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
                 Friends
               </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="해제">
+              <MenuItem sx={{ fontSize: "14px" }} value="OFF">
                 Turn off
               </MenuItem>
             </Select>
           </div>
           <div className="flex items-center justify-end">
-            <button className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white">
+            <button
+              className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white"
+              onClick={handlePost}
+            >
               Post
             </button>
           </div>

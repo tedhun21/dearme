@@ -1,12 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-// TODO: 무한스크롤
+
 // TODO: CreatePost 플로팅 버튼 위치 수정
 // TODO: commentSettings (public, friends, off)
 
-import "../globals.css";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+
+import { useInView } from "react-intersection-observer";
+import { getPostWithPage } from "@/store/api";
+
+import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+
+import { CircularProgress } from "@mui/material";
 
 import Header from "../ui/header";
 import Tabs from "../ui/social/Tabs";
@@ -57,61 +62,81 @@ export interface Post {
   goal: Goal;
   comments: Comment[];
   likes: Like[];
+  // nextPage?: number;
+  // isLast?: boolean;
 }
 
 export default function Social() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   // 선택된 탭 -> 쿼리
-  const [selectedTab, setSelectedTab] = useState("all");
+  const [selectedTab, setSelectedTab] = useState<string>("all");
+  const handleTabChange = (tab: string) => {
+    setSelectedTab(tab);
+  };
 
+  // api
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-  const fetchPosts = async (tab: string) => {
-    let url = `${API_URL}/posts`;
-    // console.log(url);
+  const queryClient = useQueryClient();
+  const [ref, inView] = useInView();
 
-    // TODO token 수정 (토큰 없으면)
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA1NTU0ODE0LCJleHAiOjE3MDgxNDY4MTR9.u6-E04b9QUVquZp63cnsZiTEUk_MfZuQB5ttYal8OYw";
+  // infinite scroll
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
 
-    let headers = {};
+    refetch,
+  } = useInfiniteQuery<Post[], Error>({
+    queryKey: ["getPostsWithPage", { tab: selectedTab }],
+    queryFn: ({ pageParam }: { pageParam: number }) =>
+      getPostWithPage({ tab: selectedTab, pageParam: pageParam }),
 
-    if (tab === "all") {
-      url += "?public=true";
-    } else {
-      headers = {
-        Authorization: `Bearer ${token}`,
-      };
-      console.log(headers);
-    }
+    getNextPageParam: (lastPage, allPages: any) => {
+      const maxPage = lastPage.length / 6;
+      const nextPage = allPages.length + 1;
 
-    try {
-      const response = await axios.get<Post[]>(url, { headers });
-      console.log(url);
-      setPosts((response.data as any).posts);
-      // console.log(response.data.posts);
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        console.error(e.message);
-      } else {
-        console.error(e);
-      }
-    }
-  };
+      return maxPage < 1 ? undefined : nextPage;
+    },
+    initialPageParam: 1,
+  });
 
   useEffect(() => {
-    fetchPosts(selectedTab);
-  }, [selectedTab]);
+    if (!inView) {
+      return;
+    }
+    fetchNextPage();
+  }, [inView]);
 
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 pb-[90px] shadow-lg">
         <Header />
         <Tabs selectedTab={selectedTab} onTabChange={setSelectedTab} />
-        {Array.isArray(posts) &&
-          posts.map((post, postId) => <SocialPost key={postId} post={post} />)}
+
+        <div className="relative w-full">
+          {data?.pages &&
+            data.pages.map(
+              (posts: any) =>
+                Array.isArray(posts) &&
+                posts.map((post: any) => (
+                  <SocialPost key={post.id} post={post} />
+                )),
+            )}
+        </div>
+
+        {!hasNextPage && (
+          <div className="flex justify-center px-5 py-2 text-sm text-default-500">
+            All posts are loaded.
+          </div>
+        )}
+        {hasNextPage && (
+          <div ref={ref}>
+            <CircularProgress />
+          </div>
+        )}
 
         {/* 게시물 작성 버튼 */}
         <div className="fixed bottom-20 right-20">
@@ -122,3 +147,5 @@ export default function Social() {
     </main>
   );
 }
+
+// 골프 개모대

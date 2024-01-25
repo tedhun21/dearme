@@ -1,18 +1,17 @@
-"use client";
-// TODO In 목표 디자인 수정
-
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
+// TODO public(isprivate) 설정
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { getGoals, createPost } from "@/store/api";
+import { Post } from "@/app/social/page";
+
+import { getGoals, updatePost } from "@/store/api";
 
 import Image from "next/image";
 import Link from "next/link";
 
-import UploadPostImg from "./UploadPostImg";
-
-import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -24,21 +23,29 @@ import MenuItem from "@mui/material/MenuItem";
 
 import Close from "@/public/social/Close";
 
-type PostDataType = {
-  selectedGoal: string;
-  isPrivate: string;
-  imageFile: File | null;
+interface EditPostProps {
+  postId: number;
+  postData: Post;
+  open: boolean;
+  onClose: () => void;
+}
+
+interface PostData {
+  selectedGoal: any;
+  isPrivate: boolean;
   postText: string;
   selectedOption: string;
-};
+}
 
-export default function CreatePost() {
+const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
+
+export default function EditPost({
+  postId,
+  postData,
+  open,
+  onClose,
+}: EditPostProps) {
   const queryClient = useQueryClient();
-
-  // modal
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   // goals
   const { data: goalsData } = useQuery({
@@ -48,25 +55,26 @@ export default function CreatePost() {
   const goals = goalsData?.data?.results;
 
   //   Select 목표 선택
-  const [selectedGoal, setSelectedGoal] = useState("");
+  const [selectedGoal, setSelectedGoal] = useState(
+    postData ? (postData.goal as any).id : "",
+  );
   const handleGoalChange = (e: any) => {
     setSelectedGoal(e.target.value);
   };
 
   // Private
-  const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const [isPrivate, setIsPrivate] = useState<boolean>(
+    postData && !postData.public,
+  );
   const handlePrivacyToggle = () => {
     setIsPrivate((prevIsPrivate) => !prevIsPrivate);
   };
 
   // 게시물 사진
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const handleImageFileChange = (file: File) => {
-    setImageFile(file);
-  };
+  const existingImageFile = postData.photo ? postData.photo.url : null;
 
   // Date
-  const date = new Date();
+  const date = new Date(postData.createdAt);
   const formattedDate = date.toLocaleDateString("en-US", {
     // weekday: "short",
     year: "numeric",
@@ -75,68 +83,57 @@ export default function CreatePost() {
   });
 
   // Post Body
-  const [postText, setPostText] = useState("");
+  const [postText, setPostText] = useState(postData ? postData.body : "");
   const handlePostTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPostText(e.target.value);
     // console.log(postText);
   };
 
   // Select 댓글 옵션 선택
-  const [selectedOption, setSelectedOption] = useState("PUBLIC");
+  const [selectedOption, setSelectedOption] = useState(
+    postData ? postData.commentSettings : "PUBLIC",
+  );
   const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
   };
 
-  // Post Request
-  // const mutation = useMutation({ mutationFn: createPost });
-
-  const { mutateAsync: addPostMutation } = useMutation({
-    mutationFn: createPost,
+  const editMutation = useMutation({
+    mutationKey: ["updatedPost"],
+    mutationFn: (variables: {
+      postId: number;
+      selectedGoal: any;
+      isPrivate: boolean;
+      postText: string;
+      selectedOption: string;
+    }) => updatePost(variables),
     onSuccess: () => {
       queryClient.invalidateQueries();
     },
   });
 
-  const handlePost = async () => {
+  const handleEditPost = async () => {
+    const updatedData = {
+      postId,
+      selectedGoal,
+      isPrivate,
+      postText,
+      selectedOption,
+    };
+    console.log(updatedData);
     try {
-      const postData = {
-        selectedGoal,
-        isPrivate,
-        imageFile,
-        postText,
-        selectedOption,
-      };
-
-      // await mutation.mutateAsync(postData);
-      await addPostMutation(postData);
-
-      window.alert("Post successfully uploaded.");
-
-      setSelectedGoal("");
-      setIsPrivate(false);
-      setImageFile(null);
-      setPostText("");
-      setSelectedOption("PUBLIC");
-
-      handleClose();
+      editMutation.mutate(updatedData);
+      onClose();
+      window.alert("Updated your post successfully.");
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <div>
-      <button
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-default-800"
-        onClick={handleOpen}
-      >
-        <AddIcon sx={{ color: "white" }} />
-      </button>
-
-      {/* 게시물 생성 modal */}
+    <>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -164,7 +161,9 @@ export default function CreatePost() {
               />
             </Link>
 
-            <button className="border-none" onClick={handleClose}>
+            {/* 게시물 수정 시에만 */}
+            {/* <EditPost className="mr-2 h-4 w-4 cursor-pointer fill-current text-default-600" /> */}
+            <button className="border-none" onClick={onClose}>
               <Close className="h-3 w-3 cursor-pointer fill-current text-default-600" />
             </button>
           </div>
@@ -216,6 +215,7 @@ export default function CreatePost() {
               </Select>
             </div>
 
+            {/* 토글 */}
             <div className="flex items-center">
               <span className="text-sm font-medium text-default-700">
                 Private
@@ -256,14 +256,19 @@ export default function CreatePost() {
                     opacity: 1,
                   },
                 }}
+                checked={isPrivate}
                 onChange={handlePrivacyToggle}
               />
             </div>
           </div>
 
           {/* 사진 업로드 */}
-          <UploadPostImg setImageFile={handleImageFileChange} />
-
+          {/* <UploadPostImg setImageFile={handleImageFileChange} /> */}
+          <img
+            src={`${BUCKET_URL}${(postData as any).photo.url}`}
+            alt="Image selected by the user"
+            className="max-h-full max-w-full object-cover"
+          />
           {/* 날짜 */}
           <div className="my-2 flex items-center">
             <span className="text-sm font-medium text-default-700">
@@ -346,13 +351,13 @@ export default function CreatePost() {
           <div className="flex items-center justify-end">
             <button
               className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white"
-              onClick={handlePost}
+              onClick={handleEditPost}
             >
-              Post
+              Edit
             </button>
           </div>
         </Box>
       </Modal>
-    </div>
+    </>
   );
 }

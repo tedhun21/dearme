@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+// TODO: Likes > follow 버튼 기능
 
 import React, { useState } from "react";
 import { Like } from "@/app/social/page";

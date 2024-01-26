@@ -8,12 +8,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 
 import BackIcon from "@/public/signup/BackIcon";
+import X from "@/public/signup/X";
+import Check from "@/public/signup/Check";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import SignupTitle from "@/public/signup/SignupTitle";
 import { FormHelperText } from "@mui/joy";
-import X from "@/public/signup/X";
-import Check from "@/public/signup/Check";
 
 export default function Signup() {
   const router = useRouter();
@@ -63,6 +63,7 @@ export default function Signup() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(signUpSchema),
+    mode: "onChange", // 실시간 유효성 검사를 위해 onChange 모드 설정
   });
 
   // input이 focus되었을 때
@@ -267,6 +268,11 @@ export default function Signup() {
                 },
               }}
             />
+            {inputValues.nameInput && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-16 pt-1 leading-5">
+                {errors.name ? <X /> : <Check />}
+              </div>
+            )}
           </section>
           {errors.name && (
             <FormHelperText className="text-red-500">
@@ -314,6 +320,11 @@ export default function Signup() {
                 },
               }}
             />
+            {inputValues.emailInput && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-16 pt-1 leading-5">
+                {duplicateCheck.email ? <X /> : <Check />}
+              </div>
+            )}
           </section>
           {errors.email && (
             <FormHelperText className="text-red-500">
@@ -365,7 +376,11 @@ export default function Signup() {
                 },
               }}
             />
-            {duplicateCheck.nickname ? <X /> : <Check />}
+            {inputValues.nicknameInput && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-16 pt-1 leading-5">
+                {duplicateCheck.nickname ? <X /> : <Check />}
+              </div>
+            )}
           </section>
           {errors.nickname && (
             <FormHelperText className="text-red-500">
@@ -417,6 +432,11 @@ export default function Signup() {
                 },
               }}
             />
+            {inputValues.passwordInput && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-16 pt-1 leading-5">
+                {errors.password ? <X /> : <Check />}
+              </div>
+            )}
           </section>
           {errors.password && (
             <FormHelperText className="text-red-500">
@@ -467,6 +487,11 @@ export default function Signup() {
                 },
               }}
             />
+            {inputValues.confirmPasswordInput && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-16 pt-1 leading-5">
+                {errors.confirmPassword ? <X /> : <Check />}
+              </div>
+            )}
           </section>
           {errors.confirmPassword && (
             <FormHelperText className="text-red-500">

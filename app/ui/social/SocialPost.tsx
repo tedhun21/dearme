@@ -1,13 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import PostSettings from "./PostSettings";
 
+import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { likePost } from "@/store/api";
 import { Post } from "@/app/social/page";
 import LikeModal from "./LikeModal";
 import CommentsSection from "./CommentsSection";
+import PostSettings from "./PostSettings";
 
 import InputBase from "@mui/material/InputBase";
 import Divider from "@mui/material/Divider";
@@ -47,10 +51,23 @@ export function timeSince(date: string): string {
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function SocialPost({ post }: SocialPostProps) {
+  const queryClient = useQueryClient();
+
   // 좋아요 상태
-  const [liked, setLiked] = useState(false);
+  // TODO 2 => userId
+  const [liked, setLiked] = useState(post.likes.some((like) => like.id === 2));
+
+  const likeMutation = useMutation({
+    mutationKey: ["likedPost"],
+    mutationFn: ({ postId }: { postId: number }) => likePost(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+
   const toggleLike = () => {
     setLiked((prevLiked) => !prevLiked);
+    likeMutation.mutate({ postId: post.id });
   };
 
   // 좋아요 목록 (LikeModal)
@@ -71,7 +88,6 @@ export default function SocialPost({ post }: SocialPostProps) {
   // 댓글 작성
   const handleCommentSubmit = (newComment: string) => {};
 
-  // console.log(`${BUCKET_URL}${post.user.photo?.url}`);
   return (
     <div className="mb-5 flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 ">
       {/* 유저 프로필 & 목표 */}
@@ -134,9 +150,9 @@ export default function SocialPost({ post }: SocialPostProps) {
             onClick={toggleLike}
           >
             {liked ? (
-              <EmptyHeart className="h-6 w-5 fill-current text-default-600" />
-            ) : (
               <FullHeart className="h-6 w-5 fill-current text-red-500" />
+            ) : (
+              <EmptyHeart className="h-6 w-5 fill-current text-default-600" />
             )}
           </div>
 

@@ -1,18 +1,7 @@
-"use client";
-// TODO In 목표 디자인 수정
-
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { getGoals, createPost } from "@/store/api";
-
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-
 import UploadPostImg from "./UploadPostImg";
-
-import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -21,122 +10,77 @@ import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import MenuItem from "@mui/material/MenuItem";
-
 import Close from "@/public/social/Close";
 
-type PostDataType = {
-  selectedGoal: string;
-  isPrivate: string;
-  imageFile: File | null;
+interface PostFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  goals: any[]; // Goal[]
+  handleGoalChange: (e: React.ChangeEvent<{ value: unknown }>) => void;
+  handlePrivacyToggle: () => void;
+  handleImageFileChange: (file: File) => void;
+  formattedDate: string;
   postText: string;
+  handlePostTextChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedGoal: string;
+  isPrivate: boolean;
+  imageFile: File | null;
   selectedOption: string;
-};
+  handleOptionChange: (e: React.ChangeEvent<{ value: unknown }>) => void;
+  buttonLabel: string;
+  handleAction: () => void;
+}
 
-export default function CreatePost() {
-  const queryClient = useQueryClient();
+// interface Goal {
+//   id: number;
+//   body: string;
+// }
 
-  // modal
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+// 사용
+{
+  /* <PostForm
+isOpen={open}
+onClose={handleClose}
+goals={goals}
+handleGoalChange={handleGoalChange}
+handlePrivacyToggle={handlePrivacyToggle}
+handleImageFileChange={handleImageFileChange}
+formattedDate={formattedDate}
+postText={postText}
+handlePostTextChange={handlePostTextChange}
+selectedGoal={selectedGoal}
+isPrivate={isPrivate}
+imageFile={imageFile}
+selectedOption={selectedOption}
+handleOptionChange={handleOptionChange}
+buttonLabel="Post"
+handleAction={handlePost}
+/> */
+}
 
-  // goals
-  const { data: goalsData } = useQuery({
-    queryKey: ["getGoals"],
-    queryFn: getGoals,
-  });
-  const goals = goalsData?.data?.results;
-
-  //   Select 목표 선택
-  const [selectedGoal, setSelectedGoal] = useState("");
-  const handleGoalChange = (e: any) => {
-    setSelectedGoal(e.target.value);
-  };
-
-  // Private
-  const [isPrivate, setIsPrivate] = useState<boolean>(false);
-  const handlePrivacyToggle = () => {
-    setIsPrivate((prevIsPrivate) => !prevIsPrivate);
-  };
-
-  // 게시물 사진
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const handleImageFileChange = (file: File) => {
-    setImageFile(file);
-  };
-
-  // Date
-  const date = new Date();
-  const formattedDate = date.toLocaleDateString("en-US", {
-    // weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-
-  // Post Body
-  const [postText, setPostText] = useState("");
-  const handlePostTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPostText(e.target.value);
-    // console.log(postText);
-  };
-
-  // Select 댓글 옵션 선택
-  const [selectedOption, setSelectedOption] = useState("PUBLIC");
-  const handleOptionChange = (e: any) => {
-    setSelectedOption(e.target.value);
-  };
-
-  // Post Request
-  // const mutation = useMutation({ mutationFn: createPost });
-
-  const { mutateAsync: addPostMutation } = useMutation({
-    mutationFn: createPost,
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-    },
-  });
-
-  const handlePost = async () => {
-    try {
-      const postData = {
-        selectedGoal,
-        isPrivate,
-        imageFile,
-        postText,
-        selectedOption,
-      };
-
-      // await mutation.mutateAsync(postData);
-      await addPostMutation(postData);
-
-      window.alert("Post successfully uploaded.");
-
-      setSelectedGoal("");
-      setIsPrivate(false);
-      setImageFile(null);
-      setPostText("");
-      setSelectedOption("PUBLIC");
-
-      handleClose();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+const PostForm: React.FC<PostFormProps> = ({
+  isOpen,
+  onClose,
+  goals,
+  handleGoalChange,
+  handlePrivacyToggle,
+  handleImageFileChange,
+  formattedDate,
+  postText,
+  handlePostTextChange,
+  selectedGoal,
+  isPrivate,
+  imageFile,
+  selectedOption,
+  handleOptionChange,
+  buttonLabel,
+  handleAction,
+}) => {
   return (
     <div>
-      <button
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-default-800"
-        onClick={handleOpen}
-      >
-        <AddIcon sx={{ color: "white" }} />
-      </button>
-
-      {/* 게시물 생성 modal */}
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={isOpen}
+        onClose={onClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -163,8 +107,7 @@ export default function CreatePost() {
                 priority
               />
             </Link>
-
-            <button className="border-none" onClick={handleClose}>
+            <button className="border-none" onClick={onClose}>
               <Close className="h-3 w-3 cursor-pointer fill-current text-default-600" />
             </button>
           </div>
@@ -173,13 +116,12 @@ export default function CreatePost() {
             <div className="flex items-center">
               <div className="text-base font-semibold text-default-500">In</div>
               <Select
-                // 스타일 안먹음..?
                 sx={{
                   marginLeft: 1,
                   "&.MuiOutlinedInput-root": {
                     borderRadius: "20px",
-                    width: "160px", // Set the width
-                    height: "25px", // Set the height
+                    width: "160px",
+                    height: "25px",
                     fontSize: "14px",
                     color: "black",
                     "& fieldset": {
@@ -189,10 +131,6 @@ export default function CreatePost() {
                       borderColor: "#DED0B6",
                     },
                   },
-
-                  // "& .MuiSelect-select": {
-                  //   padding: "0px",
-                  // },
                 }}
                 IconComponent={({ ...rest }) => (
                   <MoreHorizIcon
@@ -200,8 +138,10 @@ export default function CreatePost() {
                     sx={{ color: "#2D2422", marginLeft: 1, fontSize: "medium" }}
                   />
                 )}
-                value={selectedGoal}
-                onChange={handleGoalChange}
+                value={selectedGoal as string}
+                onChange={(e) =>
+                  handleGoalChange(e as React.ChangeEvent<{ value: unknown }>)
+                }
               >
                 {Array.isArray(goals) &&
                   goals.map((goal) => (
@@ -222,7 +162,6 @@ export default function CreatePost() {
               </span>
               <Switch
                 sx={{
-                  /// switch 기본 박스 크기
                   marginLeft: 1,
                   padding: 0,
                   width: "32px",
@@ -231,7 +170,6 @@ export default function CreatePost() {
                     padding: 0,
                     margin: "2px",
                     transitionDuration: "300ms",
-                    /// 체크될 때
                     "&.Mui-checked": {
                       transform: "translateX(12px)",
                       color: "#fff",
@@ -261,19 +199,15 @@ export default function CreatePost() {
             </div>
           </div>
 
-          {/* 사진 업로드 */}
           <UploadPostImg setImageFile={handleImageFileChange} />
 
-          {/* 날짜 */}
           <div className="my-2 flex items-center">
             <span className="text-sm font-medium text-default-700">
               {formattedDate}
             </span>
-            {/* <Triangle className="text-default-900 ml-1 h-3 w-3 cursor-pointer fill-current" /> */}
             <ArrowDropDownRoundedIcon sx={{ color: "#EDA323" }} />
           </div>
 
-          {/* Post Body */}
           <TextField
             fullWidth
             multiline
@@ -303,13 +237,11 @@ export default function CreatePost() {
             onChange={handlePostTextChange}
           />
 
-          {/* Comments Settings */}
           <div className="mb-4 flex items-center">
             <span className="mr-2 text-sm font-medium text-default-700">
               Comments
             </span>
             <Select
-              // 스타일 안먹음..?
               sx={{
                 marginLeft: 1,
                 "&.MuiOutlinedInput-root": {
@@ -329,8 +261,10 @@ export default function CreatePost() {
               IconComponent={({ ...rest }) => (
                 <ArrowDropDownRoundedIcon {...rest} sx={{ fill: "#EDA323" }} />
               )}
-              value={selectedOption}
-              onChange={handleOptionChange}
+              value={selectedOption as string}
+              onChange={(e) =>
+                handleOptionChange(e as React.ChangeEvent<{ value: unknown }>)
+              }
             >
               <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
                 All
@@ -346,13 +280,15 @@ export default function CreatePost() {
           <div className="flex items-center justify-end">
             <button
               className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white"
-              onClick={handlePost}
+              onClick={handleAction}
             >
-              Post
+              {buttonLabel}
             </button>
           </div>
         </Box>
       </Modal>
     </div>
   );
-}
+};
+
+export default PostForm;

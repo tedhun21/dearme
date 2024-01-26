@@ -2,6 +2,11 @@
 // TODO: 메뉴 디자인 수정 (라디오 버튼, 호버링)
 // FIXME: 세팅 메뉴 -> 푸터 이동
 import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { Post } from "@/app/social/page";
+import { deletePost } from "@/store/api";
+import EditPost from "./EditPost";
 
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
@@ -16,8 +21,18 @@ import FriendRequest from "@/public/social/FriendRequest";
 import Report from "@/public/social/Report";
 
 // 나의 게시물 / 친구 게시물 : isMyPost(boolean)
+interface PostSettingsProps {
+  isMyPost: boolean;
+  postId: number;
+  postData: Post;
+}
+export default function PostSettings({
+  isMyPost,
+  postId,
+  postData,
+}: PostSettingsProps) {
+  const queryClient = useQueryClient();
 
-export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
   // 게시물 (···)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -26,6 +41,36 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  // Edit _ post
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const handleEditClick = (postId: number) => {
+    setEditModalOpen(true);
+    setAnchorEl(null);
+  };
+
+  // Delete _ post
+  const deleteMutation = useMutation({
+    mutationKey: ["deletedPost"],
+    mutationFn: (variables: { postId: number }) => {
+      const { postId } = variables;
+      return deletePost(postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+
+  const handleDeletePost = async () => {
+    console.log(postId);
+    try {
+      deleteMutation.mutate({ postId });
+      handleClose();
+      window.alert("Deleted your post successfully.");
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -94,18 +139,25 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
                 </span>
               </div>
             </div>
+
             {/* <Divider sx={{ m: 0 }} /> */}
 
-            <div className="mb-3 mt-3 flex items-center">
+            <button
+              className="mb-3 mt-3 flex items-center"
+              onClick={() => handleEditClick(postId)}
+            >
               <Edit className="mr-1 h-5 w-6 fill-current text-default-600" />
 
-              <div className="text-sm font-medium text-default-700">Edit</div>
-            </div>
+              <div className=" text-sm font-medium text-default-700">Edit</div>
+            </button>
 
-            <div className="mt-2 flex items-center">
+            <button
+              className="mt-2 flex items-center"
+              onClick={() => handleDeletePost()}
+            >
               <Delete className="mr-1 h-5 w-6 fill-current text-default-600" />
               <div className="text-sm font-medium text-default-700">Delete</div>
-            </div>
+            </button>
           </div>
         ) : (
           <div className="flex flex-col pb-3 pl-5 pr-5 pt-3">
@@ -133,6 +185,13 @@ export default function PostSettings({ isMyPost }: { isMyPost: boolean }) {
           </div>
         )}
       </Menu>
+      {/* 수정 버튼 클릭 */}
+      <EditPost
+        postId={postId}
+        postData={postData}
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+      />
     </div>
   );
 }

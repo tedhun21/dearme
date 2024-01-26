@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-
 // TODO: CreatePost 플로팅 버튼 위치 수정
 // TODO: commentSettings (public, friends, off)
 
@@ -147,5 +146,3 @@ export default function Social() {
     </main>
   );
 }
-
-// 골프 개모대

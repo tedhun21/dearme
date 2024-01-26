@@ -1,19 +1,61 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
+import { getCookie } from "@/util/tokenCookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const getTodosWithDate = async ({ queryKey }: any) => {
-  const [_key, { date, isMe }] = queryKey;
+export const getMe = async ({ queryKey }: any) => {
+  const [_key, { access_token }] = queryKey;
+  if (access_token) {
+    const {
+      data: { data },
+    } = await axios.get(`${API_URL}/users/me`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  if (isMe && date) {
-    return await axios.get(`${API_URL}/todos?date=${date}`, {
+    return { data };
+  }
+};
+
+export const getMyTodosWithDate = async ({ queryKey }: any) => {
+  const [_key, { date, access_token }] = queryKey;
+
+  if (access_token && date) {
+    const {
+      data: { data },
+    } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
-        Authorization: `Bearer 
-    ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA1ODQzNjg5LCJleHAiOjE3MDg0MzU2ODl9.gP6Dr1P5e6iWtWWMVOfMjDCZD4jC6KZEGFmXEwi9ldY"}`,
+        Authorization: `Bearer ${access_token}`,
       },
     });
+
+    return { data };
   }
-  return await axios.get(`${API_URL}/todos?date=${date}`);
+};
+
+export const updateUserPhoto = async ({
+  userId,
+  selectedFile,
+  access_token,
+}: {
+  userId: number;
+  selectedFile: File;
+  access_token: string | null | undefined;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("photo", selectedFile);
+
+  try {
+    const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    window.alert(e);
+  }
 };
 
 // Read _ post

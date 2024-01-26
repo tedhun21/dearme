@@ -1,53 +1,153 @@
-import BackButton from "@/app/ui/backbutton";
-import Header from "@/app/ui/header";
-import UserProfile from "@/app/ui/me/UserProfile";
-import UserIcon from "@/public/me/UserIcon";
+"use client";
+
+import { ChangeEvent, useState } from "react";
+
+import PillSwitch from "@/app/ui/me/Switch";
+
+import { FormControl, Input } from "@mui/joy";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+
+import axios, { AxiosError } from "axios";
 import { Switch } from "@mui/material";
 
-export default function MeEdit() {
-  return (
-    <div>
-      {/* <div className="flex items-center gap-1">
-          <span className="text-xs font-semibold text-default-600">비공개</span>
-          <Switch
-            sx={{
-              /// switch 기본 박스 크기
-              padding: 0,
-              width: "32px",
-              height: "20px",
-              "& .MuiSwitch-switchBase": {
-                padding: 0,
-                margin: "2px",
-                transitionDuration: "300ms",
-                /// 체크될때
-                "&.Mui-checked": {
-                  transform: "translateX(12px)",
-                  color: "#fff",
-                  "& + .MuiSwitch-track": {
-                    backgroundColor: "#143422",
-                    opacity: 1,
-                    border: 0,
-                  },
-                  "&.Mui-disabled + .MuiSwitch-track": {
-                    opacity: 0.5,
-                  },
-                },
-              },
-              "& .MuiSwitch-thumb": {
-                boxSizing: "border-box",
-                width: 16,
-                height: 16,
-              },
-              "& .MuiSwitch-track": {
-                borderRadius: 26 / 2,
-                backgroundColor: "#b6b6c0",
-                opacity: 1,
-              },
-            }}
-          />
-        </div> */}
+type UpdateDataProps = {
+  id: number;
+  updateData: IUpdateData;
+};
 
-      <UserProfile route={"edit"} />
+type IUpdateData = {
+  name: string;
+  nickname: string;
+};
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export default function MeEdit() {
+  const [userPrivate, setUserPrivate] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
+  // console.log(watch());
+
+  const updateProfile = async ({ id, updateData }: UpdateDataProps) => {
+    console.log(id, updateData);
+    return await axios.put(
+      `${API_URL}/users/${id}`,
+      { data: updateData },
+      {
+        headers: {
+          Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA1OTcwNjk5LCJleHAiOjE3MDg1NjI2OTl9.LStQcwTesyzRLOmgknKbPqw1MPHRldtzW_M9126rKJE"}`,
+        },
+      },
+    );
+  };
+
+  const { mutate: updateProfileMutate } = useMutation({
+    mutationFn: updateProfile,
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserPrivate(e.target.checked);
+  };
+
+  const onSubmit = (updateData: any) => {
+    updateProfileMutate({ id: 1, updateData } as any);
+  };
+
+  return (
+    <section className="mb-20 mt-4">
+      <div className="flex flex-col gap-6 p-5">
+        <div className="flex items-center gap-4">
+          <span className="text-base font-semibold">Private</span>
+          <PillSwitch checked={userPrivate} onChange={handleChange} />
+        </div>
+        <div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-5"
+          >
+            <FormControl>
+              <label
+                htmlFor="id"
+                className="font-small block text-sm leading-4 text-gray-500"
+              >
+                Name
+              </label>
+              <Input
+                {...register("name")}
+                variant="plain"
+                sx={{
+                  "--Input-radius": "0px",
+                  borderBottom: "2px solid #DED0B6",
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    borderColor: "neutral.outlinedHoverBorder",
+                  },
+                  "&::before": {
+                    border: "2px solid #000000", // focusedHighlight색상
+                    transform: "scaleX(0)",
+                    left: 0,
+                    right: 0,
+                    bottom: "-2px",
+                    top: "unset",
+                    transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                    borderRadius: 0,
+                  },
+                  "&:focus-within::before": {
+                    transform: "scaleX(1)",
+                  },
+                }}
+              ></Input>
+            </FormControl>
+            <FormControl>
+              <label
+                htmlFor="id"
+                className="font-small block text-sm leading-4 text-gray-500"
+              >
+                Nickname
+              </label>
+              <Input
+                {...register("nickname")}
+                variant="plain"
+                sx={{
+                  "--Input-radius": "0px",
+                  borderBottom: "2px solid #DED0B6",
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    borderColor: "neutral.outlinedHoverBorder",
+                  },
+                  "&::before": {
+                    border: "2px solid #000000", // focusedHighlight색상
+                    transform: "scaleX(0)",
+                    left: 0,
+                    right: 0,
+                    bottom: "-2px",
+                    top: "unset",
+                    transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                    borderRadius: 0,
+                  },
+                  "&:focus-within::before": {
+                    transform: "scaleX(1)",
+                  },
+                }}
+              ></Input>
+            </FormControl>
+            <button
+              className="flex w-full items-center justify-center border-2 border-default-800 pt-4"
+              type="submit"
+            >
+              Edit Profile
+            </button>
+          </form>
+        </div>
+      </div>
+
       {/* <article className="flex flex-col items-center justify-center p-5">
         <section className="flex w-full flex-col items-center justify-center gap-5 p-5">
           <div className="flex w-2/3 items-center">
@@ -113,6 +213,6 @@ export default function MeEdit() {
           </div>
         </section>
       </article> */}
-    </div>
+    </section>
   );
 }

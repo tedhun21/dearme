@@ -49,3 +49,10 @@ export const meState = atom<IMe>({
   key: "Me",
   default: undefined,
 });
+
+interface IGoal {}
+
+export const goalListState = atom({
+  key: "Goals",
+  default: [],
+});

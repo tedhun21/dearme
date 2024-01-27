@@ -1,6 +1,6 @@
 import { selector } from "recoil";
 
-import { meState, todoListState } from "./atoms";
+import { goalListState, meState, todoListState } from "./atoms";
 
 export const todoListSelector = selector({
   key: "todoListSelector",
@@ -11,4 +11,10 @@ export const todoListSelector = selector({
 export const meSelector = selector({
   key: "meSelector",
   get: ({ get }) => get(meState),
+});
+
+export const goalListSelector = selector({
+  key: "goalListSelector",
+  get: ({ get }) => get(goalListState),
+  set: ({ set }, newValue) => set(goalListState, newValue),
 });

@@ -26,7 +26,7 @@ export default function UserProfile({ route }: { route?: string }) {
   const fileInput = useRef(null);
   const [userPhoto, setUserPhoto] = useState<File | null>(null);
 
-  const { data: meData } = useQuery({
+  const { isSuccess, data: meData } = useQuery({
     queryKey: ["getMe", { access_token }],
     queryFn: getMe,
   });
@@ -71,7 +71,7 @@ export default function UserProfile({ route }: { route?: string }) {
     if (meData?.data) {
       setMe(meData.data);
     }
-  }, []);
+  }, [isSuccess]);
 
   return (
     <section className="h-80 w-full">

@@ -58,6 +58,18 @@ export const updateUserPhoto = async ({
   }
 };
 
+export const getMyGoals = async ({ queryKey }: any) => {
+  const [_key, { date, access_token }] = queryKey;
+
+  const {
+    data: { data },
+  } = await axios.get(`${API_URL}/goals?date=${date}`, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+
+  return { data };
+};
+
 // Read _ post
 export const getPostWithPage = async ({ tab, pageParam }: any) => {
   try {

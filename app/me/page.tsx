@@ -11,7 +11,7 @@ import TodoRate from "../ui/me/TodoRate";
 import MeGoal from "../ui/me/MeGoal";
 
 import DragTodo from "../ui/todo/Drag";
-import { getToday } from "@/util/getDate";
+import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
 
 const access_token = getCookie("access_token");
@@ -20,16 +20,20 @@ export default function Me() {
   const [isDrop, setIsDrop] = useState(false);
   const [todos, setTodos] = useRecoilState(todoListState);
 
-  const { isLoading, data: todoData } = useQuery({
+  const {
+    isLoading,
+    isSuccess,
+    data: todoData,
+  } = useQuery({
     queryKey: ["getMyTodosWithDate", { date: getToday(), access_token }],
     queryFn: getMyTodosWithDate,
   });
 
   useEffect(() => {
-    if (todoData) {
+    if (todoData?.data) {
       setTodos(todoData.data.results);
     }
-  }, []);
+  }, [isSuccess]);
 
   return (
     <section className="mb-20 mt-4 flex flex-col">

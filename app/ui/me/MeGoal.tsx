@@ -1,27 +1,37 @@
 "use client";
 
+import { useRecoilState } from "recoil";
+import { useQuery } from "@tanstack/react-query";
+
 import clsx from "clsx";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+
+import { getMyGoals } from "@/store/api";
+import { goalListState } from "@/store/atoms";
+import { getToday } from "@/util/date";
+import { getCookie } from "@/util/tokenCookie";
+import { useEffect } from "react";
+import GoalList from "./GoalList";
 
 type MeGoalProps = {
   route?: string;
 };
 
-export default function MeGoal({ route }: MeGoalProps) {
-  const goalDate = (date: any): number | string => {
-    const today = dayjs();
-    const targetDate = dayjs(date);
+const access_token = getCookie("access_token");
 
-    if (targetDate.isAfter(today)) {
-      const diff = targetDate.diff(today, "day");
-      return `-${diff + 1}`;
-    } else if (targetDate.isSame(today, "day")) {
-      return "D-day";
-    } else {
-      const diff = today.diff(targetDate, "day");
-      return `+${diff}`;
+export default function MeGoal({ route }: MeGoalProps) {
+  const [goals, setGoals] = useRecoilState(goalListState);
+
+  const { isSuccess, data: goalData } = useQuery({
+    queryKey: ["getMyGoals", { date: getToday(), access_token }],
+    queryFn: getMyGoals,
+  });
+
+  useEffect(() => {
+    if (goalData?.data) {
+      setGoals(goalData.data.results);
     }
-  };
+  }, [isSuccess]);
 
   return (
     <section className={clsx(route === "home" ? "" : "px-4")}>
@@ -34,34 +44,11 @@ export default function MeGoal({ route }: MeGoalProps) {
           route === "home" ? "rounded-none" : "rounded-xl",
         )}
       >
-        <div className="flex justify-between">
-          <div className="flex flex-col">
-            <span className="text-2xs font-bold text-red-600 dark:bg-red-300">
-              New
-            </span>
-            <div className="font-bold">
-              &quot;새로운 시작, 일기 앱 개발의 완료&quot;
-            </div>
-            <div className="text-2xs">목표 날짜: 12월 25일, 2023 (월)</div>
-          </div>
-          <div className="flex items-center justify-center">
-            <span className="rounded-lg border-2 border-default-700 px-2 font-semibold">
-              {goalDate("2023-12-25")}
-            </span>
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <div className="flex flex-col">
-            <div className="font-bold">&quot;취업하자&quot;</div>
-            <div className="text-2xs">목표 날짜: 1월 1일, 2024 (월)</div>
-          </div>
-          <div className="flex items-center justify-center">
-            <span className="rounded-lg border-2 border-default-700 px-2 font-semibold">
-              {goalDate("2024-01-01")}
-            </span>
-          </div>
-        </div>
-        <div></div>
+        {Array.isArray(goals) && goals.length > 0 ? (
+          goals.map((goal: any) => <GoalList key={goal.id} goal={goal} />)
+        ) : (
+          <div className="text-center font-bold">No Goal</div>
+        )}
       </div>
     </section>
   );

@@ -89,11 +89,9 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     } else if (tab === "friends") {
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
       const headers = { Authorization: `Bearer ${token}` };
       return await axios
         .get(url, { headers })
-        .then((response) => response.data.data.results);
         .then((response) => response.data.data.results);
     }
 

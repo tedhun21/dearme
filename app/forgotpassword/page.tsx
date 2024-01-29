@@ -14,16 +14,20 @@ import SelectedEmail from "@/public/forgotpassword/SelectedEmail";
 import PageLevel2 from "@/public/forgotpassword/PageLevel2";
 import PhoneCodeTitle from "@/public/forgotpassword/PhoneCodeTitle";
 import EmailCodeTitle from "@/public/forgotpassword/EmailCodeTitle";
+import SetNewPasswordTitle from "@/public/forgotpassword/SetNewPasswordTitle";
+import PageLevel3 from "@/public/forgotpassword/PageLevel3";
 
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
   const [FocusedInput, setFocusedInput] = useState("");
   const [inputValues, setInputValues] = useState({
     emailInput: "",
+    passwordInput: "",
+    confirmPasswordInput: "",
   });
 
   // 비밀번호 찾기 위한 선택한 옵션에 따라 다음 단계로 이동
-  const handleOptionClick = (method) => {
+  const handleOptionClick = (method: any) => {
     setCurrentstep(method === "sms" ? "sms단계" : "email단계");
   };
 
@@ -236,7 +240,7 @@ export default function ForgotPassword() {
             <div className="mt-2 flex w-full flex-col">
               <Button
                 variant="outlined"
-                onClick={() => setCurrentstep("2단계")}
+                onClick={() => setCurrentstep("3단계")}
                 className="rounded-[20px] border-2 border-solid border-default-800 bg-black  py-2 text-default-100 hover:bg-default-700"
               >
                 Continue
@@ -309,7 +313,7 @@ export default function ForgotPassword() {
             <div className="mt-2 flex w-full flex-col">
               <Button
                 variant="outlined"
-                onClick={() => setCurrentstep("2단계")}
+                onClick={() => setCurrentstep("3단계")}
                 className="rounded-[20px] border-2 border-solid border-default-800 bg-black py-2 text-default-100 hover:bg-default-700"
               >
                 Continue
@@ -339,6 +343,130 @@ export default function ForgotPassword() {
 
           <section className="flex w-full justify-center pb-12 pt-12">
             <PageLevel2 />
+          </section>
+        </article>
+      )}
+
+      {currentStep === "3단계" && (
+        <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+          <header className="pl-8 pt-8">
+            <a href="/">
+              <BackIcon />
+            </a>
+          </header>
+          <section className="flex w-full pb-[32px] pl-[64px] pt-[36px]">
+            <SetNewPasswordTitle />
+          </section>
+          <section className="flex w-full flex-col pl-[64px]">
+            <p className="text-lg font-normal text-default-800">
+              Must be at least 8 characters.
+            </p>
+          </section>
+
+          <section className="relative flex w-full justify-center px-16 pt-12">
+            <label
+              htmlFor="passwordInput"
+              className={labelClass("passwordInput")}
+            >
+              Password
+            </label>
+            <Input
+              id="passwordInput"
+              className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.passwordInput}
+              variant="plain"
+              sx={{
+                width: "100%",
+                "--Input-radius": "0px",
+                borderBottom: "2px solid #DED0B6",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  borderColor: "neutral.outlinedHoverBorder",
+                },
+                "&::before": {
+                  border: "1px solid #000000", // focusedHighlight색상
+                  transform: "scaleX(0)",
+                  left: 0,
+                  right: 0,
+                  bottom: "-2px",
+                  top: "unset",
+                  transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                  borderRadius: 0,
+                },
+                "&:focus-within::before": {
+                  transform: "scaleX(1)",
+                },
+              }}
+            />
+          </section>
+
+          <section className="relative flex w-full justify-center px-16 pt-12">
+            <label
+              htmlFor="confirmPasswordInput"
+              className={labelClass("confirmPasswordInput")}
+            >
+              Confirm Password
+            </label>
+            <Input
+              id="confirmPasswordInput"
+              className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={inputValues.confirmPasswordInput}
+              variant="plain"
+              sx={{
+                width: "100%",
+                "--Input-radius": "0px",
+                borderBottom: "2px solid #DED0B6",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  borderColor: "neutral.outlinedHoverBorder",
+                },
+                "&::before": {
+                  border: "1px solid #000000", // focusedHighlight색상
+                  transform: "scaleX(0)",
+                  left: 0,
+                  right: 0,
+                  bottom: "-2px",
+                  top: "unset",
+                  transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                  borderRadius: 0,
+                },
+                "&:focus-within::before": {
+                  transform: "scaleX(1)",
+                },
+              }}
+            />
+          </section>
+
+          <section className="flex w-full flex-col items-center gap-4 px-16 pt-8">
+            <div className="mt-2 flex w-full flex-col">
+              <Button
+                variant="outlined"
+                onClick={() => setCurrentstep("4단계")}
+                className="rounded-[20px] border-2 border-solid border-default-800 bg-black py-2 text-default-100 hover:bg-default-700"
+              >
+                Reset password
+              </Button>
+            </div>
+          </section>
+
+          <section className="flex justify-center">
+            <a
+              href="/login"
+              className="inline-flex items-center gap-4 pt-4 text-sm font-semibold text-default-500"
+            >
+              <Arrow />
+              Back to log in
+            </a>
+          </section>
+
+          <section className="flex w-full justify-center pt-24">
+            <PageLevel3 />
           </section>
         </article>
       )}

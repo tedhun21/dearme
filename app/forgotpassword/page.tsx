@@ -16,6 +16,9 @@ import PhoneCodeTitle from "@/public/forgotpassword/PhoneCodeTitle";
 import EmailCodeTitle from "@/public/forgotpassword/EmailCodeTitle";
 import SetNewPasswordTitle from "@/public/forgotpassword/SetNewPasswordTitle";
 import PageLevel3 from "@/public/forgotpassword/PageLevel3";
+import PasswordRestSuccessfulTitle from "@/public/forgotpassword/PasswordRestSuccessfulTitle";
+import SuccessfulCheck from "@/public/forgotpassword/SuccessfulCheck";
+import PageLevel4 from "@/public/forgotpassword/PageLevel4";
 
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
@@ -372,6 +375,7 @@ export default function ForgotPassword() {
             </label>
             <Input
               id="passwordInput"
+              type="password"
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
@@ -412,6 +416,7 @@ export default function ForgotPassword() {
             </label>
             <Input
               id="confirmPasswordInput"
+              type="password"
               className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
               onFocus={handleFocus}
               onBlur={handleBlur}
@@ -467,6 +472,46 @@ export default function ForgotPassword() {
 
           <section className="flex w-full justify-center pt-24">
             <PageLevel3 />
+          </section>
+        </article>
+      )}
+
+      {currentStep === "4단계" && (
+        <article className="flex w-full min-w-[360px] max-w-[600px] flex-col items-center justify-center bg-default-200 shadow-lg">
+          <header>
+            <SuccessfulCheck />
+          </header>
+          <section className="flex w-full justify-center pb-[32px] pt-[36px]">
+            <PasswordRestSuccessfulTitle />
+          </section>
+          <article>
+            <section className="flex w-full flex-col items-center justify-center">
+              <p className="text-lg font-normal text-default-800">
+                You have successfully reset your
+              </p>
+              <p className="text-lg font-normal text-default-800">
+                password. Please use your new
+              </p>
+              <p className="text-lg font-normal text-default-800">
+                password when logging in.
+              </p>
+            </section>
+          </article>
+
+          <section className="flex w-full flex-col items-center gap-4 px-28 pt-8">
+            <div className="mt-2 flex w-full flex-col">
+              <Button
+                variant="outlined"
+                onClick={() => setCurrentstep("2단계")}
+                className="rounded-[20px] border-2 border-solid border-default-800 bg-black py-4 text-default-100 hover:bg-default-700"
+              >
+                Login
+              </Button>
+            </div>
+          </section>
+
+          <section className="flex w-full justify-center pt-24">
+            <PageLevel4 />
           </section>
         </article>
       )}

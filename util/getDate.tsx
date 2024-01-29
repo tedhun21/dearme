@@ -1,4 +1,4 @@
-export default function getToday() {
+export default function getDate() {
   const date = new Date();
   const year = date.getFullYear();
   const month = ("0" + (date.getMonth() + 1)).slice(-2);

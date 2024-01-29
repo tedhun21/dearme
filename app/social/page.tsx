@@ -82,13 +82,10 @@ export default function Social() {
   const [ref, inView] = useInView();
 
   // infinite scroll
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-
-    refetch,
-  } = useInfiniteQuery<Post[], Error>({
+  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
+    Post[],
+    Error
+  >({
     queryKey: ["getPostsWithPage", { tab: selectedTab }],
     queryFn: ({ pageParam }: { pageParam: number }) =>
       getPostWithPage({ tab: selectedTab, pageParam: pageParam }),

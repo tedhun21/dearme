@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
-// TODO public(isprivate) 설정
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -52,7 +52,7 @@ export default function EditPost({
     queryKey: ["getGoals"],
     queryFn: getGoals,
   });
-  const goals = goalsData?.data?.results;
+  const goals = goalsData?.data?.data.results;
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState(
@@ -119,7 +119,7 @@ export default function EditPost({
       postText,
       selectedOption,
     };
-    console.log(updatedData);
+
     try {
       editMutation.mutate(updatedData);
       onClose();
@@ -161,8 +161,6 @@ export default function EditPost({
               />
             </Link>
 
-            {/* 게시물 수정 시에만 */}
-            {/* <EditPost className="mr-2 h-4 w-4 cursor-pointer fill-current text-default-600" /> */}
             <button className="border-none" onClick={onClose}>
               <Close className="h-3 w-3 cursor-pointer fill-current text-default-600" />
             </button>

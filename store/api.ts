@@ -1,3 +1,4 @@
+import { getToday } from "@/util/date";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -87,33 +88,29 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
       url += "&public=true";
     } else if (tab === "friends") {
       const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ1MDQwLCJleHAiOjE3MDg3MzcwNDB9.z9OHjlF2fhwJMm-bTaYd_EcTc_0wWYABrOSRx8L7_N0";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
       const headers = { Authorization: `Bearer ${token}` };
       return await axios
         .get(url, { headers })
-        .then((response) => response.data.posts);
-      console.log(url);
+        .then((response) => response.data.data.results);
     }
 
     const response = await axios.get(url);
-    return response.data.posts;
-    console.log(url);
+    return response.data.data.results;
   } catch (e) {}
 };
 
 // Create _ post > 목표 조회
 export const getGoals = async ({ queryKey }: any) => {
-  // const [_key, { isMe }] = queryKey;
+  const date = getToday();
 
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
   const headers = { Authorization: `Bearer ${token}` };
 
-  // TODO 쿼리 userId
-  return await axios.get(`${API_URL}/goals?userId=2`, { headers });
+  return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
-// TODO goalId로 변경
 export const createPost = async (data: any): Promise<any> => {
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
@@ -124,7 +121,7 @@ export const createPost = async (data: any): Promise<any> => {
   formData.append(
     "data",
     JSON.stringify({
-      goal: data.selectedGoal,
+      goalId: data.selectedGoal,
       body: data.postText,
       isPublic: !data.isPrivate,
       commentSettings: data.selectedOption,
@@ -153,8 +150,6 @@ export const updatePost = async ({
   postText: string;
   selectedOption: string;
 }): Promise<any> => {
-  console.log("isPrivate:", isPrivate);
-  console.log("!isPrivate:", !isPrivate);
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MDU4OTU1LCJleHAiOjE3MDg2NTA5NTV9.G-enZ8N2k05kFT36rGd-AFer9BFB9jEgFPOPP0oI7uM";
   const headers = { Authorization: `Bearer ${token}` };
@@ -192,6 +187,19 @@ export const deletePost = async (postId: number) => {
       headers,
     });
     return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// Create _ like
+export const likePost = async (postId: number) => {
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
+  const headers = { Authorization: `Bearer ${token}` };
+
+  try {
+    await axios.put(`${API_URL}/posts/${postId}/like`, {}, { headers });
   } catch (e) {
     console.error(e);
   }

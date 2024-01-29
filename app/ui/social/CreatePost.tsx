@@ -45,7 +45,8 @@ export default function CreatePost() {
     queryKey: ["getGoals"],
     queryFn: getGoals,
   });
-  const goals = goalsData?.data?.results;
+
+  const goals = goalsData?.data?.data.results;
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState("");
@@ -78,7 +79,6 @@ export default function CreatePost() {
   const [postText, setPostText] = useState("");
   const handlePostTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPostText(e.target.value);
-    // console.log(postText);
   };
 
   // Select 댓글 옵션 선택
@@ -110,7 +110,7 @@ export default function CreatePost() {
       // await mutation.mutateAsync(postData);
       await addPostMutation(postData);
 
-      window.alert("Post successfully uploaded.");
+      window.alert("Uploaded!");
 
       setSelectedGoal("");
       setIsPrivate(false);

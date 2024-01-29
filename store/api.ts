@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getCookie } from "@/util/tokenCookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -68,6 +67,15 @@ export const getMyGoals = async ({ queryKey }: any) => {
   });
 
   return { data };
+};
+
+export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {
+  const { data, status } = await axios.get(
+    `${API_URL}/posts?friend=false&page=${pageParam}&size=12`,
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return { data: data.results };
 };
 
 // Read _ post

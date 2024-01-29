@@ -10,7 +10,7 @@ import { todoListState } from "@/store/atoms";
 import { useRecoilState } from "recoil";
 import { useQuery } from "@tanstack/react-query";
 import { getTodosWithDate } from "@/store/api";
-import getToday from "@/util/getDate";
+import getToday from "@/util/date";
 
 const me = {
   id: 1,

@@ -1,20 +1,82 @@
+import { getToday } from "@/util/date";
 import axios from "axios";
-import getToday from "@/util/getDate";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const getTodosWithDate = async ({ queryKey }: any) => {
-  const [_key, { date, isMe }] = queryKey;
+export const getMe = async ({ queryKey }: any) => {
+  const [_key, { access_token }] = queryKey;
+  if (access_token) {
+    const {
+      data: { data },
+    } = await axios.get(`${API_URL}/users/me`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  if (isMe && date) {
-    return await axios.get(`${API_URL}/todos?date=${date}`, {
+    return { data };
+  }
+};
+
+export const getMyTodosWithDate = async ({ queryKey }: any) => {
+  const [_key, { date, access_token }] = queryKey;
+
+  if (access_token && date) {
+    const {
+      data: { data },
+    } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
-        Authorization: `Bearer 
-    ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA1ODQzNjg5LCJleHAiOjE3MDg0MzU2ODl9.gP6Dr1P5e6iWtWWMVOfMjDCZD4jC6KZEGFmXEwi9ldY"}`,
+        Authorization: `Bearer ${access_token}`,
       },
     });
+
+    return { data };
   }
-  return await axios.get(`${API_URL}/todos?date=${date}`);
+};
+
+export const updateUserPhoto = async ({
+  userId,
+  selectedFile,
+  access_token,
+}: {
+  userId: number;
+  selectedFile: File;
+  access_token: string | null | undefined;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("photo", selectedFile);
+
+  try {
+    const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    window.alert(e);
+  }
+};
+
+export const getMyGoals = async ({ queryKey }: any) => {
+  const [_key, { date, access_token }] = queryKey;
+
+  const {
+    data: { data },
+  } = await axios.get(`${API_URL}/goals?date=${date}`, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+
+  return { data };
+};
+
+export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {
+  const { data, status } = await axios.get(
+    `${API_URL}/posts?friend=false&page=${pageParam}&size=12`,
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return { data: data.results };
 };
 
 // Read _ post
@@ -27,9 +89,11 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     } else if (tab === "friends") {
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
       const headers = { Authorization: `Bearer ${token}` };
       return await axios
         .get(url, { headers })
+        .then((response) => response.data.data.results);
         .then((response) => response.data.data.results);
     }
 
@@ -49,6 +113,7 @@ export const getGoals = async ({ queryKey }: any) => {
   return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
+// TODO goalId로 변경
 export const createPost = async (data: any): Promise<any> => {
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";

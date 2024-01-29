@@ -6,19 +6,19 @@ enum EPublic {
   private,
 }
 
-export type ITodo = {
+export interface ITodo {
   id: number;
   date: Date;
   body: string;
   done: boolean;
   public: EPublic;
   user: IUser;
-};
+}
 
-type IUser = {
+interface IUser {
   id: number;
   username: string;
-};
+}
 
 interface IPagination {
   page: number;
@@ -33,5 +33,26 @@ export interface ITodos {
 
 export const todoListState = atom<ITodo[]>({
   key: "Todos",
+  default: [],
+});
+
+export interface IMe {
+  id: number;
+  email: string;
+  username: string;
+  nickname: string;
+  photo: any;
+  background: any;
+}
+
+export const meState = atom<IMe>({
+  key: "Me",
+  default: undefined,
+});
+
+interface IGoal {}
+
+export const goalListState = atom({
+  key: "Goals",
   default: [],
 });

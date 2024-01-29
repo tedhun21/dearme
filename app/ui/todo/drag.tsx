@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { useQuery } from "@tanstack/react-query";
 
 import {
   DragDropContext,
   Draggable,
   DropResult,
   Droppable,
-} from "react-beautiful-dnd";
+} from "@hello-pangea/dnd";
 import Todo from "./Todo";
 
-import { getTodosWithDate } from "@/store/api";
-import { ITodo, ITodos, todoListState } from "@/store/atoms";
-import getToday from "@/util/getDate";
+import { ITodo, todoListState } from "@/store/atoms";
 
 // 배열 순서 바꾸는 함수
 const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {

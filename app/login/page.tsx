@@ -17,10 +17,18 @@ import GoogleLogo from "@/public/login/GoogleLogo";
 import EyeOffIcon from "@/public/login/EyeOffIcon";
 import EyeIcon from "@/public/login/EyeIcon";
 
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
+
 export default function Login() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleGoogleLogin = () => {
+    const googleLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/connect/google`;
+
+    window.location.href = googleLoginUrl;
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -198,6 +206,7 @@ export default function Login() {
               <div className="flex w-full flex-col justify-center">
                 <Button
                   variant="plain"
+                  onClick={handleGoogleLogin}
                   className="rounded-[20px] bg-default-800 py-2 text-default-100 hover:bg-default-700"
                 >
                   <div className="mr-2">

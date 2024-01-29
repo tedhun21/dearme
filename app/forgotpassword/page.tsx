@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
 
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
+import { FormHelperText } from "@mui/joy";
 
 import BackIcon from "@/public/forgotpassword/BackIcon";
 import FPTitle from "@/public/forgotpassword/FPTitle";
@@ -19,19 +24,99 @@ import PageLevel3 from "@/public/forgotpassword/PageLevel3";
 import PasswordRestSuccessfulTitle from "@/public/forgotpassword/PasswordRestSuccessfulTitle";
 import SuccessfulCheck from "@/public/forgotpassword/SuccessfulCheck";
 import PageLevel4 from "@/public/forgotpassword/PageLevel4";
+import X from "@/public/signup/X";
+import Check from "@/public/signup/Check";
 
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
   const [FocusedInput, setFocusedInput] = useState("");
+  const [duplicateCheck, setDuplicateCheck] = useState({
+    // 중복 검사 상태를 저장
+    email: false,
+  });
   const [inputValues, setInputValues] = useState({
     emailInput: "",
     passwordInput: "",
     confirmPasswordInput: "",
   });
 
+  // yup을 이용한 유효성 검사
+  const Schema = yup.object().shape({
+    email: yup
+      .string()
+      .email("이메일 형식이 아닙니다.")
+      .required("이메일을 입력해주세요."),
+    password: yup.string().required("비밀번호를 입력해주세요."),
+    confirmPassword: yup.lazy(() => {
+      return yup
+        .string()
+        .required("비밀번호를 입력해주세요.")
+        .oneOf([yup.ref("password"), ""], "비밀번호가 서로 다릅니다.");
+    }),
+  });
+  type IFormForgotPasswordInputs = yup.InferType<typeof Schema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(Schema),
+    mode: "onChange", // 실시간 유효성 검사를 위해 onChange 모드 설정
+  });
+
+  // Debouncing 함수 (연속적인 API 호출을 방지하기 위해)
+  const debounce = (func: any, delay: any) => {
+    let inDebounce: any;
+    return function (...args: any) {
+      const context = this;
+      clearTimeout(inDebounce);
+      inDebounce = setTimeout(() => func.apply(context, args), delay);
+    };
+  };
+
+  const checkEmail = debounce(async (email: string) => {
+    if (!email) return;
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/check-email?email=${email}`,
+        { params: { email } },
+      );
+
+      // 중복 여부에 따른 처리
+      if (response.data.duplicate) {
+        setDuplicateCheck({ ...duplicateCheck, email: true });
+      } else {
+        setDuplicateCheck({ ...duplicateCheck, email: false });
+      }
+    } catch (error) {
+      console.error("Error during email check:", error);
+    }
+  }, 500);
+
+  // 중복 검사 결과 메시지 표시
+  const renderDuplicateMessage = (type: string) => {
+    // if (type === "email" && duplicateCheck.email) {
+    if (inputValues.emailInput && !duplicateCheck.email) {
+      return (
+        <FormHelperText className="text-red-500">
+          등록되지 않은 이메일입니다.
+        </FormHelperText>
+      );
+    }
+    return null;
+  };
+
   // 비밀번호 찾기 위한 선택한 옵션에 따라 다음 단계로 이동
   const handleOptionClick = (method: any) => {
     setCurrentstep(method === "sms" ? "sms단계" : "email단계");
+  };
+
+  // 입력 필드의 onChange 핸들러
+  const handleEmailInputChange = (e: any) => {
+    const { value } = e.target;
+    setInputValues({ ...inputValues, emailInput: value });
+    checkEmail(value); // 이메일 중복 검사 호출
   };
 
   // input이 focus되었을 때
@@ -95,9 +180,14 @@ export default function ForgotPassword() {
               <Input
                 id="emailInput"
                 className="focus:border-neutral-outlinedHoverBorder w-full border-b-2 border-gray-300 bg-transparent"
+                {...register("email", {
+                  onChange: (e) => {
+                    handleChange(e);
+                    handleEmailInputChange(e);
+                  },
+                  onBlur: handleBlur,
+                })}
                 onFocus={handleFocus}
-                onBlur={handleBlur}
-                onChange={handleChange}
                 value={inputValues.emailInput}
                 variant="plain"
                 sx={{
@@ -123,7 +213,18 @@ export default function ForgotPassword() {
                   },
                 }}
               />
+              {inputValues.emailInput && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-[70px] pt-12 leading-5">
+                  {duplicateCheck.email ? <Check /> : <X />}
+                </div>
+              )}
             </section>
+            {errors.email && (
+              <FormHelperText className="mt-2 justify-center text-red-500">
+                {errors.email.message}
+              </FormHelperText>
+            )}
+            {renderDuplicateMessage("email")}
 
             <section className="flex w-full flex-col items-center gap-4 px-16 pt-8">
               <div className="mt-2 flex w-full flex-col">

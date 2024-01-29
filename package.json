@@ -25,6 +25,7 @@
     "axios": "^1.6.5",
     "clsx": "2.0.0",
     "dayjs": "1.11.10",
+    "firebaseui": "^6.1.0",
     "next": "14.0.4",
     "react": "^18.2.0",
     "react-apexcharts": "1.4.1",

@@ -96,10 +96,9 @@ export default function ForgotPassword() {
 
   // 중복 검사 결과 메시지 표시
   const renderDuplicateMessage = (type: string) => {
-    // if (type === "email" && duplicateCheck.email) {
     if (inputValues.emailInput && !duplicateCheck.email) {
       return (
-        <FormHelperText className="text-red-500">
+        <FormHelperText className="mt-2 justify-center text-red-500">
           등록되지 않은 이메일입니다.
         </FormHelperText>
       );
@@ -219,7 +218,7 @@ export default function ForgotPassword() {
                 </div>
               )}
             </section>
-            {errors.email && (
+            {errors.email && inputValues.emailInput && (
               <FormHelperText className="mt-2 justify-center text-red-500">
                 {errors.email.message}
               </FormHelperText>

@@ -1,20 +1,15 @@
 import { useState } from "react";
-import { Todo } from "./Drag";
 
-type TodoSettingProps = {
-  todo: Todo;
-  setting: {
-    value: string;
-    keyword: string;
-  };
-  handleClose: React.MouseEventHandler<HTMLInputElement>;
-};
+// type TodoSettingProps = {
+//   todo: Todo;
+//   setting: {
+//     value: string;
+//     keyword: string;
+//   };
+//   handleClose: React.MouseEventHandler<HTMLInputElement>;
+// };
 
-export default function TodoSetting({
-  todo,
-  setting,
-  handleClose,
-}: TodoSettingProps) {
+export default function TodoSetting({ todo, setting, handleClose }: any) {
   const [todoSetting, setTodoSetting] = useState(todo.private);
 
   return (

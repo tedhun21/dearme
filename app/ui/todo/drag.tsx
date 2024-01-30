@@ -56,8 +56,20 @@ export default function DragTodo() {
       return;
     }
 
-    const _todos = reorder(todos, source.index, destination.index) as ITodo[];
-    setTodos(_todos);
+    setTodos((prevTodos) => {
+      const reorderedResults = reorder(
+        prevTodos.results,
+        source.index,
+        destination.index,
+      );
+      return {
+        ...prevTodos,
+        results: reorderedResults,
+      };
+    });
+
+    // const _todos = reorder(todos.results, source.index, destination.index);
+    // setTodos(_todos);
   };
 
   useEffect(() => {
@@ -82,7 +94,7 @@ export default function DragTodo() {
             {...provided.droppableProps}
             style={getListStyle(snapshot.isDraggingOver) as any}
           >
-            {todos?.map((todo: ITodo, index: number) => (
+            {todos?.results.map((todo: ITodo, index: number) => (
               <Draggable
                 key={todo.id}
                 draggableId={todo.id.toString()}

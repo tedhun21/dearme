@@ -6,13 +6,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const getMe = async ({ queryKey }: any) => {
   const [_key, { access_token }] = queryKey;
   if (access_token) {
-    const {
-      data: { data },
-    } = await axios.get(`${API_URL}/users/me`, {
+    const { data } = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    return { data };
+    return data;
   }
 };
 
@@ -21,14 +19,14 @@ export const getMyTodosWithDate = async ({ queryKey }: any) => {
 
   if (access_token && date) {
     const {
-      data: { data },
+      data: { results, pagination },
     } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
     });
 
-    return { data };
+    return { results, pagination };
   }
 };
 
@@ -62,21 +60,52 @@ export const getMyGoals = async ({ queryKey }: any) => {
   const [_key, { date, access_token }] = queryKey;
 
   const {
-    data: { data },
+    data: { goals },
   } = await axios.get(`${API_URL}/goals?date=${date}`, {
     headers: { Authorization: `Bearer ${access_token}` },
   });
 
-  return { data };
+  return goals;
 };
 
 export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {
-  const { data, status } = await axios.get(
+  const {
+    data: { results, pagination },
+  } = await axios.get(
     `${API_URL}/posts?friend=false&page=${pageParam}&size=12`,
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
 
-  return { data: data.results };
+  return { results, pagination };
+};
+
+export const getMyRequestWithPage = async ({
+  pageParam,
+  access_token,
+}: any) => {
+  const {
+    data: { users, pagination },
+  } = await axios.get(
+    `${API_URL}/friendships/request?page=${pageParam}&size=5`,
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return users;
+};
+
+export const getMyFriendWithPage = async ({
+  pageParam,
+  size,
+  access_token,
+}: any) => {
+  const {
+    data: { users, pagination },
+  } = await axios.get(
+    `${API_URL}/friendships/friend?page=${pageParam}&size=${size}`,
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return { users, pagination };
 };
 
 // Read _ post
@@ -89,11 +118,10 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     } else if (tab === "friends") {
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
+
       const headers = { Authorization: `Bearer ${token}` };
       return await axios
         .get(url, { headers })
-        .then((response) => response.data.data.results);
         .then((response) => response.data.data.results);
     }
 

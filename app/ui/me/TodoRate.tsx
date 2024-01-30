@@ -17,12 +17,12 @@ export default function TodoRate({
   setIsDrop,
 }: TodoRateProps) {
   const todos = useRecoilValue(todoListState);
-  const checkedTodos = todos?.filter((todo: ITodo) => todo.done === true);
+  const checkedTodos = todos?.results.filter((todo: any) => todo.done === true);
 
   return (
     <section className="flex items-center justify-between px-4 pb-2">
       <div className="flex items-center gap-2">
-        {isLoading || todos.length === 0 ? null : (
+        {isLoading || todos.results.length === 0 ? null : (
           <button onClick={() => setIsDrop((prev: any) => !prev)}>
             {isDrop ? (
               <UpDropdownIcon className="h-4 w-4 fill-current text-default-500 hover:text-default-700" />
@@ -44,15 +44,15 @@ export default function TodoRate({
         }}
         variant="determinate"
         value={
-          todos && todos.length !== 0
-            ? (checkedTodos?.length / todos.length) * 100
+          todos && todos.results.length !== 0
+            ? (checkedTodos?.length / todos.results.length) * 100
             : 0
         }
         color="inherit"
       />
 
       <span className="mx-1 whitespace-nowrap text-xs font-semibold text-default-600">
-        {todos && checkedTodos?.length} / {todos.length}
+        {todos && checkedTodos?.length} / {todos.results.length}
       </span>
     </section>
   );

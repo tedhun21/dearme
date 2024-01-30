@@ -68,8 +68,8 @@ export default function UserProfile({ route }: { route?: string }) {
   };
 
   useEffect(() => {
-    if (meData?.data) {
-      setMe(meData.data);
+    if (meData) {
+      setMe(meData);
     }
   }, [isSuccess]);
 

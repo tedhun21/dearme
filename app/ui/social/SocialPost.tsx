@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import clsx from "clsx";
 
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -76,7 +77,7 @@ export default function SocialPost({ post }: SocialPostProps) {
   const closeLikeModal = () => setIsLikedModalOpen(false);
 
   // 포스트 body 더보기 (more)
-  const maxChars = 100;
+  const maxChars = 70;
   const [isExpanded, setIsExpanded] = useState(false);
 
   // 댓글 보기 상태
@@ -86,12 +87,12 @@ export default function SocialPost({ post }: SocialPostProps) {
   };
 
   // 댓글 작성
-  const handleCommentSubmit = (newComment: string) => {};
+  // const handleCommentSubmit = (newComment: string) => {};
 
   return (
     <div className="mb-5 flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 ">
       {/* 유저 프로필 & 목표 */}
-      <div className="relative flex items-center  pl-5 pr-5">
+      <div className="relative mb-2 flex  items-center px-5">
         <div className="h-10 w-10 rounded-full">
           {post.user?.photo?.url ? (
             <img
@@ -100,12 +101,12 @@ export default function SocialPost({ post }: SocialPostProps) {
               className="h-10  w-10 rounded-full object-cover"
               width={10}
               height={10}
-              // objectFit={"fill"}
             />
           ) : (
             <div>hi</div>
           )}
         </div>
+
         <div className="flex-col pl-3">
           <div className=" text-base font-bold text-default-700">
             {post.user?.nickname || "Unknown User"}
@@ -115,7 +116,7 @@ export default function SocialPost({ post }: SocialPostProps) {
           </div>
         </div>
 
-        <div className="ml-auto pt-5">
+        <div className="ml-auto ">
           {/* TODO (···) 나의 게시물 or 친구 게시물 -> boolean값 전달 */}
           <PostSettings isMyPost={true} postId={post.id} postData={post} />
         </div>
@@ -136,7 +137,7 @@ export default function SocialPost({ post }: SocialPostProps) {
             alt="Post Image"
             // fill
             // objectFit="fill"
-            className="mb-3  w-full rounded-sm "
+            className=" w-full rounded-sm "
           />
         ) : (
           <div>hi</div>
@@ -203,25 +204,40 @@ export default function SocialPost({ post }: SocialPostProps) {
         likes={post.likes}
       />
       {/* 게시물 body */}
-      <div className="mb-3 flex items-start px-5  text-sm font-medium text-default-700">
-        <span className="mr-3 text-sm font-semibold">
-          {" "}
+      <div className="flex w-full items-start gap-2 px-5 py-4 text-sm font-medium text-default-700">
+        <div className="text-sm font-semibold">
           {post.user?.nickname || "Unknown User"}
-        </span>
-        <span
-          className={`text-sm font-normal ${!isExpanded ? "line-clamp-1" : ""}`}
+        </div>
+
+        <div
+          className={clsx(
+            "flex-auto text-sm font-normal",
+            isExpanded ? "break-words" : "line-clamp-1",
+          )}
         >
           {post.body}
-        </span>
-        {!isExpanded && post.body.length > maxChars && (
-          <button
-            className="mt-1 cursor-pointer text-xs"
-            onClick={() => setIsExpanded(true)}
-          >
-            more
-          </button>
-        )}
+        </div>
+
+        <div>
+          {!isExpanded && post.body.length > maxChars && (
+            <button
+              className="flex-1  text-xs"
+              onClick={() => setIsExpanded(true)}
+            >
+              more
+            </button>
+          )}
+          {isExpanded && post.body.length > maxChars && (
+            <button
+              className="flex-1  text-xs"
+              onClick={() => setIsExpanded(false)}
+            >
+              hide
+            </button>
+          )}
+        </div>
       </div>
+
       {/* View n Comments */}
       <div
         className="cursor-pointer px-5 text-xs font-medium text-default-500"
@@ -239,7 +255,7 @@ export default function SocialPost({ post }: SocialPostProps) {
         <CommentsSection
           postId={post.id}
           comments={post.comments}
-          onCommentSubmit={handleCommentSubmit}
+          // onCommentSubmit={handleCommentSubmit}
         />
       )}
 
@@ -247,3 +263,4 @@ export default function SocialPost({ post }: SocialPostProps) {
     </div>
   );
 }
+// 개모대

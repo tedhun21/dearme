@@ -63,7 +63,6 @@ export default function PostSettings({
   });
 
   const handleDeletePost = async () => {
-    console.log(postId);
     try {
       deleteMutation.mutate({ postId });
       handleClose();
@@ -83,7 +82,7 @@ export default function PostSettings({
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <MoreHorizIcon sx={{ color: "#2D2422" }} />
+        <MoreHorizIcon sx={{ color: "#2D2422", fontSize: 20 }} />
       </IconButton>
       <Menu
         id="basic-menu"

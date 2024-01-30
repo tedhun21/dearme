@@ -17,8 +17,6 @@ import GoogleLogo from "@/public/login/GoogleLogo";
 import EyeOffIcon from "@/public/login/EyeOffIcon";
 import EyeIcon from "@/public/login/EyeIcon";
 
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
-
 export default function Login() {
   const router = useRouter();
   const [password, setPassword] = useState("");

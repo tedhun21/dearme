@@ -30,6 +30,7 @@ import Check from "@/public/signup/Check";
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
   const [FocusedInput, setFocusedInput] = useState("");
+  const [userInfo, setUserInfo] = useState({ email: "", phone: "" });
   const [duplicateCheck, setDuplicateCheck] = useState({
     // 중복 검사 상태를 저장
     email: false,
@@ -147,12 +148,41 @@ export default function ForgotPassword() {
     }`;
   };
 
+  // 첫 번째 단계에서 이메일 검증 후 사용자 정보 조회
+  const handleEmailCheck = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-by-email?email=${inputValues.emailInput}`,
+        // { params: { email: inputValues.emailInput } },
+      );
+      setUserInfo(response.data);
+      setCurrentstep("2단계");
+    } catch (error) {
+      console.error("Error during email verification:", error);
+    }
+  };
+
+  // 이메일 마스킹 처리
+  const maskEmail = (email: string) => {
+    const [username, domain] = email.split("@");
+    return `${username.slice(0, 4)}****@${domain}`;
+  };
+  // 휴대폰 번호 마스킹 처리
+  const maskPhone = (phone: string) => {
+    return `${phone.slice(0, 3)}****${phone.slice(7, 11)}`;
+  };
+
+  // 첫 번째 단계 Continue 버튼 클릭 핸들러
+  const handleContinue = () => {
+    handleEmailCheck();
+  };
+
   return (
     <main className="flex min-h-screen justify-center">
       {currentStep === "1단계" && (
         <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
           <header className="pl-8 pt-8">
-            <a href="/">
+            <a href="/login">
               <BackIcon />
             </a>
           </header>
@@ -229,7 +259,7 @@ export default function ForgotPassword() {
               <div className="mt-2 flex w-full flex-col">
                 <Button
                   variant="outlined"
-                  onClick={() => setCurrentstep("2단계")}
+                  onClick={handleContinue}
                   className="rounded-[20px] border-2 border-solid border-default-800 bg-black py-2 text-default-100 hover:bg-default-700"
                 >
                   Continue
@@ -256,7 +286,7 @@ export default function ForgotPassword() {
       {currentStep === "2단계" && (
         <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
           <header className="pl-8 pt-8">
-            <a href="/">
+            <a href="/forgotpassword">
               <BackIcon />
             </a>
           </header>
@@ -281,7 +311,7 @@ export default function ForgotPassword() {
                 <SelectedPhone />
                 <div className="flex flex-col">
                   <p className="text-default-100">via sms:</p>
-                  <p>*** **** 1234</p>
+                  <p>{maskPhone(userInfo.phone)}</p>
                 </div>
               </figure>
               <figure
@@ -291,7 +321,7 @@ export default function ForgotPassword() {
                 <SelectedEmail />
                 <div className="flex flex-col">
                   <p className="text-default-100">via email:</p>
-                  <p>****yu@gmail.com</p>
+                  <p>{maskEmail(userInfo.email)}</p>
                 </div>
               </figure>
             </section>

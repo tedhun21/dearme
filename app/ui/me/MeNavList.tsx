@@ -19,21 +19,11 @@ export default function MeNavList({ nav }: any) {
           : "group-hover:border-b-default-500",
       )}
     >
-      {/* <span
-      className={clsx(
-        "text-2xl font-extrabold",
-        pathname === "/me"
-          ? "text-default-900"
-          : "text-default-500 group-hover:text-default-700",
-      )}
-    >
-      4
-    </span> */}
-      <div className="flex items-center gap-1">
+      <div className="flex flex-col items-center gap-1">
         {nav.href === "/me" ? (
           <PlanIcon
             className={clsx(
-              "h-4 w-4 fill-current",
+              "h-5 w-5 fill-current",
               pathname === nav.href
                 ? "text-black"
                 : "text-default-500 group-hover:text-default-700",
@@ -42,7 +32,7 @@ export default function MeNavList({ nav }: any) {
         ) : nav.href === "/me/posts" ? (
           <PostIcon
             className={clsx(
-              "h-4 w-4 fill-current",
+              "h-5 w-5 fill-current",
               pathname === nav.href
                 ? "text-black"
                 : "text-default-500 group-hover:text-default-700",
@@ -51,7 +41,7 @@ export default function MeNavList({ nav }: any) {
         ) : nav.href === "/me/followers" ? (
           <FollowerIcon
             className={clsx(
-              "h-4 w-4 fill-current",
+              "h-5 w-5 fill-current",
               pathname === nav.href
                 ? "text-black"
                 : "text-default-500 group-hover:text-default-700",
@@ -60,7 +50,7 @@ export default function MeNavList({ nav }: any) {
         ) : nav.href === "/diary/remembers" ? (
           <RememberIcon
             className={clsx(
-              "h-4 w-4 fill-current",
+              "h-5 w-5 fill-current",
               pathname === nav.href
                 ? "text-black"
                 : "text-default-500 group-hover:text-default-700",

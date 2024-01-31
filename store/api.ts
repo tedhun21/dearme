@@ -93,15 +93,22 @@ export const getMyRequestWithPage = async ({
   return users;
 };
 
-export const getMyFriendWithPage = async ({
+export const getMyFriendWithPageAndSearch = async ({
   pageParam,
+  searchParam,
   size,
   access_token,
 }: any) => {
+  let q = "";
+  if (pageParam && size && searchParam) {
+    q = `&q=${searchParam}`;
+  } else if (!pageParam && !size && searchParam) {
+    q = `?q=${searchParam}`;
+  }
   const {
     data: { users, pagination },
   } = await axios.get(
-    `${API_URL}/friendships/friend?page=${pageParam}&size=${size}`,
+    `${API_URL}/friendships/friend?page=${pageParam}&size=${size}${q}`,
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
 

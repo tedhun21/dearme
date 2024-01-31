@@ -6,7 +6,10 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import FollowList from "@/app/ui/me/FollowList";
 import { getCookie } from "@/util/tokenCookie";
-import { getMyFriendWithPage, getMyRequestWithPage } from "@/store/api";
+import {
+  getMyFriendWithPageAndSearch,
+  getMyRequestWithPage,
+} from "@/store/api";
 
 const access_token = getCookie("access_token");
 
@@ -33,9 +36,9 @@ export default function MeFriend() {
     fetchNextPage: fetchNextFriendPage,
     data: friendData,
   } = useInfiniteQuery({
-    queryKey: ["getMyFriendWithPage"],
+    queryKey: ["getMyFriendWithPageAndSearch"],
     queryFn: ({ pageParam }: { pageParam: number }) =>
-      getMyFriendWithPage({ pageParam, size: 12, access_token }),
+      getMyFriendWithPageAndSearch({ pageParam, size: 12, access_token }),
     getNextPageParam: (lastPage, allPages: any) => {
       const maxPage = lastPage.users.length / 12;
       const nextPage = allPages.length + 1;

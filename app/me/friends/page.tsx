@@ -9,7 +9,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import BackButton from "@/app/ui/backbutton";
 import FollowList from "@/app/ui/me/FollowList";
-import { getMyFriendWithPageAndSearch } from "@/store/api";
+import { getMyFriendsWithPageAndSearch } from "@/store/api";
 import { getCookie } from "@/util/tokenCookie";
 import AutoComplete from "@/app/ui/me/AutoComplete";
 
@@ -26,9 +26,9 @@ export default function Friends() {
     data: friendData,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["getMyFriendWithPageAndSearch"],
+    queryKey: ["getMyFriendsWithPageAndSearch"],
     queryFn: ({ pageParam }) =>
-      getMyFriendWithPageAndSearch({
+      getMyFriendsWithPageAndSearch({
         pageParam,
         searchParam: searchKeyword,
         size: 20,
@@ -102,7 +102,7 @@ export default function Friends() {
           )),
         )
       ) : (
-        <div>No Followers</div>
+        <div>Loading...</div>
       )}
 
       {hasNextPage && (

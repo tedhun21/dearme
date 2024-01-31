@@ -14,6 +14,12 @@ export const getMe = async ({ queryKey }: any) => {
   }
 };
 
+export const getUser = async ({ profileId }: any) => {
+  const { data } = await axios.get(`${API_URL}/users/${profileId}`);
+
+  return data;
+};
+
 export const getMyTodosWithDate = async ({ queryKey }: any) => {
   const [_key, { date, access_token }] = queryKey;
 
@@ -28,6 +34,12 @@ export const getMyTodosWithDate = async ({ queryKey }: any) => {
 
     return { results, pagination };
   }
+};
+
+export const getUserTodosWithDate = async ({ date }: any) => {
+  const { data } = await axios.get(`${API_URL}/todos`);
+  console.log(data);
+  return data;
 };
 
 export const updateUserPhoto = async ({
@@ -79,7 +91,7 @@ export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {
   return { results, pagination };
 };
 
-export const getMyRequestWithPage = async ({
+export const getMyRequestsWithPage = async ({
   pageParam,
   access_token,
 }: any) => {
@@ -93,7 +105,7 @@ export const getMyRequestWithPage = async ({
   return users;
 };
 
-export const getMyFriendWithPageAndSearch = async ({
+export const getMyFriendsWithPageAndSearch = async ({
   pageParam,
   searchParam,
   size,

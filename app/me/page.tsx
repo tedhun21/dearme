@@ -19,27 +19,20 @@ const access_token = getCookie("access_token");
 export default function Me() {
   const [isDrop, setIsDrop] = useState(false);
 
-  const [todos, setTodos] = useRecoilState(todoListState);
-
-  const {
-    isLoading,
-    isSuccess,
-    data: todoData,
-  } = useQuery({
+  const { isLoading, data: todos } = useQuery({
     queryKey: ["getMyTodosWithDate", { date: getToday(), access_token }],
     queryFn: getMyTodosWithDate,
   });
 
-  useEffect(() => {
-    if (todoData) {
-      setTodos(todoData);
-    }
-  }, [isSuccess]);
-
   return (
     <section className="mb-20 mt-4 flex flex-col">
-      <TodoRate isLoading={isLoading} isDrop={isDrop} setIsDrop={setIsDrop} />
-      {isDrop && todos.results.length !== 0 ? (
+      <TodoRate
+        todos={(todos as any)?.results}
+        isLoading={isLoading}
+        isDrop={isDrop}
+        setIsDrop={setIsDrop}
+      />
+      {!isLoading && isDrop && todos?.results.length !== 0 ? (
         <section>
           <DragTodo />
         </section>

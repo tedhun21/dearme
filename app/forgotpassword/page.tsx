@@ -5,6 +5,13 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  sendSignInLinkToEmail,
+} from "firebase/auth";
 
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
@@ -26,6 +33,19 @@ import SuccessfulCheck from "@/public/forgotpassword/SuccessfulCheck";
 import PageLevel4 from "@/public/forgotpassword/PageLevel4";
 import X from "@/public/signup/X";
 import Check from "@/public/signup/Check";
+
+// Firebase 초기화
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+
+const app = initializeApp(firebaseConfig);
 
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
@@ -65,6 +85,27 @@ export default function ForgotPassword() {
     resolver: yupResolver(Schema),
     mode: "onChange", // 실시간 유효성 검사를 위해 onChange 모드 설정
   });
+
+  // Email 인증 링크를 보내는 함수
+  const sendEmailVerification = (email: string) => {
+    const auth = getAuth(app);
+
+    const emailVerificationUrl = `http://${process.env.NEXT_PUBLIC_EMAIL_VERIFICATION_URL}:1337/verifyEmail`;
+    const actionCodeSettings = {
+      // 사용자가 인증 링크를 클릭한 후 이동할 URL
+      // 사용자가 이메일 인증을 완료한 후 돌아올 로그인 페이지 URL을 명시
+      url: emailVerificationUrl,
+      handleCodeInApp: true,
+    };
+    sendSignInLinkToEmail(auth, email, actionCodeSettings)
+      .then(() => {
+        window.localStorage.setItem("emailForSignIn", email); // 추후 인증 과정에서 사용하기 위해 이메일 저장
+        // 사용자에게 인증 이메일이 전송되었음을 알립니다.
+      })
+      .catch((error) => {
+        console.error("Error sending email verification link", error);
+      });
+  };
 
   // Debouncing 함수 (연속적인 API 호출을 방지하기 위해)
   const debounce = (func: any, delay: any) => {
@@ -153,7 +194,6 @@ export default function ForgotPassword() {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/find-by-email?email=${inputValues.emailInput}`,
-        // { params: { email: inputValues.emailInput } },
       );
       setUserInfo(response.data);
       setCurrentstep("2단계");
@@ -174,7 +214,13 @@ export default function ForgotPassword() {
 
   // 첫 번째 단계 Continue 버튼 클릭 핸들러
   const handleContinue = () => {
-    handleEmailCheck();
+    handleEmailCheck()
+      .then(() => {
+        sendEmailVerification(inputValues.emailInput);
+      })
+      .catch((error) => {
+        console.error("Error sending email verification link", error);
+      });
   };
 
   return (

@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Footer from "../ui/footer";
 import MeNav from "../ui/me/MeNav";
-import UserProfile from "../ui/me/UserProfile";
+import MeProfile from "../ui/me/MeProfile";
 
 export default function RootLayout({
   children,
@@ -16,9 +16,9 @@ export default function RootLayout({
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         {pathname !== "/me/friends" && pathname !== "/me/edit" ? (
-          <UserProfile />
+          <MeProfile />
         ) : pathname === "/me/edit" ? (
-          <UserProfile route={"edit"} />
+          <MeProfile route="edit" />
         ) : null}
         {pathname !== "/me/friends" && pathname !== "/me/edit" && <MeNav />}
         {children}

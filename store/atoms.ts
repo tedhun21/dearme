@@ -21,19 +21,20 @@ interface IUser {
 }
 
 interface IPagination {
-  page: number;
-  pageCount: number;
-  total: number;
+  page?: number;
+  pageSize?: number;
+  pageCount?: number;
+  total?: number;
 }
 
 export interface ITodos {
-  result: ITodo[];
+  results: ITodo[];
   pagination: IPagination;
 }
 
-export const todoListState = atom<ITodo[]>({
+export const todoListState = atom<ITodos>({
   key: "Todos",
-  default: [],
+  default: { results: [], pagination: {} },
 });
 
 export interface IMe {
@@ -50,9 +51,14 @@ export const meState = atom<IMe>({
   default: undefined,
 });
 
-interface IGoal {}
+interface IPost {}
 
-export const goalListState = atom({
-  key: "Goals",
-  default: [],
+interface IPosts {
+  results: IPost[];
+  pagination: IPagination;
+}
+
+export const postListState = atom<IPosts>({
+  key: "Posts",
+  default: { results: [], pagination: {} },
 });

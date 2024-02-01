@@ -1,9 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { Comment } from "@/app/social/page";
+import CommentSettings from "./CommentSettings";
 import { timeSince } from "./SocialPost";
+import { createComment, updateComment } from "@/store/api";
 
 import InputBase from "@mui/material/InputBase";
 
@@ -11,17 +15,14 @@ import Send from "@/public/social/Send";
 
 interface CommentProps {
   comments: Comment[];
-  onCommentSubmit: (comment: string) => void;
   postId: number;
 }
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function CommentsSection({
-  comments,
-  onCommentSubmit,
-  postId,
-}: CommentProps) {
+export default function CommentsSection({ comments, postId }: CommentProps) {
+  const queryClient = useQueryClient();
+
   // 댓글 입력 상태
   const [comment, setComment] = useState<string>("");
 
@@ -29,41 +30,126 @@ export default function CommentsSection({
     setComment(e.target.value);
   };
 
-  const handleSubmit = () => {
-    onCommentSubmit(comment);
+  // 댓글 Post Request
+  const { mutateAsync: addCommentMutation } = useMutation({
+    mutationFn: createComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+
+  const handleSubmit = async () => {
+    try {
+      await addCommentMutation({ postId, comment });
+    } catch (e) {
+      console.error(e);
+    }
     setComment("");
   };
 
-  // console.log(comments[0]);
-  // console.log(postId);
+  // 댓글 수정 상태
+  const [editingComment, setEditingComment] = useState<string>("");
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditingComment(
+        comments.find((comment) => comment.id === editingCommentId)?.body || "",
+      );
+    }
+  }, [isEditing, editingCommentId, comments]);
+
+  // 댓글 Edit Request
+  const { mutateAsync: updateCommentMutation } = useMutation({
+    mutationFn: updateComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      setIsEditing(false);
+      setEditingComment("");
+      setEditingCommentId(null);
+    },
+  });
+
+  const handleEdit = async () => {
+    try {
+      await updateCommentMutation({
+        postId,
+        commentId: editingCommentId,
+        comment: editingComment,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <section className="mt-4 ">
-      {comments.map((comment, index) => (
-        <div key={index} className="mb-2 flex items-center px-5">
-          <div>
-            <img
-              src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-              alt="User Image"
-              className="h-8 w-8 rounded-full"
-            />
-          </div>
-
-          <div className="w-full flex-col  pl-3">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-default-700">
+      {comments.map((comment, index) => {
+        return (
+          <section key={index} className="mb-2 flex items-center px-5">
+            {/* 이미지 & id */}
+            <div className="flex items-start gap-2">
+              <img
+                src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
+                alt="User Image"
+                className="h-8 w-8 rounded-full"
+              />
+              <div className="mr-2 flex-1 text-sm font-semibold ">
                 {comment.user.nickname}
               </div>
-              <div className="flex justify-end text-xs  text-default-500">
-                {timeSince(comment.createdAt)}
+
+              {/* 댓글 */}
+              {/* TODO inputbase fullwidth 수정 */}
+              <div className=" mb-2 flex w-full flex-col  pl-3">
+                <span className="font-norma flex-auto whitespace-normal break-all text-xs text-default-700">
+                  {isEditing && editingCommentId === comment.id ? (
+                    <InputBase
+                      sx={{
+                        fontSize: 12,
+                        fontWeight: 400,
+
+                        border: 1,
+                        borderColor: "grey.500",
+                      }}
+                      value={editingComment}
+                      onChange={(e) => setEditingComment(e.target.value)}
+                      autoFocus
+                    />
+                  ) : (
+                    comment.body
+                  )}
+                </span>
+
+                <div className="text-2xs  text-default-500">
+                  {timeSince(comment.createdAt)}
+                </div>
               </div>
+
+              {/* TODO if(로그인 유저 === 댓글 작성자) */}
+              {isEditing && editingCommentId === comment.id ? (
+                <div
+                  className="cursor-pointer text-xs font-normal text-default-700"
+                  onClick={handleEdit}
+                >
+                  Edit
+                </div>
+              ) : (
+                <div>
+                  <CommentSettings
+                    postId={postId}
+                    commentId={comment.id}
+                    onEditClick={() => {
+                      setIsEditing(true);
+                      setEditingCommentId(comment.id);
+                    }}
+                  />
+                </div>
+              )}
             </div>
-            <div className="text-xs font-medium text-default-500">
-              {comment.body}
-            </div>
-          </div>
-        </div>
-      ))}
+          </section>
+        );
+      })}
 
       {/* 댓글 작성 */}
       {/* TODO 로그인 유저 프로필 이미지로 변경 */}
@@ -86,14 +172,15 @@ export default function CommentsSection({
                 fontSize: 14,
                 fontWeight: 500,
               }}
-              placeholder="댓글 작성"
+              placeholder="Add a comment..."
               inputProps={{ "aria-label": "댓글 남기기..." }}
               onChange={handleInputChange}
               value={comment}
             />
-            {/* onClick 이벤트 */}
             {comment && (
-              <Send className="mr-1 h-5 w-5 fill-current text-default-600" />
+              <div onClick={handleSubmit}>
+                <Send className="mr-1 h-5 w-5 fill-current text-default-600" />
+              </div>
             )}
           </div>
         </div>

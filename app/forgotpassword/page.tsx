@@ -224,11 +224,13 @@ export default function ForgotPassword() {
 
   // 이메일 마스킹 처리
   const maskEmail = (email: string) => {
+    if (!email) return email;
     const [username, domain] = email.split("@");
     return `${username.slice(0, 4)}****@${domain}`;
   };
   // 휴대폰 번호 마스킹 처리
   const maskPhone = (phone: string) => {
+    if (!phone) return phone;
     return `${phone.slice(0, 3)}****${phone.slice(7, 11)}`;
   };
 

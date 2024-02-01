@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import clsx from "clsx";
 
-import { getMe, updateUserPhoto } from "@/store/api";
+import { updateUserPhoto } from "@/store/api";
 import { IMe, meState } from "@/store/atoms";
 
 import ProfileSetting from "./ProfileSetting";
@@ -20,15 +20,10 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 const access_token = getCookie("access_token");
 
 export default function MeProfile({ route }: { route?: string }) {
-  const [me, setMe] = useRecoilState<IMe>(meState);
+  const me = useRecoilValue<IMe>(meState);
 
   const fileInput = useRef(null);
   const [userPhoto, setUserPhoto] = useState<File | null>(null);
-
-  const { isSuccess, data: meData } = useQuery({
-    queryKey: ["getMe", { access_token }],
-    queryFn: getMe,
-  });
 
   const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
     useMutation({
@@ -66,11 +61,7 @@ export default function MeProfile({ route }: { route?: string }) {
     });
   };
 
-  useEffect(() => {
-    if (meData) {
-      setMe(meData);
-    }
-  }, [isSuccess]);
+  console.log(me);
 
   return (
     <section className="h-80 w-full">

@@ -6,7 +6,6 @@ interface UsersProps {
 }
 
 export default function Users({ imageUrl, nickname }: UsersProps) {
-  console.log(imageUrl);
   return (
     <div className="mb-2 flex h-16 items-center rounded-lg bg-default-100 px-3 py-2">
       <img

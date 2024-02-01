@@ -50,6 +50,9 @@ const app = initializeApp(firebaseConfig);
 export default function ForgotPassword() {
   const [currentStep, setCurrentstep] = useState("1단계");
   const [FocusedInput, setFocusedInput] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailForVerification, setEmailForVerification] = useState("");
+  const [verificationCode, setVerificationCode] = useState(["", "", "", ""]); // 4자리 코드를 위한 상태
   const [userInfo, setUserInfo] = useState({ email: "", phone: "" });
   const [duplicateCheck, setDuplicateCheck] = useState({
     // 중복 검사 상태를 저장
@@ -91,6 +94,7 @@ export default function ForgotPassword() {
     const auth = getAuth(app);
 
     const emailVerificationUrl = `http://${process.env.NEXT_PUBLIC_EMAIL_VERIFICATION_URL}:1337/verifyEmail`;
+
     const actionCodeSettings = {
       // 사용자가 인증 링크를 클릭한 후 이동할 URL
       // 사용자가 이메일 인증을 완료한 후 돌아올 로그인 페이지 URL을 명시
@@ -100,7 +104,8 @@ export default function ForgotPassword() {
     sendSignInLinkToEmail(auth, email, actionCodeSettings)
       .then(() => {
         window.localStorage.setItem("emailForSignIn", email); // 추후 인증 과정에서 사용하기 위해 이메일 저장
-        // 사용자에게 인증 이메일이 전송되었음을 알립니다.
+        setEmailSent(true); // 이메일이 성공적으로 보내졌음을 상태로 설정
+        setEmailForVerification(email); // 이메일 주소를 상태로 설정
       })
       .catch((error) => {
         console.error("Error sending email verification link", error);
@@ -115,6 +120,13 @@ export default function ForgotPassword() {
       clearTimeout(inDebounce);
       inDebounce = setTimeout(() => func.apply(context, args), delay);
     };
+  };
+
+  // 코드 입력 처리 함수 (이메일 인증 or 번호 인증 4자리 코드를 위한)
+  const handleCodeInput = (index: number, value: string) => {
+    setVerificationCode(
+      verificationCode.map((code, i) => (i === index ? value[0] : code)),
+    );
   };
 
   const checkEmail = debounce(async (email: string) => {
@@ -150,7 +162,15 @@ export default function ForgotPassword() {
 
   // 비밀번호 찾기 위한 선택한 옵션에 따라 다음 단계로 이동
   const handleOptionClick = (method: any) => {
-    setCurrentstep(method === "sms" ? "sms단계" : "email단계");
+    // setCurrentstep(method === "sms" ? "sms단계" : "email단계");
+    if (method === "email") {
+      // 이메일 인증 코드 보내기
+      sendEmailVerification(userInfo.email);
+      setCurrentstep("email단계");
+    } else {
+      // 휴대폰 인증 코드 보내기
+      setCurrentstep("sms단계");
+    }
   };
 
   // 입력 필드의 onChange 핸들러
@@ -468,12 +488,21 @@ export default function ForgotPassword() {
             <p className="text-lg font-normal text-default-800">
               We sent a code to
             </p>
+            {/* <p className="text-lg font-semibold text-default-900"> */}
+            {/* amelie@gmail.com */}
+            {/* {emailSent && userInfo.email ? userInfo.email : "Loading..."}{" "} */}
+            {/* </p> */}
             <p className="text-lg font-semibold text-default-900">
-              amelie@gmail.com
+              {emailForVerification} {/* 사용자 이메일 표시 */}
             </p>
+            {emailSent && (
+              <p className="text-sm font-normal text-green-500">
+                A verification email has been sent.
+              </p>
+            )}
           </section>
 
-          <section className="flex w-full justify-center gap-1 pb-12 pt-8">
+          {/* <section className="flex w-full justify-center gap-1 pb-12 pt-8">
             <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
               1
             </span>
@@ -486,6 +515,23 @@ export default function ForgotPassword() {
             <span className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl">
               8
             </span>
+          </section> */}
+
+          <section className="flex w-full justify-center gap-1 pb-12 pt-8">
+            {[...Array(4)].map((_, index) => (
+              <Input
+                key={index}
+                type="text"
+                inputMode="numeric"
+                className="inline-flex h-20 w-16 items-center justify-center border-2 border-default-400 text-4xl"
+                value={verificationCode[index]}
+                onChange={(e) => handleCodeInput(index, e.target.value)}
+                autoFocus={index === 0}
+                style={{
+                  padding: "20px",
+                }}
+              />
+            ))}
           </section>
 
           <section className="flex w-full flex-col items-center gap-4 px-16">

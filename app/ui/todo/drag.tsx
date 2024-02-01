@@ -22,6 +22,33 @@ const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
   return result;
 };
 
+const updatePriority = (
+  list: ITodo[],
+  startIndex: number,
+  endIndex: number,
+) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  // startIndex와 endIndex의 관계에 따라 다음 항목들의 우선순위를 조절
+  if (startIndex < endIndex) {
+    // startIndex가 endIndex보다 작은 경우: 아래로 이동한 경우
+    for (let i = endIndex; i > startIndex; i--) {
+      result[i].priority = result[i - 1].priority;
+    }
+    result[startIndex].priority = endIndex;
+  } else if (startIndex > endIndex) {
+    // startIndex가 endIndex보다 큰 경우: 위로 이동한 경우
+    for (let i = endIndex; i < startIndex; i++) {
+      result[i].priority = result[i + 1].priority;
+    }
+    result[startIndex].priority = endIndex;
+  }
+
+  return result;
+};
+
 // drappable style
 const getListStyle = (isDraggingOver: any) => ({
   padding: 20,
@@ -49,9 +76,6 @@ export default function DragTodo() {
   const [todos, setTodos] = useRecoilState(todoListState);
 
   const onDragEnd = ({ source, destination }: DropResult) => {
-    // console.log(">>> source", source.index);
-    // console.log(">>> destination", destination);
-
     if (!destination) {
       return;
     }
@@ -62,14 +86,18 @@ export default function DragTodo() {
         source.index,
         destination.index,
       );
+
+      const updatedTodos = updatePriority(
+        reorderedResults,
+        source.index,
+        destination.index,
+      );
+
       return {
         ...prevTodos,
-        results: reorderedResults,
+        results: updatedTodos,
       };
     });
-
-    // const _todos = reorder(todos.results, source.index, destination.index);
-    // setTodos(_todos);
   };
 
   useEffect(() => {

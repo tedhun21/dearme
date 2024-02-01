@@ -1,9 +1,11 @@
 import { getToday } from "@/util/date";
+import { getCookie } from "@/util/tokenCookie";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const access_token = getCookie("access_token");
 
-export const getMe = async ({ access_token }: any) => {
+export const getMe = async () => {
   if (access_token) {
     const { data } = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -19,25 +21,21 @@ export const getUser = async ({ profileId }: any) => {
   return data;
 };
 
-export const getMyTodosWithDate = async ({ queryKey }: any) => {
-  const [_key, { date, access_token }] = queryKey;
-
+export const getMyTodosWithDate = async ({ date }: any) => {
   if (access_token && date) {
-    const {
-      data: { results, pagination },
-    } = await axios.get(`${API_URL}/todos?date=${date}`, {
+    const { data } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
     });
 
-    return { results, pagination };
+    return data;
   }
 };
 
 export const getUserTodosWithDate = async ({ date }: any) => {
   const { data } = await axios.get(`${API_URL}/todos`);
-  console.log(data);
+
   return data;
 };
 

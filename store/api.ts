@@ -137,16 +137,17 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     } else if (tab === "friends") {
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
-
       const headers = { Authorization: `Bearer ${token}` };
       return await axios
         .get(url, { headers })
-        .then((response) => response.data.data.results);
+        .then((response) => response.data.results);
     }
 
     const response = await axios.get(url);
-    return response.data.data.results;
-  } catch (e) {}
+    return response.data.results;
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 // Create _ post > 목표 조회
@@ -242,7 +243,7 @@ export const deletePost = async (postId: number) => {
   }
 };
 
-// Create _ like
+// Put _ like
 export const likePost = async (postId: number) => {
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
@@ -250,6 +251,74 @@ export const likePost = async (postId: number) => {
 
   try {
     await axios.put(`${API_URL}/posts/${postId}/like`, {}, { headers });
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// Create _ comment
+export const createComment = async ({
+  postId,
+  comment,
+}: {
+  postId: number;
+  comment: string;
+}) => {
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA2NTA0NTIzLCJleHAiOjE3MDkwOTY1MjN9.WIvAqKmQ7AyEn9_gDQUYeJCOwkesKdjrATRUqOmuuxo";
+  const headers = { Authorization: `Bearer ${token}` };
+
+  try {
+    await axios.post(
+      `${API_URL}/comments?postId=${postId}`,
+      { body: comment },
+      { headers },
+    );
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// Update _ comment
+export const updateComment = async ({
+  postId,
+  commentId,
+  comment,
+}: {
+  postId: number;
+  commentId: number | null;
+  comment: string;
+}) => {
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA2NTc4MDg3LCJleHAiOjE3MDkxNzAwODd9.8GfoojAHY0vht2W0PKtG0LW-6xGs8jba14f3QNqLvxU";
+  const headers = { Authorization: `Bearer ${token}` };
+  console.log(postId, commentId, comment);
+  try {
+    await axios.put(
+      `${API_URL}/comments/${commentId}?postId=${postId}`,
+      { body: comment },
+      { headers },
+    );
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// Delete _ comment
+export const deleteComment = async ({
+  postId,
+  commentId,
+}: {
+  postId: number;
+  commentId: number;
+}) => {
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA2NTA0NTIzLCJleHAiOjE3MDkwOTY1MjN9.WIvAqKmQ7AyEn9_gDQUYeJCOwkesKdjrATRUqOmuuxo";
+  const headers = { Authorization: `Bearer ${token}` };
+  try {
+    await axios.delete(`${API_URL}/comments/${commentId}?postId=${postId}`, {
+      headers,
+    });
   } catch (e) {
     console.error(e);
   }

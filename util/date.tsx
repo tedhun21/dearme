@@ -45,3 +45,12 @@ export const goalDday = (date: any): number | string => {
     return `+${diff}`;
   }
 };
+
+// 날짜에 해당하는 달이 몇주인지
+export const getWeeksInMonth = (date: Dayjs) => {
+  const firstDayOfMonth = date.startOf("month");
+  const lastDayOfMonth = date.endOf("month");
+  const firstDayOfWeek = firstDayOfMonth.startOf("week");
+  const lastDayOfWeek = lastDayOfMonth.endOf("week");
+  return lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
+};

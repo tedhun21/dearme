@@ -16,6 +16,14 @@ import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 import { Badge, Switch } from "@mui/material";
 import MeGoal from "./ui/me/MeGoal";
 import Footer from "./ui/footer";
+import { getToday, getWeeksInMonth } from "@/util/date";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/store/api";
+import { getCookie } from "@/util/tokenCookie";
+import { useRecoilState } from "recoil";
+import { meState } from "@/store/atoms";
+
+const access_token = getCookie("access_token");
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -42,25 +50,21 @@ function ServerDay(
 }
 
 export default function Home() {
-  // 현재 날짜 .e.g) "2023-12-20"
-  const dateString = dayjs().format("YYYY-MM-DD");
-  const referenceDate = dayjs(dateString);
-  // 클릭된 Date
-  const [date, setDate] = useState<Dayjs | null>(referenceDate);
+  const [date, setDate] = useState<Dayjs | null>(dayjs(getToday()));
   const [weekOfMonth, setWeekOfMonth] = useState<number | null>();
+
+  const [me, setMe] = useRecoilState(meState);
+
+  const { isSuccess, data: meData } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => getMe({ access_token }),
+  });
+
   const [isTodo, setIsTodo] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
   // 기록된 데이터가 있는 날짜 표시
   const [highlightedDays, setHighlightedDays] = useState([1, 2, 15, 25]);
-
-  const getWeeksInMonth = (date: Dayjs) => {
-    const firstDayOfMonth = date.startOf("month");
-    const lastDayOfMonth = date.endOf("month");
-    const firstDayOfWeek = firstDayOfMonth.startOf("week");
-    const lastDayOfWeek = lastDayOfMonth.endOf("week");
-    return lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
-  };
 
   // Todo or Diary
   const handleTodoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +88,12 @@ export default function Home() {
     const weeksInMonth = getWeeksInMonth(dayjs());
 
     setWeekOfMonth(weeksInMonth);
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess && meData) {
+      setMe(meData);
+    }
   }, []);
 
   return (
@@ -187,7 +197,7 @@ export default function Home() {
               }}
               views={["month", "day"]}
               loading={isLoading}
-              referenceDate={dayjs(referenceDate)}
+              referenceDate={dayjs(getToday())}
               value={date}
               onChange={(newValue) => setDate(newValue)}
               onMonthChange={handleMonthChange}

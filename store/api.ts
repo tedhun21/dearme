@@ -3,8 +3,7 @@ import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const getMe = async ({ queryKey }: any) => {
-  const [_key, { access_token }] = queryKey;
+export const getMe = async ({ access_token }: any) => {
   if (access_token) {
     const { data } = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${access_token}` },

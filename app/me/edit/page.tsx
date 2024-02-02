@@ -35,6 +35,7 @@ export default function MeEdit() {
     handleSubmit,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm();
 
@@ -42,12 +43,18 @@ export default function MeEdit() {
 
   const { mutate: updateProfileMutate } = useMutation({
     mutationFn: updateMe,
-    onSuccess: ({ status, data }) => {
+    onSuccess: ({ data }) => {
       window.alert(data.message);
       window.location.reload();
     },
-    onError: ({ response }: any) => {
-      window.alert(response.data.error.message);
+    onError: ({
+      response: {
+        data: { error },
+      },
+    }: any) => {
+      console.log(error);
+      console.log(error.details.field);
+      setError(error.details.field, { type: "manual", message: error.message });
     },
   });
 
@@ -192,6 +199,11 @@ export default function MeEdit() {
                   },
                 }}
               ></Input>
+              {errors.nickname && (
+                <p className="text-red-500">
+                  {(errors as any).nickname.message}
+                </p>
+              )}
             </FormControl>
             <FormControl>
               <label
@@ -227,6 +239,9 @@ export default function MeEdit() {
                   },
                 }}
               ></Input>
+              {errors.phone && (
+                <p className="text-red-500">{(errors as any).phone.message}</p>
+              )}
             </FormControl>
             <FormControl>
               <label

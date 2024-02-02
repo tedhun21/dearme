@@ -129,18 +129,15 @@ export const getMyFriendsWithPageAndSearch = async ({
 export const getPostWithPage = async ({ tab, pageParam }: any) => {
   try {
     let url = `${API_URL}/posts?page=${pageParam}&size=6`;
-
     if (tab === "all") {
       url += "&public=true";
     } else if (tab === "friends") {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
-      const headers = { Authorization: `Bearer ${token}` };
+      const access_token = getCookie("access_token");
+      const headers = { Authorization: `Bearer ${access_token}` };
       return await axios
         .get(url, { headers })
         .then((response) => response.data.results);
     }
-
     const response = await axios.get(url);
     return response.data.results;
   } catch (e) {
@@ -151,19 +148,15 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
 // Create _ post > 목표 조회
 export const getGoals = async ({ queryKey }: any) => {
   const date = getToday();
-
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MjMxOTYyLCJleHAiOjE3MDg4MjM5NjJ9.zkljmePR93lqAEHFA05QfKvxLXEXLILztviOR_j5Wds";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
 
   return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
-// TODO goalId로 변경
 export const createPost = async (data: any): Promise<any> => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
 
   const formData = new FormData();
 
@@ -199,9 +192,8 @@ export const updatePost = async ({
   postText: string;
   selectedOption: string;
 }): Promise<any> => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MDU4OTU1LCJleHAiOjE3MDg2NTA5NTV9.G-enZ8N2k05kFT36rGd-AFer9BFB9jEgFPOPP0oI7uM";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
 
   const formData = new FormData();
 
@@ -227,9 +219,8 @@ export const updatePost = async ({
 
 // Delete _ post
 export const deletePost = async (postId: number) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
     const response = await axios.delete(`${API_URL}/posts/${postId}`, {
@@ -243,9 +234,8 @@ export const deletePost = async (postId: number) => {
 
 // Put _ like
 export const likePost = async (postId: number) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzA2MTQ4ODAxLCJleHAiOjE3MDg3NDA4MDF9.9EdkDllEionOaPz4ac2nsMw0nd7Yx-uoHcF058p0OJY";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
     await axios.put(`${API_URL}/posts/${postId}/like`, {}, { headers });
@@ -262,9 +252,8 @@ export const createComment = async ({
   postId: number;
   comment: string;
 }) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA2NTA0NTIzLCJleHAiOjE3MDkwOTY1MjN9.WIvAqKmQ7AyEn9_gDQUYeJCOwkesKdjrATRUqOmuuxo";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
     await axios.post(
@@ -287,9 +276,8 @@ export const updateComment = async ({
   commentId: number | null;
   comment: string;
 }) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA2NTc4MDg3LCJleHAiOjE3MDkxNzAwODd9.8GfoojAHY0vht2W0PKtG0LW-6xGs8jba14f3QNqLvxU";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
   console.log(postId, commentId, comment);
   try {
     await axios.put(
@@ -310,9 +298,8 @@ export const deleteComment = async ({
   postId: number;
   commentId: number;
 }) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA2NTA0NTIzLCJleHAiOjE3MDkwOTY1MjN9.WIvAqKmQ7AyEn9_gDQUYeJCOwkesKdjrATRUqOmuuxo";
-  const headers = { Authorization: `Bearer ${token}` };
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
   try {
     await axios.delete(`${API_URL}/comments/${commentId}?postId=${postId}`, {
       headers,
@@ -325,14 +312,12 @@ export const deleteComment = async ({
 // search users
 export const getSearchUsers = async (name: string) => {
   const access_token = getCookie("access_token");
-  console.log(access_token);
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
       `${API_URL}/search-users?searchTerm=${name}`,
       { headers },
     );
-    console.log(response.data);
     return response.data;
   } catch (e) {
     console.error(e);

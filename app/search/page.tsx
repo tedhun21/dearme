@@ -101,9 +101,9 @@ export default function Search() {
             <section>
               <div className="mb-3 text-xl font-semibold">User</div>
               {Array.isArray(users) &&
-                users.map((user, index) => (
+                users.map((user) => (
                   <Users
-                    key={index}
+                    key={user.id}
                     imageUrl={`${BUCKET_URL}${user.photo}`}
                     nickname={user.nickname}
                   />

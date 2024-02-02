@@ -1,13 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { ChangeEvent, useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getCookie } from "@/util/tokenCookie";
+import { useRecoilState } from "recoil";
+import { IMe, meState } from "@/store/atoms";
+import { getMe, createComment, updateComment } from "@/store/api";
 
 import { Comment } from "@/app/social/page";
 import CommentSettings from "./CommentSettings";
 import { timeSince } from "./SocialPost";
-import { createComment, updateComment } from "@/store/api";
 
 import InputBase from "@mui/material/InputBase";
 
@@ -22,6 +27,19 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function CommentsSection({ comments, postId }: CommentProps) {
   const queryClient = useQueryClient();
+
+  // 유저 정보 가져오기
+  const [me, setMe] = useRecoilState<IMe>(meState);
+  const access_token = getCookie("access_token");
+  const { isSuccess, data: meData } = useQuery({
+    queryKey: ["getMe", { access_token }],
+    queryFn: getMe,
+  });
+  useEffect(() => {
+    if (meData) {
+      setMe(meData);
+    }
+  }, [isSuccess]);
 
   // 댓글 입력 상태
   const [comment, setComment] = useState<string>("");
@@ -152,11 +170,10 @@ export default function CommentsSection({ comments, postId }: CommentProps) {
       })}
 
       {/* 댓글 작성 */}
-      {/* TODO 로그인 유저 프로필 이미지로 변경 */}
       <div className="mb-2 mt-5 flex items-center px-5">
         <div>
           <img
-            src="https://i.pinimg.com/564x/e3/5b/90/e35b90f73b94757a55448aa157d5891e.jpg"
+            src={`${BUCKET_URL}${me.photo.url}`}
             alt="User Image"
             className="h-8 w-8 rounded-full"
           />

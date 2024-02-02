@@ -1,7 +1,9 @@
 import { getToday } from "@/util/date";
+import { getCookie } from "@/util/tokenCookie";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const access_token = getCookie("access_token");
 
 export const getMe = async ({ queryKey }: any) => {
   const [_key, { access_token }] = queryKey;
@@ -66,6 +68,16 @@ export const updateUserPhoto = async ({
   } catch (e) {
     window.alert(e);
   }
+};
+
+export const updateMe = async ({ userId, updateData }: any) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(updateData));
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
 };
 
 export const getMyGoals = async ({ queryKey }: any) => {

@@ -37,13 +37,19 @@ export const todoListState = atom<ITodos>({
   default: { results: [], pagination: {} },
 });
 
+interface IImage {
+  id: number;
+  url: string;
+}
+
 export interface IMe {
   id: number;
   email: string;
   username: string;
   nickname: string;
-  photo: any;
-  background: any;
+  photo: IImage;
+  background: IImage;
+  private: boolean;
 }
 
 export const meState = atom<IMe>({

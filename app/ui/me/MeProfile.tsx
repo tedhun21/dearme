@@ -96,7 +96,7 @@ export default function MeProfile({ route }: { route?: string }) {
                 />
               </Link>
             )}
-            {<ProfileSetting />}
+            <ProfileSetting />
           </div>
           {route === "edit" ? (
             <div className="relative flex">

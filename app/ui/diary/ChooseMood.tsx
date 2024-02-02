@@ -6,11 +6,12 @@ import NeutralEmoji from "@/public/diary/NeutralEmoji";
 import SadEmoji from "@/public/diary/SadEmoji";
 import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 
-export default function ChooseMood() {
+export default function ChooseMood({ onMoodSelect }) {
   const [selectedMood, setSelectedMood] = useState(null);
 
-  const handleMoodClick = (mood) => {
+  const handleMoodClick = (mood: any) => {
     setSelectedMood(mood);
+    onMoodSelect(mood);
   };
 
   return (

@@ -11,20 +11,18 @@ import Input from "@mui/joy/Input";
 import Textarea from "@mui/joy/Textarea";
 
 import CirclePlus from "../../../public/diary/CirclePlus";
-import Weather from "../../../public/diary/Weather";
+import WeatherIcons from "@/app/ui/diary/WeatherIcons";
+// import Weather from "../../../public/diary/Weather";
 
-export default function DiaryCreateModal({
-  onSubmit,
-}: {
-  onSubmit: (data: { title: string; content: string }) => void;
-}) {
+export default function DiaryCreateModal({ onSubmit }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [weather, setWeather] = useState("");
+  const [weatherId, setWeatherId] = useState(null);
 
   const handleComplete = () => {
-    onSubmit({ title, content }); // 부모 컴포넌트로 제목과 내용 전달
+    onSubmit({ title, content, weather }); // 부모 컴포넌트로 제목, 내용, 날씨 전달
     setOpen(false); // 모달 닫기
     setTitle(""); // 제목 초기화
     setContent(""); // 내용 초기화
@@ -41,6 +39,7 @@ export default function DiaryCreateModal({
         const { name, main } = response.data;
         const temp = main.temp.toFixed(1); // 소수점 첫째 자리에서 반올림
         setWeather(`${name}, ${temp}°C`);
+        setWeatherId(response.data.weather[0].id);
       } catch (error) {
         console.error("날씨 정보를 가져오는 데 실패했습니다.", error);
       }
@@ -61,7 +60,8 @@ export default function DiaryCreateModal({
       </Button>
       <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
         <span className="mr-2">
-          <Weather />
+          {/* <Weather /> */}
+          <WeatherIcons weatherId={weatherId} />
         </span>
         <h4 className="flex justify-end text-xs font-medium text-default-800">
           {weather || "날씨 정보를 가져오는 중입니다."}

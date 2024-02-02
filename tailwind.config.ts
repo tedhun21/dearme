@@ -12,6 +12,7 @@ const config: Config = {
       screens: {
         xxs: "400px",
         xs: "500px",
+        s: "580px",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

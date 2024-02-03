@@ -8,40 +8,47 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRecoilState } from "recoil";
 import clsx from "clsx";
 
-import { getMe, updateUserPhoto } from "@/store/api";
+import { getMe, updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
 import { IMe, meState } from "@/store/atoms";
 
 import ProfileSetting from "./ProfileSetting";
 import BackButton from "../backbutton";
 import PencilIcon from "@/public/me/PencilIcon";
 import { getCookie } from "@/util/tokenCookie";
+import { IconButton, Menu } from "@mui/material";
+import { usePathname } from "next/navigation";
+
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+
+import ShareIcon from "@/public/me/ShareIcon";
+
+import EditIcon from "@/public/me/EditIcon";
+
+import BackGroundIcon from "@/public/me/BackGroundIcon";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 const access_token = getCookie("access_token");
 
 export default function MeProfile({ route }: { route?: string }) {
+  const pathname = usePathname();
   const [me, setMe] = useRecoilState<IMe>(meState);
 
-  const fileInput = useRef(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
   const [userPhoto, setUserPhoto] = useState<File | null>(null);
+  const [backGroundPhoto, setBackGroundPhoto] = useState<File | null>(null);
 
-  const { isSuccess, data: meData } = useQuery({
-    queryKey: ["getMe", { access_token }],
-    queryFn: getMe,
-  });
+  const fileInput = useRef(null);
+  const BackGroundfileInput = useRef(null);
 
-  const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
-    useMutation({
-      mutationKey: ["updateUserPhoto"],
-      mutationFn: (variables: {
-        userId: number;
-        selectedFile: File;
-        access_token: string | null | undefined;
-      }) => updateUserPhoto(variables),
-      onSuccess: ({ message }: any) => {
-        window.alert(message);
-      },
-    });
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   // 유저 사진 바꾸기, 바꾸면서 업데이트 통신을 같이
   const handleUserPhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -49,22 +56,71 @@ export default function MeProfile({ route }: { route?: string }) {
 
     if (selectedFiles && selectedFiles.length > 0) {
       const selectedFile: File = selectedFiles[0];
-      if (me && access_token) {
+      if (me) {
         setUserPhoto(selectedFile);
 
-        postUserPhoto(selectedFile);
+        // 유저 프로필 사진 업데이트
+        updateUserPhotoMutate({
+          userId: me.id,
+          selectedFile,
+        });
       }
     }
   };
 
-  // 유저 사진 업데이트
-  const postUserPhoto = async (selectedFile: File) => {
-    updateUserPhotoMutate({
-      userId: me.id,
-      selectedFile,
-      access_token,
-    });
+  // 유저 배경 사진 바꾸기, 바꾸면서 업데이트 통신을 같이
+  const handleUserBackGroundChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+
+    if (selectedFiles && selectedFiles.length > 0) {
+      const selectedFile: File = selectedFiles[0];
+      if (me) {
+        setBackGroundPhoto(selectedFile);
+
+        // 유저 백그라운드 사진 업데이트
+        updateBackGroundMutate({ userId: me.id, selectedFile });
+      }
+    }
   };
+
+  const { isSuccess, data: meData } = useQuery({
+    queryKey: ["getMe", { access_token }],
+    queryFn: getMe,
+  });
+
+  // 유저 프로필 사진 바꾸기
+  const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
+    useMutation({
+      mutationKey: ["updateUserPhoto"],
+      mutationFn: (variables: { userId: number; selectedFile: File }) =>
+        updateUserPhoto(variables),
+      onSuccess: ({ message }: any) => {
+        window.alert(message);
+      },
+      onError: ({ response }: any) => {
+        window.alert(response.data.error.message);
+      },
+    });
+
+  // 유저 백그라운드 사진 바꾸기
+  const { mutate: updateBackGroundMutate, data: updateBackGroundData } =
+    useMutation({
+      mutationKey: ["updateBackGroundPhoto"],
+      mutationFn: ({
+        userId,
+        selectedFile,
+      }: {
+        userId: number;
+        selectedFile: File;
+      }) => updateBackGroundPhoto({ userId, selectedFile }),
+      onSuccess: ({ data: { message } }) => {
+        window.alert(message);
+        window.location.reload();
+      },
+      onError: ({ response }: any) => {
+        window.alert(response.data.error.message);
+      },
+    });
 
   useEffect(() => {
     if (meData) {
@@ -96,7 +152,71 @@ export default function MeProfile({ route }: { route?: string }) {
                 />
               </Link>
             )}
-            <ProfileSetting />
+            {/* Meatballs */}
+            <div>
+              <IconButton onClick={handleClick}>
+                <MoreHorizIcon sx={{ color: "#2D2422" }} />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                sx={{
+                  "& .MuiMenu-paper": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                <div className="flex flex-col items-end gap-4 pr-1">
+                  <button className="group flex items-center gap-2">
+                    <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
+                      Share
+                    </span>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
+                      <ShareIcon className="h-5 w-5" />
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => {
+                      (BackGroundfileInput.current as any).click();
+                    }}
+                    className="group flex items-center gap-2"
+                  >
+                    <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
+                      BackGround
+                    </span>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl hover:drop-shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
+                      <BackGroundIcon className="h-5 w-5" />
+                    </div>
+                  </button>
+                  <input
+                    hidden
+                    type="file"
+                    accept="image/jpg,image/png,image/jpeg"
+                    ref={BackGroundfileInput}
+                    onChange={handleUserBackGroundChange}
+                  />
+                  {pathname !== "/me/edit" && (
+                    <Link
+                      href="/me/edit"
+                      onClick={handleClose}
+                      className="group flex items-center gap-2"
+                    >
+                      <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
+                        Edit
+                      </span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl hover:drop-shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
+                        <EditIcon className="h-5 w-5" />
+                      </div>
+                    </Link>
+                  )}
+                </div>
+              </Menu>
+            </div>
+            {/* Meatballs */}
           </div>
           {route === "edit" ? (
             <div className="relative flex">
@@ -104,7 +224,7 @@ export default function MeProfile({ route }: { route?: string }) {
             </div>
           ) : (
             <div className="px-4">
-              <div
+              <button
                 className="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-default-300"
                 onClick={() => {
                   (fileInput.current as any).click();
@@ -127,9 +247,9 @@ export default function MeProfile({ route }: { route?: string }) {
                     className="object-cover"
                   />
                 ) : null}
-              </div>
+              </button>
               <input
-                className="hidden"
+                hidden
                 type="file"
                 accept="image/jpg,image/png,image/jpeg"
                 ref={fileInput}
@@ -188,14 +308,25 @@ export default function MeProfile({ route }: { route?: string }) {
             </button>
           </div>
         ) : null}
-        <Image
-          src="/me/DefaultBackground.png"
-          alt="profile default image"
-          fill
-          quality={80}
-          priority
-          className="z-0 object-cover object-center"
-        />
+        {me?.background ? (
+          <Image
+            src={`${BUCKET_URL}${me.background.url}`}
+            alt="background image"
+            fill
+            quality={80}
+            priority
+            className="z-0 object-cover object-center"
+          />
+        ) : (
+          <Image
+            src={"/me/DefaultBackground.png"}
+            alt="default background image"
+            fill
+            quality={80}
+            priority
+            className="z-0 object-cover object-center"
+          />
+        )}
       </div>
     </section>
   );

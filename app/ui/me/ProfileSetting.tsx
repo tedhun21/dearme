@@ -1,18 +1,22 @@
 import { IconButton, Menu } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import ShareIcon from "@/public/me/ShareIcon";
 
 import Link from "next/link";
 import EditIcon from "@/public/me/EditIcon";
 import { usePathname } from "next/navigation";
+import BackGroundIcon from "@/public/me/BackGroundIcon";
 
 export default function ProfileSetting() {
   const pathname = usePathname();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
+
+  const fileInput = useRef(null);
+  console.log(fileInput);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -46,10 +50,29 @@ export default function ProfileSetting() {
             <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
               Share
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 group-hover:bg-default-400 group-active:bg-default-600">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
               <ShareIcon className="h-5 w-5" />
             </div>
           </button>
+          <button
+            onClick={() => {
+              (fileInput.current as any).click();
+            }}
+            className="group flex items-center gap-2"
+          >
+            <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
+              BackGround
+            </span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl hover:drop-shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
+              <BackGroundIcon className="h-5 w-5" />
+            </div>
+          </button>
+          <input
+            hidden
+            type="file"
+            accept="image/jpg,image/png,image/jpeg"
+            ref={fileInput}
+          />
           {pathname !== "/me/edit" && (
             <Link
               href="/me/edit"
@@ -59,7 +82,7 @@ export default function ProfileSetting() {
               <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
                 Edit
               </span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 group-hover:bg-default-400 group-active:bg-default-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl hover:drop-shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
                 <EditIcon className="h-5 w-5" />
               </div>
             </Link>

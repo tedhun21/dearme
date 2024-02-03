@@ -48,7 +48,6 @@ function ServerDay(
 }
 
 export default function Home() {
-  //
   const [date, setDate] = useState<Dayjs | null>(dayjs(getToday()));
   const [month, setMonth] = useState(dayjs(getToday()).format("YYYY-MM"));
   const [weekOfMonth, setWeekOfMonth] = useState<number | null>(
@@ -94,6 +93,12 @@ export default function Home() {
     setDate(date);
     setMonth(dayjs(date).format("YYYY-MM"));
   };
+
+  useEffect(() => {
+    if (isSuccessForMe) {
+      setMe(meData);
+    }
+  }, []);
 
   useEffect(() => {
     // 데이터가 성공적으로 불러와지면 todos와 highlightedDays를 업데이트합니다.

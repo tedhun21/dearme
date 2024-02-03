@@ -82,7 +82,7 @@ export default function DragTodo() {
 
     setTodos((prevTodos) => {
       const reorderedResults = reorder(
-        prevTodos.results,
+        prevTodos,
         source.index,
         destination.index,
       );
@@ -122,7 +122,7 @@ export default function DragTodo() {
             {...provided.droppableProps}
             style={getListStyle(snapshot.isDraggingOver) as any}
           >
-            {todos?.results.map((todo: ITodo, index: number) => (
+            {todos?.map((todo: ITodo, index: number) => (
               <Draggable
                 key={todo.id}
                 draggableId={todo.id.toString()}

@@ -52,8 +52,6 @@ export default function MeEdit() {
         data: { error },
       },
     }: any) => {
-      console.log(error);
-      console.log(error.details.field);
       setError(error.details.field, { type: "manual", message: error.message });
     },
   });

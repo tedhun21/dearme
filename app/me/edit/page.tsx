@@ -1,15 +1,18 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
-
-import PillSwitch from "@/app/ui/me/Switch";
-
-import { FormControl, Input } from "@mui/joy";
+import { ChangeEvent, useEffect, useState } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { useRecoilValueLoadable } from "recoil";
 
-import axios, { AxiosError } from "axios";
-import { Switch } from "@mui/material";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+import { FormControl, Input } from "@mui/joy";
+
+import PillSwitch from "@/app/ui/me/Switch";
+import { IMe, meState } from "@/store/atoms";
+import { updateMe } from "@/store/api";
+import { useRouter } from "next/navigation";
 
 type UpdateDataProps = {
   id: number;
@@ -21,35 +24,38 @@ type IUpdateData = {
   nickname: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export default function MeEdit() {
+  // 초기값이 undefined여서 업데이트되면 초기값으로 설정
+  const me = useRecoilValueLoadable(meState);
+
+  // 초기값이 undefined여서 업데이트되면 초기값으로 설정
   const [userPrivate, setUserPrivate] = useState(false);
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm();
 
   // console.log(watch());
 
-  const updateProfile = async ({ id, updateData }: UpdateDataProps) => {
-    console.log(id, updateData);
-    return await axios.put(
-      `${API_URL}/users/${id}`,
-      { data: updateData },
-      {
-        headers: {
-          Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzA1OTcwNjk5LCJleHAiOjE3MDg1NjI2OTl9.LStQcwTesyzRLOmgknKbPqw1MPHRldtzW_M9126rKJE"}`,
-        },
-      },
-    );
-  };
-
   const { mutate: updateProfileMutate } = useMutation({
-    mutationFn: updateProfile,
+    mutationFn: updateMe,
+    onSuccess: ({ data }) => {
+      window.alert(data.message);
+      window.location.reload();
+    },
+    onError: ({
+      response: {
+        data: { error },
+      },
+    }: any) => {
+      console.log(error);
+      console.log(error.details.field);
+      setError(error.details.field, { type: "manual", message: error.message });
+    },
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -57,31 +63,50 @@ export default function MeEdit() {
   };
 
   const onSubmit = (updateData: any) => {
-    updateProfileMutate({ id: 1, updateData } as any);
+    // 빈 스트링 제거
+    Object.keys(updateData).forEach((key) => {
+      if (updateData[key] === "" || updateData[key] == null) {
+        delete updateData[key];
+      }
+    });
+
+    if (me.state === "hasValue" && me.contents.id)
+      updateProfileMutate({
+        userId: me.contents.id,
+        updateData: { ...updateData, private: userPrivate },
+      } as any);
   };
+
+  useEffect(() => {
+    if (me.state === "hasValue") {
+      setUserPrivate(me.contents?.private);
+    }
+  }, [me.state, me.contents]);
 
   return (
     <section className="mb-20 mt-4">
-      <div className="flex flex-col gap-6 p-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-6 p-5"
+      >
         <div className="flex items-center gap-4">
-          <span className="text-base font-semibold">Private</span>
-          <PillSwitch checked={userPrivate} onChange={handleChange} />
+          <span className="text-xl font-semibold">Private</span>
+          <PillSwitch checked={userPrivate ?? false} onChange={handleChange} />
         </div>
         <div>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-5"
-          >
+          <div className="flex w-full flex-col gap-5">
             <FormControl>
               <label
-                htmlFor="id"
+                htmlFor="username"
                 className="font-small block text-sm leading-4 text-gray-500"
               >
                 Name
               </label>
               <Input
-                {...register("name")}
+                id="username"
                 variant="plain"
+                defaultValue={me.contents?.username}
+                readOnly
                 sx={{
                   "--Input-radius": "0px",
                   borderBottom: "2px solid #DED0B6",
@@ -107,14 +132,16 @@ export default function MeEdit() {
             </FormControl>
             <FormControl>
               <label
-                htmlFor="id"
+                htmlFor="email"
                 className="font-small block text-sm leading-4 text-gray-500"
               >
-                Nickname
+                Email
               </label>
               <Input
-                {...register("nickname")}
+                id="email"
                 variant="plain"
+                defaultValue={me.contents?.email}
+                readOnly
                 sx={{
                   "--Input-radius": "0px",
                   borderBottom: "2px solid #DED0B6",
@@ -138,81 +165,125 @@ export default function MeEdit() {
                 }}
               ></Input>
             </FormControl>
-            <button
-              className="flex w-full items-center justify-center border-2 border-default-800 pt-4"
-              type="submit"
-            >
-              Edit Profile
-            </button>
-          </form>
-        </div>
-      </div>
-
-      {/* <article className="flex flex-col items-center justify-center p-5">
-        <section className="flex w-full flex-col items-center justify-center gap-5 p-5">
-          <div className="flex w-2/3 items-center">
-            <label className="mr-5 w-12 flex-none text-xs font-semibold">
-              이름
-            </label>
-            <input
-              className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 focus:outline-none"
-              defaultValue="김코딩"
-              readOnly
-            />
-          </div>
-          <div className="flex w-2/3 items-center">
-            <label className="mr-5 w-12 flex-none text-xs font-semibold">
-              닉네임
-            </label>
-            <input
-              className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
-              value="코딩맨"
-            />
-          </div>
-          <div className="flex w-2/3 items-center">
-            <label className="mr-5 w-12 flex-none text-xs font-semibold">
-              연락처
-            </label>
-            <input
-              className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
-              value="010839405552"
-            />
-          </div>
-          <div className="flex w-2/3 items-center">
-            <label className="mr-5 w-12 flex-none text-xs font-semibold">
-              주소
-            </label>
-            <input
-              className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
-              value="서울시 중구"
-            />
-          </div>
-          <div className="flex w-2/3 items-center">
-            <label className="mr-5 w-12 flex-none text-xs font-semibold">
-              상세주소
-            </label>
-            <input
-              className="flex-auto border-b-2 border-default-400 bg-transparent text-center text-xs text-default-700 hover:border-default-600 focus:border-default-800 focus:outline-none"
-              value="새록새록아파트 202동 1105호"
-            />
-          </div>
-        </section>
-        <section className="flex w-full flex-col items-center p-5">
-          <div className="flex w-2/3 flex-col">
-            <button className="w-full rounded-lg border-2 border-default-500 bg-default-100 p-2 text-xs font-semibold hover:border-default-700 hover:bg-default-500 hover:text-default-300 active:border-default-800">
-              수정하기
-            </button>
-            <div className="flex justify-between pt-4">
-              <button className="text-xs font-semibold text-default-500 hover:text-default-700">
-                로그아웃
+            <FormControl>
+              <label
+                htmlFor="nickname"
+                className="font-small block text-sm leading-4 text-gray-500"
+              >
+                Nickname
+              </label>
+              <Input
+                id="nickname"
+                {...register("nickname")}
+                variant="plain"
+                defaultValue={me.contents?.nickname}
+                sx={{
+                  "--Input-radius": "0px",
+                  borderBottom: "2px solid #DED0B6",
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    borderColor: "neutral.outlinedHoverBorder",
+                  },
+                  "&::before": {
+                    border: "2px solid #000000", // focusedHighlight색상
+                    transform: "scaleX(0)",
+                    left: 0,
+                    right: 0,
+                    bottom: "-2px",
+                    top: "unset",
+                    transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                    borderRadius: 0,
+                  },
+                  "&:focus-within::before": {
+                    transform: "scaleX(1)",
+                  },
+                }}
+              ></Input>
+              {errors.nickname && (
+                <p className="text-red-500">
+                  {(errors as any).nickname.message}
+                </p>
+              )}
+            </FormControl>
+            <FormControl>
+              <label
+                htmlFor="phone"
+                className="font-small block text-sm leading-4 text-gray-500"
+              >
+                Phone
+              </label>
+              <Input
+                id="phone"
+                {...register("phone")}
+                variant="plain"
+                defaultValue={me.contents?.phone}
+                sx={{
+                  "--Input-radius": "0px",
+                  borderBottom: "2px solid #DED0B6",
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    borderColor: "neutral.outlinedHoverBorder",
+                  },
+                  "&::before": {
+                    border: "2px solid #000000", // focusedHighlight색상
+                    transform: "scaleX(0)",
+                    left: 0,
+                    right: 0,
+                    bottom: "-2px",
+                    top: "unset",
+                    transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                    borderRadius: 0,
+                  },
+                  "&:focus-within::before": {
+                    transform: "scaleX(1)",
+                  },
+                }}
+              ></Input>
+              {errors.phone && (
+                <p className="text-red-500">{(errors as any).phone.message}</p>
+              )}
+            </FormControl>
+            <FormControl>
+              <label
+                htmlFor="body"
+                className="font-small block text-sm leading-4 text-gray-500"
+              >
+                Introduce
+              </label>
+              <TextareaAutosize
+                id="body"
+                {...register("body")}
+                defaultValue={me.contents?.body}
+                minRows={3}
+                maxRows={6}
+                className="rounded-md border border-solid hover:border-default-800 focus:border-default-900 focus:shadow-lg focus-visible:outline-0"
+              ></TextareaAutosize>
+            </FormControl>
+            <div className="mx-8 flex flex-col items-center justify-center gap-4">
+              <button
+                className="w-full rounded-3xl border-2 border-default-800 bg-default-300 py-3 font-bold hover:bg-default-400 active:bg-default-800 active:text-default-900"
+                type="submit"
+              >
+                Edit Profile
               </button>
-              <button className="text-xs font-semibold text-default-500 hover:text-default-700">
-                회원탈퇴
-              </button>
+              <div className="flex w-full justify-between">
+                <button
+                  type="button"
+                  className="font-semibold hover:text-default-800 active:text-default-900"
+                >
+                  Log out
+                </button>
+                <button
+                  type="button"
+                  className="font-semibold hover:text-default-800 active:text-default-900"
+                >
+                  Withdrawal
+                </button>
+              </div>
             </div>
           </div>
-        </section>
-      </article> */}
+        </div>
+      </form>
     </section>
   );
 }

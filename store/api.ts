@@ -43,27 +43,47 @@ export const getUserTodosWithDate = async ({ date }: any) => {
 export const updateUserPhoto = async ({
   userId,
   selectedFile,
-  access_token,
 }: {
   userId: number;
   selectedFile: File;
-  access_token: string | null | undefined;
 }) => {
   const formData = new FormData();
   formData.append("data", JSON.stringify({}));
   formData.append("photo", selectedFile);
 
-  try {
-    const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
 
-    return data;
-  } catch (e) {
-    window.alert(e);
-  }
+  return data;
+};
+export const updateBackGroundPhoto = async ({
+  userId,
+  selectedFile,
+}: {
+  userId: number;
+  selectedFile: File;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("background", selectedFile);
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
+};
+
+export const updateMe = async ({ userId, updateData }: any) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(updateData));
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
 };
 
 export const getMyGoals = async ({ queryKey }: any) => {

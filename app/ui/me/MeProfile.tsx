@@ -5,10 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import clsx from "clsx";
 
+
 import { getMe, updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
+
 import { IMe, meState } from "@/store/atoms";
 
 import ProfileSetting from "./ProfileSetting";
@@ -30,8 +32,7 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 const access_token = getCookie("access_token");
 
 export default function MeProfile({ route }: { route?: string }) {
-  const pathname = usePathname();
-  const [me, setMe] = useRecoilState<IMe>(meState);
+  const me = useRecoilValue<IMe>(meState);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
@@ -49,6 +50,20 @@ export default function MeProfile({ route }: { route?: string }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
+    useMutation({
+      mutationKey: ["updateUserPhoto"],
+      mutationFn: (variables: {
+        userId: number;
+        selectedFile: File;
+        access_token: string | null | undefined;
+      }) => updateUserPhoto(variables),
+      onSuccess: ({ message }: any) => {
+        window.alert(message);
+      },
+    });
+
 
   // 유저 사진 바꾸기, 바꾸면서 업데이트 통신을 같이
   const handleUserPhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +142,7 @@ export default function MeProfile({ route }: { route?: string }) {
       setMe(meData);
     }
   }, [isSuccess]);
-
+          
   return (
     <section className="h-80 w-full">
       <div className="relative flex h-full p-5">

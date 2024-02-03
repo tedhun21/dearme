@@ -13,6 +13,7 @@ export interface ITodo {
   done: boolean;
   public: EPublic;
   user: IUser;
+  priority: number;
 }
 
 interface IUser {
@@ -27,14 +28,14 @@ interface IPagination {
   total?: number;
 }
 
-export interface ITodos {
-  results: ITodo[];
-  pagination: IPagination;
-}
+// export interface ITodos {
+//   results: ITodo[];
+//   pagination: IPagination;
+// }
 
-export const todoListState = atom<ITodos>({
+export const todoListState = atom<ITodo[]>({
   key: "Todos",
-  default: { results: [], pagination: {} },
+  default: [],
 });
 
 interface IImage {

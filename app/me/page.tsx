@@ -20,8 +20,8 @@ export default function Me() {
   const [isDrop, setIsDrop] = useState(false);
 
   const { isLoading, data: todos } = useQuery({
-    queryKey: ["getMyTodosWithDate", { date: getToday(), access_token }],
-    queryFn: getMyTodosWithDate,
+    queryKey: ["getMyTodosWithDate"],
+    queryFn: () => getMyTodosWithDate({ date: getToday() }),
   });
 
   return (

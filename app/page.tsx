@@ -1,21 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Header from "./ui/header";
+import { use, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useRecoilState } from "recoil";
+
 import dayjs, { Dayjs } from "dayjs";
-import weekOfYear from "dayjs/plugin/weekOfYear";
+
 import {
   LocalizationProvider,
   PickersDay,
   PickersDayProps,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 import { Badge, Switch } from "@mui/material";
+
+import Header from "./ui/header";
 import MeGoal from "./ui/me/MeGoal";
 import Footer from "./ui/footer";
+import { getToday, getWeeksInMonth } from "@/util/date";
+import { getMe, getMyTodosWithDate } from "@/store/api";
+import { meState, todoListState } from "@/store/atoms";
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -42,25 +48,36 @@ function ServerDay(
 }
 
 export default function Home() {
-  // 현재 날짜 .e.g) "2023-12-20"
-  const dateString = dayjs().format("YYYY-MM-DD");
-  const referenceDate = dayjs(dateString);
-  // 클릭된 Date
-  const [date, setDate] = useState<Dayjs | null>(referenceDate);
-  const [weekOfMonth, setWeekOfMonth] = useState<number | null>();
+  //
+  const [date, setDate] = useState<Dayjs | null>(dayjs(getToday()));
+  const [month, setMonth] = useState(dayjs(getToday()).format("YYYY-MM"));
+  const [weekOfMonth, setWeekOfMonth] = useState<number | null>(
+    getWeeksInMonth(dayjs()),
+  );
+
+  const [me, setMe] = useRecoilState(meState);
+  const [todos, setTodos] = useRecoilState(todoListState);
+
+  const { isSuccess: isSuccessForMe, data: meData } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => getMe(),
+  });
+
+  const {
+    isSuccess: isSuccessForTodos,
+    data: todoData,
+    refetch: refetchTodos,
+    isRefetching: isTodoRefetching,
+  } = useQuery({
+    queryKey: ["getMyTodosWithDate"],
+    queryFn: () => getMyTodosWithDate({ date: month }),
+  });
+
   const [isTodo, setIsTodo] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
   // 기록된 데이터가 있는 날짜 표시
-  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15, 25]);
-
-  const getWeeksInMonth = (date: Dayjs) => {
-    const firstDayOfMonth = date.startOf("month");
-    const lastDayOfMonth = date.endOf("month");
-    const firstDayOfWeek = firstDayOfMonth.startOf("week");
-    const lastDayOfWeek = lastDayOfMonth.endOf("week");
-    return lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
-  };
+  const [highlightedDays, setHighlightedDays] = useState([]);
 
   // Todo or Diary
   const handleTodoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,17 +91,24 @@ export default function Home() {
     // 그 달 몇주인지 업데이트
     setWeekOfMonth(weeksInMonth);
 
-    // setIsLoading(true);
-    setHighlightedDays([]);
-    // fetchHighlightDays(date)
+    setDate(date);
+    setMonth(dayjs(date).format("YYYY-MM"));
   };
 
-  // 첫 마운트될 때 그 달의 몇주인지
   useEffect(() => {
-    const weeksInMonth = getWeeksInMonth(dayjs());
+    // 데이터가 성공적으로 불러와지면 todos와 highlightedDays를 업데이트합니다.
+    if (isSuccessForTodos && todoData) {
+      setTodos(todoData);
+      const highlighted = todoData.map((todo: any) => +todo.date.slice(8, 10));
+      setHighlightedDays(highlighted);
+    }
+  }, [isSuccessForTodos, todoData]);
 
-    setWeekOfMonth(weeksInMonth);
-  }, []);
+  useEffect(() => {
+    if (!isTodoRefetching && month) {
+      refetchTodos();
+    }
+  }, [month]);
 
   return (
     <main className="flex min-h-screen justify-center">
@@ -187,7 +211,7 @@ export default function Home() {
               }}
               views={["month", "day"]}
               loading={isLoading}
-              referenceDate={dayjs(referenceDate)}
+              referenceDate={dayjs(getToday())}
               value={date}
               onChange={(newValue) => setDate(newValue)}
               onMonthChange={handleMonthChange}

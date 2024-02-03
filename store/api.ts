@@ -7,13 +7,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
 
 export const getMe = async () => {
-  if (access_token) {
-    const { data } = await axios.get(`${API_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
+  const { data } = await axios.get(`${API_URL}/users/me`, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
 
-    return data;
-  }
+  return data;
 };
 
 export const getUser = async ({ profileId }: any) => {

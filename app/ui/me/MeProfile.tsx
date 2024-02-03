@@ -1,37 +1,30 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRecoilValue } from "recoil";
 import clsx from "clsx";
 
-
-import { getMe, updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
-
+import { updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
 import { IMe, meState } from "@/store/atoms";
 
-import ProfileSetting from "./ProfileSetting";
-import BackButton from "../backbutton";
-import PencilIcon from "@/public/me/PencilIcon";
-import { getCookie } from "@/util/tokenCookie";
 import { IconButton, Menu } from "@mui/material";
-import { usePathname } from "next/navigation";
 
+import BackButton from "../backbutton";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-
+import PencilIcon from "@/public/me/PencilIcon";
 import ShareIcon from "@/public/me/ShareIcon";
-
 import EditIcon from "@/public/me/EditIcon";
-
 import BackGroundIcon from "@/public/me/BackGroundIcon";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
-const access_token = getCookie("access_token");
 
 export default function MeProfile({ route }: { route?: string }) {
+  const pathname = usePathname();
   const me = useRecoilValue<IMe>(meState);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -50,58 +43,6 @@ export default function MeProfile({ route }: { route?: string }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
-    useMutation({
-      mutationKey: ["updateUserPhoto"],
-      mutationFn: (variables: {
-        userId: number;
-        selectedFile: File;
-        access_token: string | null | undefined;
-      }) => updateUserPhoto(variables),
-      onSuccess: ({ message }: any) => {
-        window.alert(message);
-      },
-    });
-
-
-  // 유저 사진 바꾸기, 바꾸면서 업데이트 통신을 같이
-  const handleUserPhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-
-    if (selectedFiles && selectedFiles.length > 0) {
-      const selectedFile: File = selectedFiles[0];
-      if (me) {
-        setUserPhoto(selectedFile);
-
-        // 유저 프로필 사진 업데이트
-        updateUserPhotoMutate({
-          userId: me.id,
-          selectedFile,
-        });
-      }
-    }
-  };
-
-  // 유저 배경 사진 바꾸기, 바꾸면서 업데이트 통신을 같이
-  const handleUserBackGroundChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-
-    if (selectedFiles && selectedFiles.length > 0) {
-      const selectedFile: File = selectedFiles[0];
-      if (me) {
-        setBackGroundPhoto(selectedFile);
-
-        // 유저 백그라운드 사진 업데이트
-        updateBackGroundMutate({ userId: me.id, selectedFile });
-      }
-    }
-  };
-
-  const { isSuccess, data: meData } = useQuery({
-    queryKey: ["getMe", { access_token }],
-    queryFn: getMe,
-  });
 
   // 유저 프로필 사진 바꾸기
   const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
@@ -130,19 +71,44 @@ export default function MeProfile({ route }: { route?: string }) {
       }) => updateBackGroundPhoto({ userId, selectedFile }),
       onSuccess: ({ data: { message } }) => {
         window.alert(message);
-        window.location.reload();
       },
       onError: ({ response }: any) => {
         window.alert(response.data.error.message);
       },
     });
 
-  useEffect(() => {
-    if (meData) {
-      setMe(meData);
+  // 유저 사진 바꾸기, 바꾸면서 업데이트 통신을 같이
+  const handleUserPhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+
+    if (selectedFiles && selectedFiles.length > 0) {
+      const selectedFile: File = selectedFiles[0];
+      if (me) {
+        setUserPhoto(selectedFile);
+
+        // 유저 프로필 사진 업데이트
+        updateUserPhotoMutate({
+          userId: me.id,
+          selectedFile,
+        });
+      }
     }
-  }, [isSuccess]);
-          
+  };
+
+  const handleUserBackGroundChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+
+    if (selectedFiles && selectedFiles.length > 0) {
+      const selectedFile: File = selectedFiles[0];
+      if (me) {
+        setBackGroundPhoto(selectedFile);
+
+        // 유저 백그라운드 사진 업데이트
+        updateBackGroundMutate({ userId: me.id, selectedFile });
+      }
+    }
+  };
+
   return (
     <section className="h-80 w-full">
       <div className="relative flex h-full p-5">
@@ -290,7 +256,7 @@ export default function MeProfile({ route }: { route?: string }) {
               {userPhoto ? (
                 <Image
                   src={userPhoto && URL.createObjectURL(userPhoto)}
-                  alt="profile default image"
+                  alt="user photo"
                   fill
                   quality={80}
                   priority
@@ -299,7 +265,7 @@ export default function MeProfile({ route }: { route?: string }) {
               ) : (me as any)?.photo ? (
                 <Image
                   src={`${BUCKET_URL}${(me as any).photo.url}`}
-                  alt="userPhoto"
+                  alt="user photo"
                   fill
                   className="object-cover"
                 />
@@ -323,7 +289,12 @@ export default function MeProfile({ route }: { route?: string }) {
             </button>
           </div>
         ) : null}
-        {me?.background ? (
+        {backGroundPhoto ? (
+          <Image
+            src={backGroundPhoto && URL.createObjectURL(backGroundPhoto)}
+            alt="background image"
+          ></Image>
+        ) : me?.background ? (
           <Image
             src={`${BUCKET_URL}${me.background.url}`}
             alt="background image"

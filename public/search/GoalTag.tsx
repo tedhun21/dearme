@@ -2,7 +2,7 @@ type IconProps = {
   className?: string;
 };
 
-export default function Tag({ className }: IconProps) {
+export default function GoalTag({ className }: IconProps) {
   return (
     <svg
       className={className}

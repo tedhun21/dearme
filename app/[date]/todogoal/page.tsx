@@ -4,82 +4,116 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 
 import { Modal } from "@mui/joy";
-import { LinearProgress, Switch } from "@mui/material";
+import { Button, LinearProgress, Switch } from "@mui/material";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 
-import Footer from "@/app/ui/footer";
-import Header from "@/app/ui/header";
 import UserIcon from "@/public/me/UserIcon";
 import PlusIcon from "@/public/todo/PlusIcon";
 import XIcon from "@/public/todo/XIcon";
-import DragTodo from "@/app/ui/todo/Drag";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { meState } from "@/store/atoms";
+import Image from "next/image";
+import CalendarIcon from "@/public/date/Calendar";
+import Footer from "@/app/ui/footer";
+import clsx from "clsx";
 
+const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 export default function DailyTodo() {
-  const { date: defaultDate } = useParams<{ date: string }>();
+  const { date } = useParams<{ date: string }>();
+  const me = useRecoilValue(meState);
 
-  const [selectDate, setSelectDate] = useState<Dayjs | null>(
-    dayjs(defaultDate),
-  );
+  const [title, setTitle] = useState("Todo");
 
   const [modalOpen, setModalOpen] = useState(false);
   const [isPublicTodo, setPublicTodo] = useState(false);
 
   return (
     <main className="flex min-h-screen justify-center">
-      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 pb-[52px] shadow-lg">
-        <Header />
-        <article className="flex flex-col py-3">
-          <section>
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-300">
-                <UserIcon />
-              </div>
-              <span className="font-bold">4 Tasks</span>
-              <div className="flex w-40 items-center">
-                <LinearProgress
+      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-black text-white shadow-lg">
+        <article className="flex flex-col gap-4 p-5">
+          <section className="flex w-full items-center justify-between">
+            <span className="text-xl font-semibold">Hi! {me.nickname}</span>
+            <div className="flex">
+              <div className="relative rounded-3xl bg-default-800">
+                <div
+                  className={clsx(
+                    "absolute h-[40px] w-[100px] transform rounded-3xl bg-default-400 transition-transform",
+                    title === "Todo" ? "translate-x-0" : "translate-x-[100px]",
+                  )}
+                />
+                <Button
+                  disableRipple
+                  variant="text"
                   sx={{
-                    height: "18px",
-                    width: "100%",
-                    borderRadius: "12px",
+                    width: "100px",
+                    height: "40px",
+                    fontWeight: "bold",
+                    color: title === "Todo" ? "#143422" : "#ffffff",
+                    transition: "all 0.2s 0.1s ease",
                   }}
-                  value={80}
-                  variant="determinate"
-                />
+                  onClick={() => setTitle("Todo")}
+                >
+                  Todo
+                </Button>
+                <Button
+                  disableRipple
+                  variant="text"
+                  sx={{
+                    width: "100px",
+                    height: "40px",
+                    fontWeight: "bold",
+                    color: title === "Todo" ? "#ffffff" : "#143422",
+                    transition: "all 0.2s 0.1s ease",
+                  }}
+                  onClick={() => setTitle("Goal")}
+                >
+                  Goal
+                </Button>
               </div>
             </div>
-          </section>
-          <section>
-            <div className="flex justify-center bg-default-300">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  views={["month", "day"]}
-                  value={dayjs(selectDate)}
-                  onChange={(newValue) => setSelectDate(newValue)}
-                  showDaysOutsideCurrentMonth={true}
-                  dayOfWeekFormatter={(_day, weekday) =>
-                    `${weekday.format("ddd")}`
-                  }
-                />
-              </LocalizationProvider>
+
+            <div className="relative h-12 w-12 overflow-hidden rounded-full">
+              <Image
+                src={`${BUCKET_URL}${me?.photo.url}`}
+                alt="user profile"
+                fill
+                className="object-cover object-center"
+              />
             </div>
           </section>
-          <section>
-            <DragTodo />
+          <section className="w-full rounded-xl bg-default-800 p-6">
+            <div className="flex justify-between">
+              <div className="flex gap-1">
+                <CalendarIcon className="h-5 w-5 fill-current text-white" />
+                <span>23 Thu</span>
+              </div>
+            </div>
+
+            <div>hi</div>
+            <div>hi</div>
+            <div>hi</div>
+            <div>hi</div>
           </section>
-        </article>
-        {/* Floating create todo button */}
-        <div className="fixed bottom-0 w-full max-w-[600px] cursor-pointer">
-          <button
-            onClick={() => setModalOpen(true)}
-            className="absolute bottom-28 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-default-600 shadow-lg hover:bg-default-800"
-          >
-            <PlusIcon />
-          </button>
-        </div>
-        {/* create todo modal */}
-        <Modal
+          <section className="w-full rounded-xl bg-default-900 p-6">
+            <div>hello</div>
+            <div>hello</div>
+            <div>hello</div>
+            <div>hello</div>
+            <div>hello</div>
+          </section>
+          <section className="w-full rounded-xl bg-default-400 p-6">
+            <div>guten tag</div>
+            <div>guten tag</div>
+            <div>guten tag</div>
+            <div>guten tag</div>
+            <div>guten tag</div>
+            <div>guten tag</div>
+          </section>
+
+          {/* create todo modal */}
+          {/* <Modal
           className="flex items-center justify-center"
           open={modalOpen}
           onClose={() => setModalOpen(false)}
@@ -153,7 +187,8 @@ export default function DailyTodo() {
               </button>
             </div>
           </div>
-        </Modal>
+        </Modal> */}
+        </article>
         <Footer />
       </div>
     </main>

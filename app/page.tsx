@@ -22,6 +22,7 @@ import Footer from "./ui/footer";
 import { getToday, getWeeksInMonth } from "@/util/date";
 import { getMe, getMyTodosWithDate } from "@/store/api";
 import { meState, todoListState } from "@/store/atoms";
+import Link from "next/link";
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -112,7 +113,7 @@ export default function Home() {
     if (isSuccessForMe) {
       setMe(meData);
     }
-  }, []);
+  }, [isSuccessForMe]);
 
   useEffect(() => {
     // 데이터가 성공적으로 불러와지면 todos를 업데이트
@@ -263,7 +264,9 @@ export default function Home() {
             <MeGoal route="home" />
           </section>
           <section className="mt-4 rounded-xl border-2 border-default-300 bg-default-100">
-            <div>hi</div>
+            <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todogoal`}>
+              hi
+            </Link>
           </section>
         </article>
         <Footer />

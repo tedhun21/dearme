@@ -4,11 +4,11 @@
 "use client";
 
 import React, { ChangeEvent, useState, useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCookie } from "@/util/tokenCookie";
-import { useRecoilState } from "recoil";
-import { IMe, meState } from "@/store/atoms";
-import { getMe, createComment, updateComment } from "@/store/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useRecoilValue } from "recoil";
+import { meState } from "@/store/atoms";
+import { createComment, updateComment } from "@/store/api";
 
 import { Comment } from "@/app/social/page";
 import CommentSettings from "./CommentSettings";
@@ -28,18 +28,9 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 export default function CommentsSection({ comments, postId }: CommentProps) {
   const queryClient = useQueryClient();
 
-  // 유저 정보 가져오기
-  const [me, setMe] = useRecoilState<IMe>(meState);
-  const access_token = getCookie("access_token");
-  const { isSuccess, data: meData } = useQuery({
-    queryKey: ["getMe", { access_token }],
-    queryFn: getMe,
-  });
-  useEffect(() => {
-    if (meData) {
-      setMe(meData);
-    }
-  }, [isSuccess]);
+  // me
+  const me = useRecoilValue(meState);
+  console.log(me);
 
   // 댓글 입력 상태
   const [comment, setComment] = useState<string>("");
@@ -64,6 +55,9 @@ export default function CommentsSection({ comments, postId }: CommentProps) {
     }
     setComment("");
   };
+
+  // TODO 댓글 호버(...)
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   // 댓글 수정 상태
   const [editingComment, setEditingComment] = useState<string>("");
@@ -102,33 +96,35 @@ export default function CommentsSection({ comments, postId }: CommentProps) {
   };
 
   return (
-    <section className="mt-4 ">
+    <section className="mt-4  ">
       {comments.map((comment, index) => {
         return (
-          <section key={index} className="mb-2 flex items-center px-5">
-            {/* 이미지 & id */}
-            <div className="flex items-start gap-2">
-              <img
-                src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-                alt="User Image"
-                className="h-8 w-8 rounded-full"
-              />
-              <div className="mr-2 flex-1 text-sm font-semibold ">
-                {comment.user.nickname}
-              </div>
+          <section key={index} className="mb-3 flex w-full gap-2  px-5">
+            {/* 이미지*/}
+            {/* FIXME */}
+            <img
+              src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
+              alt="User Image"
+              className="h-8 w-8 overflow-hidden rounded-full object-cover"
+            />
 
-              {/* 댓글 */}
-              {/* TODO inputbase fullwidth 수정 */}
-              <div className=" mb-2 flex w-full flex-col  pl-3">
-                <span className="font-norma flex-auto whitespace-normal break-all text-xs text-default-700">
+            <div className="flex w-full flex-col justify-center">
+              {/* 작성자 & 댓글 */}
+              <div className="flex gap-2">
+                <span className="text-sm font-semibold">
+                  {comment.user.nickname}
+                </span>
+                <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
                   {isEditing && editingCommentId === comment.id ? (
                     <InputBase
+                      multiline
                       sx={{
-                        fontSize: 12,
+                        fontSize: "12px",
                         fontWeight: 400,
-
-                        border: 1,
-                        borderColor: "grey.500",
+                        width: "100%",
+                        overflowWrap: "break-word",
+                        // border: 1,
+                        // borderColor: "grey.500",
                       }}
                       value={editingComment}
                       onChange={(e) => setEditingComment(e.target.value)}
@@ -138,32 +134,37 @@ export default function CommentsSection({ comments, postId }: CommentProps) {
                     comment.body
                   )}
                 </span>
-
-                <div className="text-2xs  text-default-500">
-                  {timeSince(comment.createdAt)}
-                </div>
               </div>
 
-              {/* TODO if(로그인 유저 === 댓글 작성자) */}
-              {isEditing && editingCommentId === comment.id ? (
+              {/* 작성 시간 & 댓글 설정 */}
+              <div className="flex items-center justify-end">
                 <div
-                  className="cursor-pointer text-xs font-normal text-default-700"
-                  onClick={handleEdit}
+                  className="text-2xs  text-default-500"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
-                  Edit
+                  {timeSince(comment.createdAt)}
                 </div>
-              ) : (
-                <div>
-                  <CommentSettings
-                    postId={postId}
-                    commentId={comment.id}
-                    onEditClick={() => {
-                      setIsEditing(true);
-                      setEditingCommentId(comment.id);
-                    }}
-                  />
-                </div>
-              )}
+                {isEditing && editingCommentId === comment.id ? (
+                  <div
+                    className="ml-2 cursor-pointer text-xs font-normal text-default-700"
+                    onClick={handleEdit}
+                  >
+                    Edit
+                  </div>
+                ) : (
+                  <div>
+                    <CommentSettings
+                      postId={postId}
+                      commentId={comment.id}
+                      onEditClick={() => {
+                        setIsEditing(true);
+                        setEditingCommentId(comment.id);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </section>
         );

@@ -17,10 +17,10 @@ export default function GoalList({ goal }: any) {
             <span className="text-2xs font-bold text-red-600">IMMINENT</span>
           ) : null}
         </div>
-        <div className="font-bold">&quot;{goal.title}&quot;</div>
-        <div className="text-2xs">{`목표 날짜: ${splitedGoalDate[1]}월 ${
-          splitedGoalDate[2]
-        }일, ${splitedGoalDate[0]} (${
+        <div className="text-base font-bold">&quot;{goal.title}&quot;</div>
+        <div className="text-xs font-semibold text-default-500">{`Deadline: ${
+          splitedGoalDate[1]
+        }월 ${splitedGoalDate[2]}일, ${splitedGoalDate[0]} (${
           dayjs(goal.endDate).format("dddd")[0]
         })`}</div>
       </div>

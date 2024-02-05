@@ -9,11 +9,10 @@ export default function Header() {
       <Link href="/">
         <Image
           src="/header/logo.png"
-          width={80}
-          height={20}
           alt="logo"
-          quality={80}
-          priority
+          width={80}
+          height={26}
+          style={{ width: "80px", height: "26px" }}
         />
       </Link>
       <div className="flex flex-row gap-2 p-3">

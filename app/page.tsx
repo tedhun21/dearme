@@ -57,18 +57,32 @@ export default function Home() {
   const [me, setMe] = useRecoilState(meState);
   const [todos, setTodos] = useRecoilState(todoListState);
 
+  // 내 정보 가져오기
   const { isSuccess: isSuccessForMe, data: meData } = useQuery({
     queryKey: ["getMe"],
     queryFn: () => getMe(),
   });
 
+  // 일별 todo 불러오기
   const {
-    isSuccess: isSuccessForTodos,
-    data: todoData,
-    refetch: refetchTodos,
-    isRefetching: isTodoRefetching,
+    isSuccess: isSuccessForTodayTodos,
+    data: todosForToday,
+    refetch: refetchTodosForToday,
+    isRefetching: isTodosForTodayRefetching,
   } = useQuery({
-    queryKey: ["getMyTodosWithDate"],
+    queryKey: ["getMyTodosWithDateForToday"],
+    queryFn: () =>
+      getMyTodosWithDate({ date: dayjs(date).format("YYYY-MM-DD") }),
+  });
+
+  // 월별 todo 불러오기 (불러와서 달력에 표시)
+  const {
+    isSuccess: isSuccessForMonthTodos,
+    data: todosForMonth,
+    refetch: refetchTodosForMonth,
+    isRefetching: isTodosForMonthRefetching,
+  } = useQuery({
+    queryKey: ["getMyTodosWithDateForMonth"],
     queryFn: () => getMyTodosWithDate({ date: month }),
   });
 
@@ -101,133 +115,157 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // 데이터가 성공적으로 불러와지면 todos와 highlightedDays를 업데이트합니다.
-    if (isSuccessForTodos && todoData) {
-      setTodos(todoData);
-      const highlighted = todoData.map((todo: any) => +todo.date.slice(8, 10));
-      setHighlightedDays(highlighted);
+    // 데이터가 성공적으로 불러와지면 todos를 업데이트
+    if (todosForToday) {
+      setTodos(todosForToday);
     }
-  }, [isSuccessForTodos, todoData]);
+  }, [date]);
 
   useEffect(() => {
-    if (!isTodoRefetching && month) {
-      refetchTodos();
+    // 날짜가 바뀌면 일일 todos refetch
+    if (!isTodosForTodayRefetching && date) {
+      refetchTodosForToday();
     }
+  }, [date]);
+
+  // 월별 todos
+  useEffect(() => {
+    if (!isTodosForMonthRefetching && isSuccessForMonthTodos) {
+      const highlighted = todosForMonth.map(
+        (todo: any) => +todo.date.slice(8, 10),
+      );
+      setHighlightedDays(highlighted);
+    }
+  }, [isSuccessForMonthTodos, todosForMonth]);
+
+  // month가 변할때마다 월별 todos refetch
+  useEffect(() => {
+    refetchTodosForMonth();
   }, [month]);
 
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
-        <div className=" relative mx-5 overflow-hidden rounded-xl bg-default-300 shadow-md">
-          <div className="mr-3 mt-3 flex items-center justify-end gap-2">
-            <span className="text-sm font-semibold">
-              {isTodo ? "할 일" : "일기"}
-            </span>
-            <Switch
-              checked={isTodo}
-              onChange={handleTodoChange}
-              sx={{
-                /// switch 기본 박스 크기
-                padding: 0,
-                width: "32px",
-                height: "20px",
-                "& .MuiSwitch-switchBase": {
+        <article className="mx-5">
+          <section className="overflow-hidden rounded-xl bg-default-300 shadow-md">
+            <div className="mr-3 mt-3 flex items-center justify-end gap-2">
+              <span className="text-sm font-semibold">
+                {isTodo ? "할 일" : "일기"}
+              </span>
+              <Switch
+                checked={isTodo}
+                onChange={handleTodoChange}
+                sx={{
+                  /// switch 기본 박스 크기
                   padding: 0,
-                  margin: "2px",
-                  transitionDuration: "300ms",
-                  /// 체크될때
-                  "&.Mui-checked": {
-                    transform: "translateX(12px)",
-                    color: "#fff",
-                    "& + .MuiSwitch-track": {
-                      backgroundColor: "#143422",
-                      opacity: 1,
-                      border: 0,
-                    },
-                    "&.Mui-disabled + .MuiSwitch-track": {
-                      opacity: 0.5,
-                    },
-                  },
-                },
-                "& .MuiSwitch-thumb": {
-                  boxSizing: "border-box",
-                  width: 16,
-                  height: 16,
-                },
-                "& .MuiSwitch-track": {
-                  borderRadius: 26 / 2,
-                  backgroundColor: "#b6b6c0",
-                  opacity: 1,
-                },
-              }}
-            />
-          </div>
-
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              sx={{
-                "&.MuiDateCalendar-root": {
-                  width: "100%",
-                  maxHeight: "480px", // 6줄일때 480 5줄일때 420
-                  height: `${
-                    weekOfMonth === 6
-                      ? "480px"
-                      : weekOfMonth === 5
-                        ? "420px"
-                        : "360px"
-                  }`,
-                  "& .MuiPickersCalendarHeader-labelContainer": {
-                    fontFamily: "inherit",
-                    fontSize: "24px",
-                  },
-                },
-                "& .MuiDateCalendar-viewTransitionContainer": {
-                  "& .MuiDayCalendar-header": {
-                    paddingX: "20px",
-                    justifyContent: "space-between",
-                  },
-                  "& .MuiPickersSlideTransition-root": {
-                    overflowX: "unset",
-                    "& .MuiDayCalendar-monthContainer": {
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "26px",
-                      "& .MuiDayCalendar-weekContainer": {
-                        paddingX: "20px",
-                        justifyContent: "space-between",
+                  width: "32px",
+                  height: "20px",
+                  "& .MuiSwitch-switchBase": {
+                    padding: 0,
+                    margin: "2px",
+                    transitionDuration: "300ms",
+                    /// 체크될때
+                    "&.Mui-checked": {
+                      transform: "translateX(12px)",
+                      color: "#fff",
+                      "& + .MuiSwitch-track": {
+                        backgroundColor: "#143422",
+                        opacity: 1,
+                        border: 0,
+                      },
+                      "&.Mui-disabled + .MuiSwitch-track": {
+                        opacity: 0.5,
                       },
                     },
                   },
-                  "& .MuiButtonBase-root": {
-                    fontFamily: "inherit",
-                    fontSize: "20px",
-                    "&:hover": {
-                      backgroundColor: "#DED0B6",
-                    },
-                    "&:focus": {
-                      backgroundColor: "#505050",
+                  "& .MuiSwitch-thumb": {
+                    boxSizing: "border-box",
+                    width: 16,
+                    height: 16,
+                  },
+                  "& .MuiSwitch-track": {
+                    borderRadius: 26 / 2,
+                    backgroundColor: "#b6b6c0",
+                    opacity: 1,
+                  },
+                }}
+              />
+            </div>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
+              <DateCalendar
+                sx={{
+                  "&.MuiDateCalendar-root": {
+                    width: "100%",
+                    maxHeight: "480px", // 6줄일때 480 5줄일때 420
+                    height: `${
+                      weekOfMonth === 6
+                        ? "480px"
+                        : weekOfMonth === 5
+                          ? "420px"
+                          : "360px"
+                    }`,
+                    "& .MuiPickersCalendarHeader-labelContainer": {
+                      fontFamily: "inherit",
+                      fontSize: "24px",
                     },
                   },
-                  "& .Mui-selected": {
-                    backgroundColor: "#143422",
+                  "& .MuiDateCalendar-viewTransitionContainer": {
+                    "& .MuiDayCalendar-header": {
+                      paddingX: "20px",
+                      justifyContent: "space-between",
+                    },
+                    "& .MuiPickersSlideTransition-root": {
+                      overflowX: "unset",
+                      "& .MuiDayCalendar-monthContainer": {
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "26px",
+                        "& .MuiDayCalendar-weekContainer": {
+                          paddingX: "20px",
+                          justifyContent: "space-between",
+                        },
+                      },
+                    },
+                    "& .MuiButtonBase-root": {
+                      fontFamily: "inherit",
+                      fontSize: "20px",
+                      "&:hover": {
+                        backgroundColor: "#DED0B6",
+                      },
+                      "&:focus": {
+                        backgroundColor: "#505050",
+                      },
+                    },
+                    "& .Mui-selected": {
+                      backgroundColor: "#143422",
+                    },
+                    "& .MuiMonthCalendar-root": {
+                      width: "100%",
+                    },
                   },
-                },
-              }}
-              views={["month", "day"]}
-              loading={isLoading}
-              referenceDate={dayjs(getToday())}
-              value={date}
-              onChange={(newValue) => setDate(newValue)}
-              onMonthChange={handleMonthChange}
-              renderLoading={() => <DayCalendarSkeleton />}
-              dayOfWeekFormatter={(_day, weekday) => `${weekday.format("ddd")}`}
-              slots={{ day: ServerDay }}
-              slotProps={{ day: { highlightedDays } as any }}
-            />
-          </LocalizationProvider>
-          <MeGoal route="home" />
-        </div>
+                }}
+                views={["month", "day"]}
+                loading={isLoading}
+                referenceDate={dayjs(getToday())}
+                value={date}
+                onChange={(newValue) => setDate(newValue)}
+                onMonthChange={handleMonthChange}
+                renderLoading={() => <DayCalendarSkeleton />}
+                dayOfWeekFormatter={(_day, weekday) =>
+                  `${weekday.format("ddd")}`
+                }
+                slots={{ day: ServerDay }}
+                slotProps={{ day: { highlightedDays } as any }}
+              />
+            </LocalizationProvider>
+            <MeGoal route="home" />
+          </section>
+          <section className="mt-4 rounded-xl border-2 border-default-300 bg-default-100">
+            <div>hi</div>
+          </section>
+        </article>
         <Footer />
       </div>
     </main>

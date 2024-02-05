@@ -7,11 +7,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
 
 export const getMe = async () => {
-  const { data } = await axios.get(`${API_URL}/users/me`, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  if (access_token !== null) {
+    const { data } = await axios.get(`${API_URL}/users/me`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  return data;
+    return data;
+  } else {
+    return {};
+  }
 };
 
 export const getUser = async ({ profileId }: any) => {
@@ -21,7 +25,7 @@ export const getUser = async ({ profileId }: any) => {
 };
 
 export const getMyTodosWithDate = async ({ date }: any) => {
-  if (access_token && date) {
+  if (access_token !== null) {
     const { data } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -29,11 +33,13 @@ export const getMyTodosWithDate = async ({ date }: any) => {
     });
 
     return data;
+  } else {
+    return [];
   }
 };
 
 export const getUserTodosWithDate = async ({ date }: any) => {
-  const { data } = await axios.get(`${API_URL}/todos`);
+  const { data } = await axios.get(`${API_URL}/todos/${date}`);
 
   return data;
 };
@@ -87,13 +93,17 @@ export const updateMe = async ({ userId, updateData }: any) => {
 export const getMyGoals = async ({ queryKey }: any) => {
   const [_key, { date, access_token }] = queryKey;
 
-  const {
-    data: { goals },
-  } = await axios.get(`${API_URL}/goals?date=${date}`, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  if (access_token !== null) {
+    const {
+      data: { goals },
+    } = await axios.get(`${API_URL}/goals?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  return goals;
+    return goals;
+  } else {
+    return {};
+  }
 };
 
 export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {

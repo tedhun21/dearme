@@ -358,7 +358,7 @@ export const getSearchGoals = async (
         `${API_URL}/search-goals?searchTerm=${goal}&posts=true`,
         { headers },
       );
-      console.log(response);
+      // console.log(response);
       return response.data.searchedGoals[0];
     } catch (e) {
       console.error(e);
@@ -374,5 +374,17 @@ export const getSearchGoals = async (
     } catch (e) {
       console.error(e);
     }
+  }
+};
+
+export const getPost = async (postId: number) => {
+  const headers = { Authorization: `Bearer ${access_token}` };
+  try {
+    console.log("getPost");
+    const response = await axios.get(`${API_URL}/posts/${postId}`, { headers });
+    console.log(response.data.results);
+    return response.data.results;
+  } catch (e) {
+    console.error(e);
   }
 };

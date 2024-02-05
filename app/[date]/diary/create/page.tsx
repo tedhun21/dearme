@@ -138,9 +138,10 @@ export default function Create() {
         </section>
         <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
           <DiaryCreateModal
-            onSubmit={(modalData: any) =>
-              setDiaryData({ ...diaryData, ...modalData })
-            }
+            onSubmit={(modalData: any) => {
+              console.log("onSubmit called with data:", modalData);
+              setDiaryData({ ...diaryData, ...modalData });
+            }}
           />
         </section>
         {/* <section className="flex flex-col bg-default-300">

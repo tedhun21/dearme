@@ -12,7 +12,13 @@ import Textarea from "@mui/joy/Textarea";
 
 import CirclePlus from "../../../public/diary/CirclePlus";
 import WeatherIcons from "@/app/ui/diary/WeatherIcons";
-// import Weather from "../../../public/diary/Weather";
+import ButtonExit from "@/public/diary/ButtonExit";
+
+type DiaryEntry = {
+  title: string;
+  content: string;
+  weather: string;
+};
 
 export default function DiaryCreateModal({ onSubmit }) {
   const [open, setOpen] = useState(false);
@@ -20,14 +26,37 @@ export default function DiaryCreateModal({ onSubmit }) {
   const [content, setContent] = useState("");
   const [weather, setWeather] = useState("");
   const [weatherId, setWeatherId] = useState(null);
+  const [diaryEntry, setDiaryEntry] = useState<DiaryEntry | null>(null);
 
   const handleComplete = () => {
-    onSubmit({ title, content, weather }); // 부모 컴포넌트로 제목, 내용, 날씨 전달
-    setOpen(false); // 모달 닫기
-    setTitle(""); // 제목 초기화
-    setContent(""); // 내용 초기화
+    const newDiary = { title, content, weather };
+    setDiaryEntry(newDiary); // 일기 항목을 설정
+    setOpen(false);
+    // 제목과 내용 초기화 로직은 모달 닫힐 때만 적용
   };
 
+  // 일기 수정
+  // const handleEditModal = (entry: any) => {
+  //   setTitle(entry.title);
+  //   setContent(entry.content);
+  //   setWeather(entry.weather);
+  //   setOpen(true);
+  // };
+
+  //일기 삭제
+  const handleDeleteDiary = (e: any) => {
+    setDiaryEntry(null);
+  };
+
+  // 입력된 제목의 길이가 25자를 초과 X
+  const handleTitleChange = (e: any) => {
+    const input = e.target.value;
+    if (input.length <= 25) {
+      setTitle(input);
+    }
+  };
+
+  // 날씨 정보 가져오기
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
@@ -49,24 +78,49 @@ export default function DiaryCreateModal({ onSubmit }) {
   return (
     // 모달창을 띄우는 버튼
     <>
-      <Button
-        className="flex flex-col px-8 py-28 text-base text-default-800"
-        variant="plain"
-        color="primary"
-        onClick={() => setOpen(true)}
-      >
-        <CirclePlus />
-        당신의 소중한 이야기를 기록해주세요:)
-      </Button>
-      <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
-        <span className="mr-2">
-          {/* <Weather /> */}
-          <WeatherIcons weatherId={weatherId} />
-        </span>
-        <h4 className="flex justify-end text-xs font-medium text-default-800">
-          {weather || "날씨 정보를 가져오는 중입니다."}
-        </h4>
-      </section>
+      {diaryEntry ? (
+        <div
+          className="flex flex-col rounded bg-white p-4 py-8 pl-8 shadow hover:bg-default-400"
+          // onClick={handleEditModal}
+        >
+          <button
+            onClick={handleDeleteDiary}
+            className="mr-2 flex items-center justify-end"
+          >
+            <ButtonExit />
+          </button>
+          <h3 className="mb-2 text-lg font-bold">{diaryEntry.title}</h3>
+          <p className="mb-8">{diaryEntry.content}</p>
+          <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
+            <span className="mr-2">
+              <WeatherIcons weatherId={weatherId} />
+            </span>
+            <h4 className="flex justify-end text-xs font-medium text-default-800">
+              {weather || "날씨 정보를 가져오는 중입니다."}
+            </h4>
+          </section>
+        </div>
+      ) : (
+        <>
+          <Button
+            className="flex flex-col px-8 py-28 text-base text-default-800"
+            variant="plain"
+            color="primary"
+            onClick={() => setOpen(true)}
+          >
+            <CirclePlus />
+            당신의 소중한 이야기를 기록해주세요:)
+          </Button>
+          <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
+            <span className="mr-2">
+              <WeatherIcons weatherId={weatherId} />
+            </span>
+            <h4 className="flex justify-end text-xs font-medium text-default-800">
+              {weather || "날씨 정보를 가져오는 중입니다."}
+            </h4>
+          </section>
+        </>
+      )}
       <Transition in={open} timeout={400}>
         {(state: string) => (
           <Modal
@@ -108,7 +162,8 @@ export default function DiaryCreateModal({ onSubmit }) {
                   variant="soft"
                   value={title}
                   placeholder="최대 25자 내외로 작성해주세요."
-                  onChange={(e) => setTitle(e.target.value)} // 제목 입력 처리
+                  // onChange={(e) => setTitle(e.target.value)} // 제목 입력 처리
+                  onChange={handleTitleChange}
                   sx={{ minHeight: "40px", justifyItems: "center" }}
                 />
               </DialogContent>

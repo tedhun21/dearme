@@ -112,7 +112,7 @@ export default function SocialPost({ post }: SocialPostProps) {
             {post.user?.nickname || "Unknown User"}
           </div>
           <div className="text-xs font-semibold text-default-500">
-            #{post.goal.body}
+            @{post.goal.body}
           </div>
         </div>
 

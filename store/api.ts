@@ -150,7 +150,6 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     if (tab === "all") {
       url += "&public=true";
     } else if (tab === "friends") {
-      const access_token = getCookie("access_token");
       const headers = { Authorization: `Bearer ${access_token}` };
       return await axios
         .get(url, { headers })
@@ -166,14 +165,12 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
 // Create _ post > 목표 조회
 export const getGoals = async ({ queryKey }: any) => {
   const date = getToday();
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
 export const createPost = async (data: any): Promise<any> => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   const formData = new FormData();
@@ -210,7 +207,6 @@ export const updatePost = async ({
   postText: string;
   selectedOption: string;
 }): Promise<any> => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   const formData = new FormData();
@@ -237,7 +233,6 @@ export const updatePost = async ({
 
 // Delete _ post
 export const deletePost = async (postId: number) => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -252,7 +247,7 @@ export const deletePost = async (postId: number) => {
 
 // Put _ like
 export const likePost = async (postId: number) => {
-  const access_token = getCookie("access_token");
+  // const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -270,7 +265,6 @@ export const createComment = async ({
   postId: number;
   comment: string;
 }) => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -294,7 +288,6 @@ export const updateComment = async ({
   commentId: number | null;
   comment: string;
 }) => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   console.log(postId, commentId, comment);
   try {
@@ -316,7 +309,6 @@ export const deleteComment = async ({
   postId: number;
   commentId: number;
 }) => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     await axios.delete(`${API_URL}/comments/${commentId}?postId=${postId}`, {
@@ -327,9 +319,8 @@ export const deleteComment = async ({
   }
 };
 
-// search users
+// Search _ users
 export const getSearchUsers = async (name: string) => {
-  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
@@ -339,5 +330,39 @@ export const getSearchUsers = async (name: string) => {
     return response.data;
   } catch (e) {
     console.error(e);
+  }
+};
+
+// Search _ goals
+export const getSearchGoals = async (
+  goal: string | string[],
+  posts: boolean,
+) => {
+  console.log("requested");
+  console.log(posts);
+  const headers = { Authorization: `Bearer ${access_token}` };
+
+  if (posts === true) {
+    try {
+      const response = await axios.get(
+        `${API_URL}/search-goals?searchTerm=${goal}&posts=true`,
+        { headers },
+      );
+      console.log(response);
+      return response.data.searchedGoals[0];
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    try {
+      const response = await axios.get(
+        `${API_URL}/search-goals?searchTerm=${goal}`,
+        { headers },
+      );
+      console.log(response.data.searchedGoals);
+      return response.data.searchedGoals;
+    } catch (e) {
+      console.error(e);
+    }
   }
 };

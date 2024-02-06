@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getSearchUsers, getSearchGoals } from "@/store/api";
-import Link from "next/link";
 
 import RecentSearches from "./RecentSearches";
 
@@ -56,6 +55,51 @@ export default function SearchBar() {
     staleTime: 0,
   });
   const searchedGoals = getGoalSearchResult || [];
+  console.log(searchedGoals);
+
+  // 최근 검색어
+  interface recentSearch {
+    id: number;
+    text: string;
+    userId?: number;
+    photo?: string;
+  }
+
+  const [recentSearches, setRecentSearches] = useState<recentSearch[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const result = localStorage.getItem("recentSearches") || "[]";
+      setRecentSearches(JSON.parse(result));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+  }, [recentSearches]);
+
+  const handleAddRecent = (text: string, photo: string, userId?: number) => {
+    const newRecent = {
+      id: Date.now(),
+      text: text,
+      ...(photo && { photo: photo }),
+      userId: userId,
+    };
+    const updatedRecentSearches = [newRecent, ...recentSearches.slice(0, 9)];
+
+    setRecentSearches(updatedRecentSearches);
+  };
+
+  const handleRemoveRecent = (id: number) => {
+    const newRecent = recentSearches.filter((recent) => {
+      return recent.id !== id;
+    });
+    setRecentSearches(newRecent);
+  };
+
+  const handleClearRecent = () => {
+    setRecentSearches([]);
+  };
 
   return (
     <>
@@ -93,7 +137,11 @@ export default function SearchBar() {
 
       {/* !input Focus ? 최근 검색어 : 추천 검색어 */}
       {search === "" ? (
-        <RecentSearches />
+        <RecentSearches
+          recentSearches={recentSearches}
+          onRecentRemove={(id) => handleRemoveRecent(id)}
+          onClearRecent={handleClearRecent}
+        />
       ) : (
         <section className="mb-5 flex w-full flex-col  rounded-b-lg border-x-2 border-b-2 border-default-300 bg-default-100 px-5 pt-5">
           {/* 검색 결과 */}
@@ -105,7 +153,13 @@ export default function SearchBar() {
               </div>
               {Array.isArray(searchedGoals) && searchedGoals.length > 0 ? (
                 searchedGoals.map((goal: any) => (
-                  <Link key={goal.id} href={`/search/${goal.body}`}>
+                  <a
+                    key={goal.id}
+                    href={`/search/${goal.body}`}
+                    onClick={() => {
+                      handleAddRecent(`#${goal.body}`, "");
+                    }}
+                  >
                     <div className="mb-3 flex items-center">
                       <GoalTag className="h-10 w-10 rounded-full" />
                       <div className="flex items-center">
@@ -118,7 +172,7 @@ export default function SearchBar() {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 ))
               ) : (
                 <div className="mb-5 flex w-full justify-center  text-xs font-normal text-default-300">
@@ -134,7 +188,13 @@ export default function SearchBar() {
               </div>
               {Array.isArray(users) && users.length > 0 ? (
                 users.map((user) => (
-                  <Link key={user.id} href={`/profile/${user.id}`} passHref>
+                  <a
+                    key={user.id}
+                    href={`/profile/${user.id}`}
+                    onClick={() => {
+                      handleAddRecent(user.nickname, user.photo, user.id);
+                    }}
+                  >
                     <div className="mb-3 flex items-center">
                       <img
                         src={`${BUCKET_URL}${user.photo}`}
@@ -145,7 +205,7 @@ export default function SearchBar() {
                         {user.nickname}
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 ))
               ) : (
                 <div className="mb-5 flex w-full justify-center  text-xs font-normal text-default-300">

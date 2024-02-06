@@ -1,15 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+// TODO Comment Settings -> 댓글 설정
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRecoilValue } from "recoil";
 
-import { IMe, meState } from "@/store/atoms";
 import { likePost } from "@/store/api";
 
 import { Post } from "@/app/social/page";
@@ -56,8 +55,6 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function SocialPost({ post }: SocialPostProps) {
   const queryClient = useQueryClient();
-
-  console.log(post);
 
   // const me = useRecoilValue<IMe>(meState);
 

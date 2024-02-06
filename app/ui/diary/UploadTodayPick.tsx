@@ -19,7 +19,7 @@ type UploadTodayPickProps = {
 
 export default function UploadTodayPick({ onSubmit }) {
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
   const [entry, setEntry] = useState<UploadTodayPickProps>({
     title: "",
     date: "",
@@ -40,8 +40,16 @@ export default function UploadTodayPick({ onSubmit }) {
   const removeImage = () => setImage(null);
 
   const handleComplete = () => {
-    onsubmit(entry);
+    if (onSubmit) {
+      onSubmit(entry);
+    }
     setOpen(false);
+  };
+
+  const handleChange = (name: keyof UploadTodayPickProps) => (e: any) => {
+    if (e.target.value.length <= 30) {
+      setEntry((prev) => ({ ...prev, [name]: e.target.value }));
+    }
   };
 
   return (
@@ -79,7 +87,7 @@ export default function UploadTodayPick({ onSubmit }) {
           }}
         >
           <DialogTitle id="modal-title" sx={{ justifyContent: "center" }}>
-            Add Today's Cultural Activity
+            {`Add Today's Cultural Activity`}
           </DialogTitle>
 
           <Box
@@ -121,7 +129,7 @@ export default function UploadTodayPick({ onSubmit }) {
                   }}
                 />
               ) : (
-                <AddPhoto style={{ cursor: "pointer" }} />
+                <AddPhoto />
               )}
             </label>
             {image && (
@@ -150,25 +158,23 @@ export default function UploadTodayPick({ onSubmit }) {
             <Input
               className="mb-4"
               fullWidth
-              placeholder="Title (25 characters or less)"
+              placeholder="Title (30 characters or less)"
               value={entry.title}
-              onChange={(e) => setEntry({ ...entry, title: e.target.value })}
+              onChange={handleChange("title")}
             />
             <Input
               className="mb-4"
               fullWidth
-              placeholder="date (25 characters or less)"
+              placeholder="date (30 characters or less)"
               value={entry.date}
-              onChange={(e) => setEntry({ ...entry, date: e.target.value })}
+              onChange={handleChange("date")}
             />
             <Input
               className="mb-1"
               fullWidth
               placeholder="Contributors (Production Company, Cast, Author, etc)"
               value={entry.contributors}
-              onChange={(e) =>
-                setEntry({ ...entry, contributors: e.target.value })
-              }
+              onChange={handleChange("contributors")}
             />
           </DialogContent>
 

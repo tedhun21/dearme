@@ -19,6 +19,7 @@ type UploadTodayPickProps = {
 
 export default function UploadTodayPick({ onSubmit }) {
   const [open, setOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [entry, setEntry] = useState<UploadTodayPickProps>({
     title: "",
@@ -40,9 +41,7 @@ export default function UploadTodayPick({ onSubmit }) {
   const removeImage = () => setImage(null);
 
   const handleComplete = () => {
-    if (onSubmit) {
-      onSubmit(entry);
-    }
+    setSubmitted(true);
     setOpen(false);
   };
 
@@ -54,21 +53,33 @@ export default function UploadTodayPick({ onSubmit }) {
 
   return (
     <>
-      <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
-        <button
-          onClick={handleOpen}
-          className="w-full rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300"
-        >
-          <span className="mb-2 flex justify-center">
-            <BlackPlus />
-          </span>
-          오늘의 문화생활을
-          <h3 className="flex justify-center text-base font-medium text-gray-400">
-            기록해봐요!
-          </h3>
-        </button>
-      </span>
-
+      {submitted ? (
+        <article className="today-pick-display">
+          <section className="ml-8 flex h-60 w-52">
+            <img src={image} alt="Today's Pick" />
+          </section>
+          <section className="mb-8 ml-8 mt-2 flex flex-col">
+            <h3 className="text-base text-default-100">{entry.title}</h3>
+            <p className="text-xs text-default-100">{entry.date}</p>
+            <p className="text-xs text-default-100">{entry.contributors}</p>
+          </section>
+        </article>
+      ) : (
+        <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
+          <button
+            onClick={handleOpen}
+            className="w-full rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300"
+          >
+            <span className="mb-2 flex justify-center">
+              <BlackPlus />
+            </span>
+            오늘의 문화생활을
+            <h3 className="flex justify-center text-base font-medium text-gray-400">
+              기록해봐요!
+            </h3>
+          </button>
+        </span>
+      )}
       <Modal
         keepMounted
         open={open}

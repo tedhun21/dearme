@@ -11,6 +11,7 @@ import Button from "@mui/joy/Button";
 import BlackPlus from "@/public/diary/BlackPlus";
 import AddPhoto from "@/public/diary/AddPhoto";
 import CirclePlus from "@/public/diary/CirclePlus";
+import DearmeLogo from "@/public/login/DearmeLogo";
 
 type UploadTodayPickProps = {
   id: number;
@@ -94,31 +95,30 @@ export default function UploadTodayPick({ onSubmit }) {
             picks.map((pick, index) => (
               <article key={pick.id} className="flex flex-col">
                 <section
-                  className="relative flex min-h-[200px] min-w-[200px] pr-12"
+                  className="relative flex max-h-[200px] min-h-[200px] min-w-[200px] max-w-[200px]"
                   onMouseEnter={() => handleMouseEnter(pick.id)}
                   onMouseLeave={() => handleMouseLeave(pick.id)}
                 >
-                  {pick.image && (
+                  {pick.image ? (
                     <img
                       src={pick.image}
                       alt="Uploaded"
                       className="ml-8 flex h-44 w-44 object-cover"
                     />
+                  ) : (
+                    <div className="ml-8 flex h-44 w-44 flex-col items-center justify-center bg-default-600">
+                      <DearmeLogo />
+                    </div>
                   )}
                   <Button
                     sx={{
-                      px: 2,
                       position: "absolute",
-                      top: "45%",
-                      left: "45%",
+                      top: "50%",
+                      right: "20%",
                       visibility: hovered[pick.id] ? "visible" : "hidden",
                       opacity: hovered[pick.id] ? 1 : 0,
-                      transform: "translate(-50%, -50%)", // 정확히 중앙에 오도록 조정
+                      transform: "translateY(-50%)",
                       transition: "visibility 0.3s, opacity 0.3s ease",
-                      bgcolor: "rgba(13, 31, 188, 0.7)", // 버튼 배경을 약간 투명하게 설정
-                      "&:hover": {
-                        // bgcolor: "rgba(13, 31, 188, 0.7)", // 호버링 시 더 불투명하게 설정
-                      },
                     }}
                     onClick={() => handleRemove(pick.id)}
                   >

@@ -1,7 +1,6 @@
 import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
 import axios from "axios";
-import { access } from "fs";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
@@ -104,6 +103,22 @@ export const getMyGoals = async ({ queryKey }: any) => {
   } else {
     return {};
   }
+};
+
+export const updateMyTodoPriority = async ({
+  date,
+  source,
+  destination,
+}: any) => {
+  console.log(source, destination);
+  const { data } = await axios.put(
+    `${API_URL}/todos/${date}/updatePriority`,
+    { data: { source, destination } },
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  console.log(data);
+  return data;
 };
 
 export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {

@@ -10,6 +10,8 @@ import {
 import Todo from "./Todo";
 
 import { ITodo, todoListState } from "@/store/atoms";
+import { useMutation } from "@tanstack/react-query";
+import { updateMyTodoPriority } from "@/store/api";
 
 // 배열 순서 바꾸는 함수
 const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
@@ -18,33 +20,6 @@ const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
   const [removed] = result.splice(startIndex, 1);
   // 제거된 요소를 배열에 하나도 제거하지 않고 endIndex에 추가
   result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-const updatePriority = (
-  list: ITodo[],
-  startIndex: number,
-  endIndex: number,
-) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  // startIndex와 endIndex의 관계에 따라 다음 항목들의 우선순위를 조절
-  if (startIndex < endIndex) {
-    // startIndex가 endIndex보다 작은 경우: 아래로 이동한 경우
-    for (let i = endIndex; i > startIndex; i--) {
-      result[i].priority = result[i - 1].priority;
-    }
-    result[startIndex].priority = endIndex;
-  } else if (startIndex > endIndex) {
-    // startIndex가 endIndex보다 큰 경우: 위로 이동한 경우
-    for (let i = endIndex; i < startIndex; i++) {
-      result[i].priority = result[i + 1].priority;
-    }
-    result[startIndex].priority = endIndex;
-  }
 
   return result;
 };
@@ -71,14 +46,28 @@ const getTodoStyle = (isDragging: any, draggableStyle: any) => ({
   ...draggableStyle,
 });
 
-export default function DragTodo() {
+export default function DragTodo({ date }: any) {
   const [enabled, setEnabled] = useState(false);
   const [todos, setTodos] = useRecoilState(todoListState);
+
+  const { mutate: updateMyTodoPriorityMutate } = useMutation({
+    mutationKey: ["updateMyTodoPriority"],
+    mutationFn: updateMyTodoPriority,
+    onError: ({ response }: any) => {
+      window.alert(response.data.error.message);
+    },
+  });
 
   const onDragEnd = ({ source, destination }: DropResult) => {
     if (!destination) {
       return;
     }
+
+    updateMyTodoPriorityMutate({
+      date,
+      source: source.index,
+      destination: destination.index,
+    });
 
     setTodos((prevTodos) => {
       const reorderedResults = reorder(
@@ -87,16 +76,7 @@ export default function DragTodo() {
         destination.index,
       );
 
-      const updatedTodos = updatePriority(
-        reorderedResults,
-        source.index,
-        destination.index,
-      );
-
-      return {
-        ...prevTodos,
-        results: updatedTodos,
-      };
+      return reorderedResults;
     });
   };
 

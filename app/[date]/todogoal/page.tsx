@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import { Modal } from "@mui/joy";
-import { Button, LinearProgress, Switch } from "@mui/material";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
+import { Button, Divider, LinearProgress, Switch } from "@mui/material";
+import {
+  DateCalendar,
+  DatePicker,
+  LocalizationProvider,
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -13,33 +17,67 @@ import UserIcon from "@/public/me/UserIcon";
 import PlusIcon from "@/public/todo/PlusIcon";
 import XIcon from "@/public/todo/XIcon";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { meState } from "@/store/atoms";
+import { meState, todoListState } from "@/store/atoms";
 import Image from "next/image";
-import CalendarIcon from "@/public/date/Calendar";
+import CalendarIcon from "@/public/todogoal/CalendarIcon";
 import Footer from "@/app/ui/footer";
 import clsx from "clsx";
+import { useQuery } from "@tanstack/react-query";
+import { getMyTodosWithDate } from "@/store/api";
+import ProgressIcon from "@/public/todogoal/ProgressIcon";
+import LeftArrowIcon from "@/public/todogoal/LeftArrow";
+import DragTodo from "@/app/ui/todo/Drag";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
+
 export default function DailyTodo() {
-  const { date } = useParams<{ date: string }>();
   const me = useRecoilValue(meState);
+  const [todos, setTodos] = useRecoilState(todoListState);
+  const checkedTodos = todos?.filter((todo: any) => todo.done === true);
+  const percent =
+    todos && todos.length !== 0
+      ? Math.round((checkedTodos?.length / todos.length) * 100)
+      : 0;
 
   const [title, setTitle] = useState("Todo");
+
+  const { date } = useParams<{ date: string }>();
+  const [value, setValue] = useState(dayjs(date));
+
+  const { isSuccess, data, refetch, isRefetching } = useQuery({
+    queryKey: ["getMyTodosWithDate"],
+    queryFn: () =>
+      getMyTodosWithDate({ date: dayjs(value).format("YYYY-MM-DD") }),
+  });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [isPublicTodo, setPublicTodo] = useState(false);
 
+  useEffect(() => {
+    if (isSuccess || !isRefetching) {
+      setTodos(data);
+    }
+  }, [isSuccess, isRefetching]);
+
+  useEffect(() => {
+    if (!isRefetching && value) {
+      refetch();
+    }
+  }, [value]);
+
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-black text-white shadow-lg">
-        <article className="flex flex-col gap-4 p-5">
+        <article className="flex flex-col gap-5 p-5">
           <section className="flex w-full items-center justify-between">
-            <span className="text-xl font-semibold">Hi! {me.nickname}</span>
+            {me && (
+              <span className="text-xl font-semibold">Hi! {me?.nickname}</span>
+            )}
             <div className="flex">
               <div className="relative rounded-3xl bg-default-800">
                 <div
                   className={clsx(
-                    "absolute h-[40px] w-[100px] transform rounded-3xl bg-default-400 transition-transform",
+                    "absolute h-[40px] w-[100px] transform rounded-3xl bg-default-400 transition-all",
                     title === "Todo" ? "translate-x-0" : "translate-x-[100px]",
                   )}
                 />
@@ -73,43 +111,100 @@ export default function DailyTodo() {
                 </Button>
               </div>
             </div>
-
             <div className="relative h-12 w-12 overflow-hidden rounded-full">
-              <Image
-                src={`${BUCKET_URL}${me?.photo.url}`}
-                alt="user profile"
-                fill
-                className="object-cover object-center"
-              />
+              {me && (
+                <Image
+                  src={`${BUCKET_URL}${me?.photo.url}`}
+                  alt="user profile"
+                  fill
+                  className="object-cover object-center"
+                />
+              )}
             </div>
           </section>
-          <section className="w-full rounded-xl bg-default-800 p-6">
-            <div className="flex justify-between">
-              <div className="flex gap-1">
+          <section className="flex flex-col gap-2">
+            <div className="w-full rounded-3xl bg-default-800 p-6">
+              <div className="flex items-center gap-4">
                 <CalendarIcon className="h-5 w-5 fill-current text-white" />
-                <span>23 Thu</span>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    views={["day"]}
+                    value={value}
+                    onChange={(newValue: any) => setValue(newValue)}
+                    minDate={dayjs(date).subtract(1, "month")}
+                    maxDate={dayjs(date).add(1, "month")}
+                    sx={{
+                      width: "100px",
+                      borderColor: "#ffffff",
+                      "& .MuiInputBase-root": {
+                        color: "#ffffff",
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </div>
+              <div className="flex flex-col text-2xl font-bold">
+                <span>You have</span>
+                <span>
+                  {todos?.length} {todos?.length > 0 ? "tasks" : "task"} for
+                  today
+                </span>
+              </div>
+              <div className="mb-3 mt-5 h-0.5 bg-white" />
+              <div className="flex gap-5 text-default-300">
+                <span>#planning</span>
+                <span>#challenge</span>
+                <span>#youthfulness</span>
               </div>
             </div>
-
-            <div>hi</div>
-            <div>hi</div>
-            <div>hi</div>
-            <div>hi</div>
-          </section>
-          <section className="w-full rounded-xl bg-default-900 p-6">
-            <div>hello</div>
-            <div>hello</div>
-            <div>hello</div>
-            <div>hello</div>
-            <div>hello</div>
-          </section>
-          <section className="w-full rounded-xl bg-default-400 p-6">
-            <div>guten tag</div>
-            <div>guten tag</div>
-            <div>guten tag</div>
-            <div>guten tag</div>
-            <div>guten tag</div>
-            <div>guten tag</div>
+            <div className="w-full rounded-3xl bg-default-900 p-6">
+              <div className="flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                  <ProgressIcon className="h-8 w-8" />
+                </div>
+                <span className="text-xl">Your Progress</span>
+              </div>
+              <div className="flex items-end justify-between">
+                <div className="flex w-2/3 flex-col pb-0.5">
+                  <div className="flex gap-2">
+                    <span className="text-xl">
+                      {percent === 0
+                        ? "Let's try this!"
+                        : percent < 50
+                          ? "You are doing well!"
+                          : percent > 50
+                            ? "You are almost there"
+                            : percent === 100
+                              ? "Well Done!"
+                              : null}
+                    </span>
+                    <div>^^</div>
+                  </div>
+                  <LinearProgress
+                    sx={{
+                      height: "16px",
+                      borderRadius: "12px",
+                      width: "100%",
+                      color: "#143422",
+                      backgroundColor: "#ffffff",
+                    }}
+                    variant="determinate"
+                    value={percent}
+                    color="inherit"
+                  />
+                </div>
+                <div className="flex w-1/3 items-end justify-around">
+                  <div>
+                    <LeftArrowIcon className="h-5 w-5" />
+                  </div>
+                  <span className="text-5xl">{percent}%</span>
+                </div>
+              </div>
+            </div>
+            <div className="w-full overflow-hidden rounded-3xl bg-default-200">
+              <DragTodo date={date} />
+              <div>+</div>
+            </div>
           </section>
 
           {/* create todo modal */}

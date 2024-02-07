@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -10,60 +10,113 @@ import Button from "@mui/joy/Button";
 
 import BlackPlus from "@/public/diary/BlackPlus";
 import AddPhoto from "@/public/diary/AddPhoto";
+import CirclePlus from "@/public/diary/CirclePlus";
 
 type UploadTodayPickProps = {
+  id: number;
   title: string;
   date: string;
   contributors: string;
+  image: string | null;
 };
 
 export default function UploadTodayPick({ onSubmit }) {
   const [open, setOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [image, setImage] = useState<string | null>(null);
-  const [entry, setEntry] = useState<UploadTodayPickProps>({
+  const [picks, setPicks] = useState<UploadTodayPickProps[]>([]);
+  const [newPick, setNewPick] = useState<UploadTodayPickProps>({
+    id: Date.now(),
     title: "",
     date: "",
     contributors: "",
+    image: null,
   });
 
   const handleOpen = () => setOpen(true);
 
   const handleClose = () => setOpen(false);
 
-  const handleImageChange = (e: any) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      const image = URL.createObjectURL(file);
+      setNewPick((prev) => ({ ...prev, image }));
+      console.log(image);
     }
   };
 
-  const removeImage = () => setImage(null);
+  const removeImage = () => {
+    setNewPick((prev) => ({ ...prev, image: null }));
+  };
 
   const handleComplete = () => {
-    setSubmitted(true);
+    const completedPick = { ...newPick, id: Date.now() };
+    setPicks((picks) => [...picks, completedPick]);
+    if (onSubmit) {
+      onSubmit(completedPick);
+    }
+    setNewPick({
+      id: Date.now(),
+      title: "",
+      date: "",
+      contributors: "",
+      image: null,
+    });
     setOpen(false);
   };
 
-  const handleChange = (name: keyof UploadTodayPickProps) => (e: any) => {
-    if (e.target.value.length <= 30) {
-      setEntry((prev) => ({ ...prev, [name]: e.target.value }));
+  const handleRemove = (id: number) => {
+    setPicks(picks.filter((pick) => pick.id !== id));
+  };
+
+  const handleChange = (name: keyof UploadTodayPickProps, value: string) => {
+    if (value.length <= 30) {
+      setNewPick({ ...newPick, [name]: value });
     }
   };
 
+  useEffect(() => {
+    console.log("newPick.image has been updated to:", newPick.image);
+  }, [newPick.image]); // newPick.image가 변경될 때마다 이 useEffect가 실행됩니다.
+
   return (
     <>
-      {submitted ? (
-        <article className="today-pick-display">
-          <section className="ml-8 flex h-60 w-52">
-            <img src={image} alt="Today's Pick" />
-          </section>
-          <section className="mb-8 ml-8 mt-2 flex flex-col">
-            <h3 className="text-base text-default-100">{entry.title}</h3>
-            <p className="text-xs text-default-100">{entry.date}</p>
-            <p className="text-xs text-default-100">{entry.contributors}</p>
-          </section>
-        </article>
+      {picks.length > 0 ? (
+        picks.map((pick, index) => (
+          <article key={pick.id} className="flex flex-col">
+            <section className="flex pr-40">
+              {pick.image && (
+                <img
+                  src={pick.image}
+                  alt="Uploaded"
+                  className="ml-8 flex h-[200px] w-[200px]"
+                />
+              )}
+              {index === picks.length - 1 && (
+                <span
+                  onClick={handleOpen}
+                  style={{ cursor: "pointer" }}
+                  className="ml-16 mt-24 flex justify-end"
+                >
+                  <CirclePlus />
+                </span>
+              )}
+            </section>
+            <section className="mb-2 ml-8 mt-2 flex flex-col">
+              <h3 className="text-base text-default-100">{pick.title}</h3>
+              <p className="text-xs text-default-100">{pick.date}</p>
+              <p className="text-xs text-default-100">{pick.contributors}</p>
+              <span className="mt-2 flex">
+                <Button
+                  sx={{ pl: 9.2, pr: 9.2 }}
+                  onClick={() => handleRemove(pick.id)}
+                >
+                  Remove
+                </Button>
+              </span>
+            </section>
+          </article>
+        ))
       ) : (
         <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
           <button
@@ -80,13 +133,7 @@ export default function UploadTodayPick({ onSubmit }) {
           </button>
         </span>
       )}
-      <Modal
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-      >
+      <Modal keepMounted open={open} onClose={handleClose}>
         <ModalDialog
           sx={{
             width: "400px",
@@ -103,8 +150,8 @@ export default function UploadTodayPick({ onSubmit }) {
 
           <Box
             sx={{
-              border: image ? "none" : "1px dashed #EBE3D5", // 이미지가 있으면 border 없앰
-              backgroundColor: image ? "transparent" : "", // 이미지가 있으면 배경색 투명 처리
+              border: newPick.image ? "none" : "1px dashed #EBE3D5", // 이미지가 있으면 border 없앰
+              backgroundColor: newPick.image ? "transparent" : "", // 이미지가 있으면 배경색 투명 처리
               position: "relative",
               padding: 2,
               display: "flex",
@@ -112,7 +159,7 @@ export default function UploadTodayPick({ onSubmit }) {
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              height: 320,
+              height: 280,
               overflow: "hidden", // 이미지가 넘치는 경우 잘라줌.
               "&:hover .remove-image-button": {
                 // 호버링 시 특정 클래스를 가진 요소의 스타일을 변경
@@ -129,9 +176,9 @@ export default function UploadTodayPick({ onSubmit }) {
               onChange={handleImageChange}
             />
             <label htmlFor="raised-button-file" style={{ cursor: "pointer" }}>
-              {image ? (
+              {newPick.image ? (
                 <img
-                  src={image}
+                  src={newPick.image}
                   alt="UploadImage"
                   style={{
                     maxWidth: "100%",
@@ -143,9 +190,8 @@ export default function UploadTodayPick({ onSubmit }) {
                 <AddPhoto />
               )}
             </label>
-            {image && (
+            {newPick.image && (
               <Button
-                className="remove-image-button"
                 sx={{
                   position: "absolute", // 버튼을 이미지 위에 절대 위치
                   top: "50%", // 상단에서 50%의 위치
@@ -164,31 +210,29 @@ export default function UploadTodayPick({ onSubmit }) {
               </Button>
             )}
           </Box>
-
           <DialogContent>
             <Input
               className="mb-4"
               fullWidth
               placeholder="Title (30 characters or less)"
-              value={entry.title}
-              onChange={handleChange("title")}
+              value={newPick.title}
+              onChange={(e) => handleChange("title", e.target.value)}
             />
             <Input
               className="mb-4"
               fullWidth
               placeholder="date (30 characters or less)"
-              value={entry.date}
-              onChange={handleChange("date")}
+              value={newPick.date}
+              onChange={(e) => handleChange("date", e.target.value)}
             />
             <Input
               className="mb-1"
               fullWidth
               placeholder="Contributors (Production Company, Cast, Author, etc)"
-              value={entry.contributors}
-              onChange={handleChange("contributors")}
+              value={newPick.contributors}
+              onChange={(e) => handleChange("contributors", e.target.value)}
             />
           </DialogContent>
-
           <Button
             className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800 hover:bg-default-400"
             onClick={() => setOpen(false)}

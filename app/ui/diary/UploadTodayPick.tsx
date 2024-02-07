@@ -81,43 +81,46 @@ export default function UploadTodayPick({ onSubmit }) {
 
   return (
     <>
-      {picks.length > 0 ? (
-        picks.map((pick, index) => (
-          <article key={pick.id} className="flex flex-col">
-            <section className="flex pr-40">
-              {pick.image && (
-                <img
-                  src={pick.image}
-                  alt="Uploaded"
-                  className="ml-8 flex h-[200px] w-[200px]"
-                />
-              )}
-              {index === picks.length - 1 && (
-                <span
-                  onClick={handleOpen}
-                  style={{ cursor: "pointer" }}
-                  className="ml-16 mt-24 flex justify-end"
-                >
-                  <CirclePlus />
+      <div className="overflow-x-auto">
+        <div className={picks.length > 0 ? "flex flex-row items-start" : ""}>
+          {picks.map((pick, index) => (
+            <article key={pick.id} className="flex flex-col">
+              <section className="flex min-h-[200px] min-w-[200px] pr-12">
+                {pick.image && (
+                  <img
+                    src={pick.image}
+                    alt="Uploaded"
+                    className="ml-8 flex h-44 w-44"
+                  />
+                )}
+                {index === picks.length - 1 && (
+                  <span
+                    onClick={handleOpen}
+                    style={{ cursor: "pointer" }}
+                    className="ml-16 mt-24 flex justify-end"
+                  >
+                    <CirclePlus />
+                  </span>
+                )}
+              </section>
+              <section className="mb-2 ml-8 flex flex-col">
+                <h3 className="text-base text-default-100">{pick.title}</h3>
+                <p className="text-xs text-default-100">{pick.date}</p>
+                <p className="text-xs text-default-100">{pick.contributors}</p>
+                <span className="mt-2 flex">
+                  <Button
+                    sx={{ pl: 8, pr: 8 }}
+                    onClick={() => handleRemove(pick.id)}
+                  >
+                    Remove
+                  </Button>
                 </span>
-              )}
-            </section>
-            <section className="mb-2 ml-8 mt-2 flex flex-col">
-              <h3 className="text-base text-default-100">{pick.title}</h3>
-              <p className="text-xs text-default-100">{pick.date}</p>
-              <p className="text-xs text-default-100">{pick.contributors}</p>
-              <span className="mt-2 flex">
-                <Button
-                  sx={{ pl: 9.2, pr: 9.2 }}
-                  onClick={() => handleRemove(pick.id)}
-                >
-                  Remove
-                </Button>
-              </span>
-            </section>
-          </article>
-        ))
-      ) : (
+              </section>
+            </article>
+          ))}
+        </div>
+      </div>
+      {picks.length === 0 && (
         <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
           <button
             onClick={handleOpen}

@@ -18,7 +18,7 @@ export interface ITodo {
 
 interface IUser {
   id: number;
-  username: string;
+  nickname: string;
 }
 
 interface IPagination {

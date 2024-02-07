@@ -31,18 +31,18 @@ import DragTodo from "@/app/ui/todo/Drag";
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function DailyTodo() {
+  const [title, setTitle] = useState("Todo");
   const me = useRecoilValue(meState);
   const [todos, setTodos] = useRecoilState(todoListState);
+
+  const { date } = useParams<{ date: string }>();
+  const [value, setValue] = useState(dayjs(date));
+
   const checkedTodos = todos?.filter((todo: any) => todo.done === true);
   const percent =
     todos && todos.length !== 0
       ? Math.round((checkedTodos?.length / todos.length) * 100)
       : 0;
-
-  const [title, setTitle] = useState("Todo");
-
-  const { date } = useParams<{ date: string }>();
-  const [value, setValue] = useState(dayjs(date));
 
   const { isSuccess, data, refetch, isRefetching } = useQuery({
     queryKey: ["getMyTodosWithDate"],
@@ -172,7 +172,7 @@ export default function DailyTodo() {
                         ? "Let's try this!"
                         : percent < 50
                           ? "You are doing well!"
-                          : percent > 50
+                          : percent < 99
                             ? "You are almost there"
                             : percent === 100
                               ? "Well Done!"
@@ -203,8 +203,8 @@ export default function DailyTodo() {
             </div>
             <div className="w-full overflow-hidden rounded-3xl bg-default-200">
               <DragTodo date={date} />
-              <div>+</div>
             </div>
+            <div>+</div>
           </section>
 
           {/* create todo modal */}

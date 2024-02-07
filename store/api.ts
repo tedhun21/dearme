@@ -110,14 +110,22 @@ export const updateMyTodoPriority = async ({
   source,
   destination,
 }: any) => {
-  console.log(source, destination);
   const { data } = await axios.put(
     `${API_URL}/todos/${date}/updatePriority`,
     { data: { source, destination } },
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
 
-  console.log(data);
+  return data;
+};
+
+export const updateMyTodoDone = async ({ todoId, done }: any) => {
+  const { data } = await axios.put(
+    `${API_URL}/todos/${todoId}`,
+    { done },
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
   return data;
 };
 

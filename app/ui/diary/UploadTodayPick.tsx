@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -24,6 +24,7 @@ export default function UploadTodayPick({ onSubmit }) {
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [picks, setPicks] = useState<UploadTodayPickProps[]>([]);
+  const [hovered, setHovered] = useState({});
   const [newPick, setNewPick] = useState<UploadTodayPickProps>({
     id: Date.now(),
     title: "",
@@ -75,49 +76,73 @@ export default function UploadTodayPick({ onSubmit }) {
     }
   };
 
-  useEffect(() => {
-    console.log("newPick.image has been updated to:", newPick.image);
-  }, [newPick.image]); // newPick.image가 변경될 때마다 이 useEffect가 실행됩니다.
+  // 마우스가 이미지 위로 이동했을 때 호출될 핸들러입니다.
+  const handleMouseEnter = (id) => {
+    setHovered((prev) => ({ ...prev, [id]: true }));
+  };
+
+  // 마우스가 이미지에서 벗어났을 때 호출될 핸들러입니다.
+  const handleMouseLeave = (id) => {
+    setHovered((prev) => ({ ...prev, [id]: false }));
+  };
 
   return (
     <>
       <div className="overflow-x-auto">
-        <div className={picks.length > 0 ? "flex flex-row items-start" : ""}>
-          {picks.map((pick, index) => (
-            <article key={pick.id} className="flex flex-col">
-              <section className="flex min-h-[200px] min-w-[200px] pr-12">
-                {pick.image && (
-                  <img
-                    src={pick.image}
-                    alt="Uploaded"
-                    className="ml-8 flex h-44 w-44"
-                  />
-                )}
-                {index === picks.length - 1 && (
-                  <span
-                    onClick={handleOpen}
-                    style={{ cursor: "pointer" }}
-                    className="ml-16 mt-24 flex justify-end"
-                  >
-                    <CirclePlus />
-                  </span>
-                )}
-              </section>
-              <section className="mb-2 ml-8 flex flex-col">
-                <h3 className="text-base text-default-100">{pick.title}</h3>
-                <p className="text-xs text-default-100">{pick.date}</p>
-                <p className="text-xs text-default-100">{pick.contributors}</p>
-                <span className="mt-2 flex">
+        <div className="flex flex-row items-start">
+          {picks.length > 0 &&
+            picks.map((pick, index) => (
+              <article key={pick.id} className="flex flex-col">
+                <section
+                  className="relative flex min-h-[200px] min-w-[200px] pr-12"
+                  onMouseEnter={() => handleMouseEnter(pick.id)}
+                  onMouseLeave={() => handleMouseLeave(pick.id)}
+                >
+                  {pick.image && (
+                    <img
+                      src={pick.image}
+                      alt="Uploaded"
+                      className="ml-8 flex h-44 w-44 object-cover"
+                    />
+                  )}
                   <Button
-                    sx={{ pl: 8, pr: 8 }}
+                    sx={{
+                      px: 2,
+                      position: "absolute",
+                      top: "45%",
+                      left: "45%",
+                      visibility: hovered[pick.id] ? "visible" : "hidden",
+                      opacity: hovered[pick.id] ? 1 : 0,
+                      transform: "translate(-50%, -50%)", // 정확히 중앙에 오도록 조정
+                      transition: "visibility 0.3s, opacity 0.3s ease",
+                      bgcolor: "rgba(13, 31, 188, 0.7)", // 버튼 배경을 약간 투명하게 설정
+                      "&:hover": {
+                        // bgcolor: "rgba(13, 31, 188, 0.7)", // 호버링 시 더 불투명하게 설정
+                      },
+                    }}
                     onClick={() => handleRemove(pick.id)}
                   >
                     Remove
                   </Button>
-                </span>
-              </section>
-            </article>
-          ))}
+                  {index === picks.length - 1 && (
+                    <span
+                      onClick={handleOpen}
+                      style={{ cursor: "pointer" }}
+                      className="ml-16 mt-24 flex justify-end"
+                    >
+                      <CirclePlus />
+                    </span>
+                  )}
+                </section>
+                <section className="mb-6 ml-8 mt-[-16px] flex flex-col">
+                  <h3 className="text-base text-default-100">{pick.title}</h3>
+                  <p className="text-xs text-default-100">{pick.date}</p>
+                  <p className="text-xs text-default-100">
+                    {pick.contributors}
+                  </p>
+                </section>
+              </article>
+            ))}
         </div>
       </div>
       {picks.length === 0 && (

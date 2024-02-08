@@ -11,7 +11,6 @@ import DiaryCreateModal from "@/app/ui/diary/DiaryCreateModal";
 import ChooseMood from "@/app/ui/diary/ChooseMood";
 import ChooseEmotionTags from "@/app/ui/diary/ChooseEmotionTags";
 import ChooseCompanions from "@/app/ui/diary/ChooseCompanions";
-// import SleepRecord from "@/app/ui/diary/SleepRecord";
 import UploadPhoto from "@/app/ui/diary/UploadPhoto";
 import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
 import { getCookie } from "@/util/tokenCookie";
@@ -23,10 +22,6 @@ export default function Create() {
     mood: "",
     emotionTags: [],
     companions: [],
-    // sleep: {
-    //   startTime: "",
-    //   endTime: "",
-    // },
     photo: [],
     todayPick: "",
   });
@@ -53,20 +48,6 @@ export default function Create() {
       setFormattedDate(newFormat);
     }
   }, [params]);
-
-  // const handleSleepTimeChange = (sleepTime: any) => {
-  //   setDiaryData((prevData) => ({
-  //     ...prevData,
-  //     sleep: { ...prevData.sleep, startTime: sleepTime },
-  //   }));
-  // };
-
-  // const handleWakeTimeChange = (wakeTime: any) => {
-  //   setDiaryData((prevData) => ({
-  //     ...prevData,
-  //     sleep: { ...prevData.sleep, endTime: wakeTime },
-  //   }));
-  // };
 
   // 일기 데이터 Submit
   const handleSubmitDiary = async () => {
@@ -144,15 +125,6 @@ export default function Create() {
             }}
           />
         </section>
-        {/* <section className="flex flex-col bg-default-300">
-          <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
-            수면
-          </h2>
-          <SleepRecord
-            onSleepTimeChange={handleSleepTimeChange}
-            onWakeTimeChange={handleWakeTimeChange}
-          />
-        </section> */}
         <section className="flex flex-col bg-default-400">
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
             오늘의 사진
@@ -167,7 +139,11 @@ export default function Create() {
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-default-100">
             오늘의 PICK
           </h2>
-          <UploadTodayPick />
+          <UploadTodayPick
+            onSubmit={(todayPickData: any) => {
+              setDiaryData({ ...diaryData, todayPick: todayPickData });
+            }}
+          />
         </section>
         <section className="mx-4 my-4 flex justify-center">
           <Button

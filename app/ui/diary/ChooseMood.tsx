@@ -9,9 +9,17 @@ import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 export default function ChooseMood({ onMoodSelect }) {
   const [selectedMood, setSelectedMood] = useState(null);
 
-  const handleMoodClick = (mood: any) => {
-    setSelectedMood(mood);
-    onMoodSelect(mood);
+  const handleMoodClick = (mood: string) => {
+    // 이미 선택된 기분을 다시 클릭했는지 확인
+    if (mood === selectedMood) {
+      // 선택을 취소하고 상위 컴포넌트에도 알림
+      setSelectedMood(null);
+      onMoodSelect(null);
+    } else {
+      // 새로운 기분을 선택하고 상위 컴포넌트에 알림
+      setSelectedMood(mood);
+      onMoodSelect(mood);
+    }
   };
 
   return (

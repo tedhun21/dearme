@@ -5,6 +5,8 @@ import axios from "axios";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
 
+// 유저
+/// 내 정보 가져오기
 export const getMe = async () => {
   if (access_token !== null) {
     const { data } = await axios.get(`${API_URL}/users/me`, {
@@ -17,12 +19,64 @@ export const getMe = async () => {
   }
 };
 
+// 내 정보 수정하기 (사진 제외)
+export const updateMe = async ({ userId, updateData }: any) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(updateData));
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
+};
+
+/// 유저 정보 가져오기
 export const getUser = async ({ profileId }: any) => {
   const { data } = await axios.get(`${API_URL}/users/${profileId}`);
 
   return data;
 };
 
+/// 유저 사진만 수정
+export const updateUserPhoto = async ({
+  userId,
+  selectedFile,
+}: {
+  userId: number;
+  selectedFile: File;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("photo", selectedFile);
+
+  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+
+  return data;
+};
+
+/// 유저 백그라운드 사진만 수정
+export const updateBackGroundPhoto = async ({
+  userId,
+  selectedFile,
+}: {
+  userId: number;
+  selectedFile: File;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("background", selectedFile);
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
+};
+
+// todo
 export const getMyTodosWithDate = async ({ date }: any) => {
   if (access_token !== null) {
     const { data } = await axios.get(`${API_URL}/todos?date=${date}`, {
@@ -43,49 +97,11 @@ export const getUserTodosWithDate = async ({ date }: any) => {
   return data;
 };
 
-export const updateUserPhoto = async ({
-  userId,
-  selectedFile,
-}: {
-  userId: number;
-  selectedFile: File;
-}) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("photo", selectedFile);
-
-  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-
-  return data;
-};
-export const updateBackGroundPhoto = async ({
-  userId,
-  selectedFile,
-}: {
-  userId: number;
-  selectedFile: File;
-}) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("background", selectedFile);
-
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+export const createMyTodo = async ({ createData }: any) => {
+  const { data } = await axios.post(`${API_URL}/todos`, createData, {
     headers: { Authorization: `Bearer ${access_token}` },
   });
-  return data;
-};
 
-export const updateMe = async ({ userId, updateData }: any) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify(updateData));
-
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
   return data;
 };
 

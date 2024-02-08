@@ -1,34 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useForm } from "react-hook-form";
+import clsx from "clsx";
 
 import { Modal } from "@mui/joy";
 import { Button, LinearProgress, Switch } from "@mui/material";
-import {
-  DateCalendar,
-  DatePicker,
-  LocalizationProvider,
-} from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
-import UserIcon from "@/public/me/UserIcon";
 import PlusIcon from "@/public/todo/PlusIcon";
 import XIcon from "@/public/todo/XIcon";
-import { useRecoilState, useRecoilValue } from "recoil";
 import { meState, todoListState } from "@/store/atoms";
-import Image from "next/image";
 import CalendarIcon from "@/public/todogoal/CalendarIcon";
 import Footer from "@/app/ui/footer";
-import clsx from "clsx";
-import { useQuery } from "@tanstack/react-query";
-import { getMyTodosWithDate } from "@/store/api";
+import { createMyTodo, getMyTodosWithDate } from "@/store/api";
 import ProgressIcon from "@/public/todogoal/ProgressIcon";
 import LeftArrowIcon from "@/public/todogoal/LeftArrow";
 import DragTodo from "@/app/ui/todo/Drag";
-import { useForm } from "react-hook-form";
-import CheckFalseIcon from "@/public/me/CheckFalseIcon";
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
 import SendIcon from "@/public/todogoal/SendIcon";
 
@@ -54,14 +49,37 @@ export default function DailyTodo() {
       getMyTodosWithDate({ date: dayjs(value).format("YYYY-MM-DD") }),
   });
 
-  // creat input
+  // ABOUT: creat Todo
   const [createInput, setCreateInput] = useState(false);
+  const [todoBody, setTodoBody] = useState("");
+
+  const { mutate: createTodoMutate } = useMutation({
+    mutationKey: ["createMyTodo"],
+    mutationFn: createMyTodo,
+  });
+
+  const { register: todoRegister, handleSubmit: handleCreateSubmit } =
+    useForm();
+
+  const onSubmit = (data: any) => {
+    const { createTodoBody } = data;
+
+    createTodoMutate(
+      { createData: { date, body: createTodoBody } },
+      {
+        onSuccess: (data) => {
+          setTodos((prev) => {
+            return [...prev, data];
+          });
+        },
+      },
+    );
+  };
   // update Modal
   const [modalOpen, setModalOpen] = useState(false);
   const [isPublicTodo, setPublicTodo] = useState(true);
 
-  const { register } = useForm();
-
+  // ABOUT:get Todo
   useEffect(() => {
     if (isSuccess || !isRefetching) {
       setTodos(data);
@@ -76,7 +94,7 @@ export default function DailyTodo() {
 
   return (
     <main className="flex min-h-screen justify-center">
-      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-black text-white shadow-lg">
+      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-black pb-28 text-white shadow-lg">
         <article className="flex flex-col gap-5 p-5">
           <section className="flex w-full items-center justify-between">
             {me && (
@@ -216,10 +234,14 @@ export default function DailyTodo() {
               </div>
               {createInput && (
                 <div className="w-full rounded-3xl px-5">
-                  <div className="flex justify-between rounded-xl bg-default-200 px-5 py-3">
+                  <form
+                    onSubmit={handleCreateSubmit(onSubmit)}
+                    className="flex justify-between rounded-xl bg-default-200 px-5 py-3"
+                  >
                     <div className="flex flex-grow items-center gap-3">
                       <TodoCheckFalseIcon className="h-6 w-6 fill-current text-default-600 hover:text-default-700" />
                       <input
+                        {...todoRegister("createTodoBody")}
                         className="text-semibold flex-grow bg-transparent text-sm text-default-700 focus:outline-none"
                         placeholder="Please enter the todo content..."
                       />
@@ -227,7 +249,7 @@ export default function DailyTodo() {
                     <button className="flex h-8 w-8 items-center justify-center rounded-full bg-default-800 transition-colors duration-300 hover:bg-default-900">
                       <SendIcon className="h-4 w-4" />
                     </button>
-                  </div>
+                  </form>
                 </div>
               )}
 
@@ -235,7 +257,11 @@ export default function DailyTodo() {
                 onClick={() => setCreateInput((prev) => !prev)}
                 className="h-10 w-10 rounded-full bg-default-600 p-2 transition-colors duration-300 hover:bg-default-400"
               >
-                {createInput ? <XIcon /> : <PlusIcon />}
+                {createInput ? (
+                  <XIcon className="fill-current text-white" />
+                ) : (
+                  <PlusIcon />
+                )}
               </button>
 
               {/* <Modal
@@ -315,8 +341,6 @@ export default function DailyTodo() {
               </Modal> */}
             </div>
           </section>
-
-          {/* create todo modal */}
         </article>
         <Footer />
       </div>

@@ -35,7 +35,6 @@ export default function ChooseEmotionTags({ onTagSelect }) {
       return newTags;
     });
     console.log("Clicked on tag:", tag);
-    // 여기서 태그 클릭에 대한 로직을 추가할 수 있습니다.
   };
 
   return (

@@ -58,6 +58,9 @@ export default function Create() {
       return;
     }
 
+    // diaryData 상태 로깅
+    console.log("제출될 일기 데이터:", diaryData);
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/diaries?date=${params.date}`,

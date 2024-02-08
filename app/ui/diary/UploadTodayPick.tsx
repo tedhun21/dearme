@@ -71,6 +71,7 @@ export default function UploadTodayPick({ onSubmit }) {
     setPicks(picks.filter((pick) => pick.id !== id));
   };
 
+  // input 글자 수 제한
   const handleChange = (name: keyof UploadTodayPickProps, value: string) => {
     if (value.length <= 30) {
       setNewPick({ ...newPick, [name]: value });

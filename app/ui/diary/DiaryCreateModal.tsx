@@ -18,6 +18,7 @@ type DiaryEntry = {
   title: string;
   content: string;
   weather: string;
+  weatherId: number | null;
 };
 
 export default function DiaryCreateModal({ onSubmit }) {
@@ -25,14 +26,16 @@ export default function DiaryCreateModal({ onSubmit }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [weather, setWeather] = useState("");
-  const [weatherId, setWeatherId] = useState(null);
+  const [weatherId, setWeatherId] = useState<number | null>(null);
   const [diaryEntry, setDiaryEntry] = useState<DiaryEntry | null>(null);
 
   const handleComplete = () => {
-    const newDiary = { title, content, weather };
-    setDiaryEntry(newDiary); // 일기 항목을 설정
-    setOpen(false);
-    // 제목과 내용 초기화 로직은 모달 닫힐 때만 적용
+    if (weather !== null) {
+      const newDiary: DiaryEntry = { title, content, weather, weatherId };
+      setDiaryEntry(newDiary); // 일기 항목을 설정
+      onSubmit(newDiary); // 일기 항목을 전달
+      setOpen(false);
+    }
   };
 
   // 일기 수정

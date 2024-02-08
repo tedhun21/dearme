@@ -118,7 +118,7 @@ export default function DragTodo({ date }: any) {
                       provided.draggableProps.style,
                     )}
                   >
-                    <Todo todo={todo} />
+                    <Todo date={date} todo={todo} />
                   </div>
                 )}
               </Draggable>

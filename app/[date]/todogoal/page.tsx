@@ -9,8 +9,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { useForm } from "react-hook-form";
 import clsx from "clsx";
 
-import { Modal } from "@mui/joy";
-import { Button, LinearProgress, Switch } from "@mui/material";
+import { Button, LinearProgress } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -51,33 +50,35 @@ export default function DailyTodo() {
 
   // ABOUT: creat Todo
   const [createInput, setCreateInput] = useState(false);
-  const [todoBody, setTodoBody] = useState("");
 
   const { mutate: createTodoMutate } = useMutation({
     mutationKey: ["createMyTodo"],
     mutationFn: createMyTodo,
   });
 
-  const { register: todoRegister, handleSubmit: handleCreateSubmit } =
-    useForm();
+  const {
+    register: todoRegister,
+    handleSubmit: handleCreateSubmit,
+    setValue: setTodoBodyValue,
+  } = useForm();
 
   const onSubmit = (data: any) => {
     const { createTodoBody } = data;
 
-    createTodoMutate(
-      { createData: { date, body: createTodoBody } },
-      {
-        onSuccess: (data) => {
-          setTodos((prev) => {
-            return [...prev, data];
-          });
+    if (createTodoBody !== "") {
+      createTodoMutate(
+        { createData: { date, body: createTodoBody } },
+        {
+          onSuccess: (data) => {
+            setTodos((prev) => {
+              return [...prev, data];
+            });
+            setTodoBodyValue("createTodoBody", "");
+          },
         },
-      },
-    );
+      );
+    }
   };
-  // update Modal
-  const [modalOpen, setModalOpen] = useState(false);
-  const [isPublicTodo, setPublicTodo] = useState(true);
 
   // ABOUT:get Todo
   useEffect(() => {
@@ -184,16 +185,16 @@ export default function DailyTodo() {
                 <span>#youthfulness</span>
               </div>
             </div>
-            <div className="w-full rounded-3xl bg-default-900 p-6">
+            <div className="flex w-full flex-col gap-5 rounded-3xl bg-default-900 p-6">
               <div className="flex items-center gap-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
                   <ProgressIcon className="h-8 w-8" />
                 </div>
-                <span className="text-xl">Your Progress</span>
+                <span className="text-xl font-semibold">Your Progress</span>
               </div>
               <div className="flex items-end justify-between">
-                <div className="flex w-2/3 flex-col pb-0.5">
-                  <div className="flex gap-2">
+                <div className="flex w-2/3 flex-col gap-3 pb-0.5">
+                  <div className="flex gap-4">
                     <span className="text-xl">
                       {percent === 0
                         ? "Let's try this!"
@@ -228,10 +229,14 @@ export default function DailyTodo() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-full overflow-hidden rounded-3xl bg-default-200">
-                <DragTodo date={date} />
+            {Array.isArray(todos) && todos.length > 0 && (
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-full overflow-hidden rounded-3xl bg-default-200">
+                  <DragTodo date={date} />
+                </div>
               </div>
+            )}
+            <div className="flex w-full flex-col items-center gap-4">
               {createInput && (
                 <div className="w-full rounded-3xl px-5">
                   <form
@@ -246,99 +251,23 @@ export default function DailyTodo() {
                         placeholder="Please enter the todo content..."
                       />
                     </div>
-                    <button className="flex h-8 w-8 items-center justify-center rounded-full bg-default-800 transition-colors duration-300 hover:bg-default-900">
-                      <SendIcon className="h-4 w-4" />
-                    </button>
+                    <div className="transistion-all group h-10 w-10 p-1 duration-200 hover:p-0 active:p-2">
+                      <button className="flex h-full w-full items-center justify-center rounded-full bg-default-800 transition-all duration-200 hover:bg-default-900">
+                        <SendIcon className="h-4 w-4 transition-all duration-200 group-hover:h-5 group-hover:w-5 group-active:h-3 group-active:w-3" />
+                      </button>
+                    </div>
                   </form>
                 </div>
               )}
-
-              <button
-                onClick={() => setCreateInput((prev) => !prev)}
-                className="h-10 w-10 rounded-full bg-default-600 p-2 transition-colors duration-300 hover:bg-default-400"
-              >
-                {createInput ? (
-                  <XIcon className="fill-current text-white" />
-                ) : (
-                  <PlusIcon />
-                )}
-              </button>
-
-              {/* <Modal
-                className="flex items-center justify-center"
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
-              >
-                <div className="flex h-[400px] w-[300px] flex-col justify-between rounded-2xl bg-default-300 p-6 xxs:w-[360px] xs:w-[500px]">
-                  <form className="flex h-full flex-col gap-8">
-                    <div className="flex w-full items-center gap-4">
-                      <input
-                        className="w-full rounded-lg border-2 border-default-400 bg-default-300 p-1 font-semibold outline-none focus:border-default-900"
-                        placeholder="Please wrtie your goal..."
-                      />
-                      <button
-                        onClick={() => setModalOpen(false)}
-                        className="rounded-full p-2 hover:bg-default-400"
-                      >
-                        <XIcon className="h-5 w-5" />
-                      </button>
-                    </div>
-                    <div className="h-full w-full">
-                      <div>{date}</div>
-                      <textarea
-                        className="h-[150px] w-full rounded-lg border-2 border-default-400 bg-default-100 p-2 outline-none focus:border-default-900"
-                        placeholder="please write the content..."
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div>공개 여부</div>
-                        <Switch
-                          value={isPublicTodo}
-                          onChange={() => setPublicTodo((prev) => !prev)}
-                          sx={{
-                            /// switch 기본 박스 크기
-                            padding: 0,
-                            width: "32px",
-                            height: "20px",
-                            "& .MuiSwitch-switchBase": {
-                              padding: 0,
-                              margin: "2px",
-                              transitionDuration: "300ms",
-                              /// 체크될때
-                              "&.Mui-checked": {
-                                transform: "translateX(12px)",
-                                color: "#fff",
-                                "& + .MuiSwitch-track": {
-                                  backgroundColor: "#143422",
-                                  opacity: 1,
-                                  border: 0,
-                                },
-                                "&.Mui-disabled + .MuiSwitch-track": {
-                                  opacity: 0.5,
-                                },
-                              },
-                            },
-                            "& .MuiSwitch-thumb": {
-                              boxSizing: "border-box",
-                              width: 16,
-                              height: 16,
-                            },
-                            "& .MuiSwitch-track": {
-                              borderRadius: 26 / 2,
-                              backgroundColor: "#b6b6c0",
-                              opacity: 1,
-                            },
-                          }}
-                        />
-                      </div>
-                      <button className="rounded-lg bg-default-800 px-3 py-2 font-semibold text-white hover:bg-default-900">
-                        Create Todo
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </Modal> */}
+              {/* plus button */}
+              <div className="group flex h-12 w-12 items-center justify-center p-1 transition-all duration-200 hover:p-0 active:p-2">
+                <button
+                  onClick={() => setCreateInput((prev) => !prev)}
+                  className="h-full w-full rounded-full bg-default-600 p-2 duration-200 group-hover:h-12 group-hover:w-12 group-hover:bg-default-400 group-active:h-8 group-active:w-8"
+                >
+                  {createInput ? <XIcon color="white" /> : <PlusIcon />}
+                </button>
+              </div>
             </div>
           </section>
         </article>

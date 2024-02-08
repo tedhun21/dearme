@@ -105,6 +105,37 @@ export const createMyTodo = async ({ createData }: any) => {
   return data;
 };
 
+export const updateMyTodo = async ({ todoId, updateData }: any) => {
+  const { data } = await axios.put(`${API_URL}/todos/${todoId}`, updateData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+
+  return data;
+};
+
+/// todo 우선순위 업데이트
+export const updateMyTodoPriority = async ({
+  date,
+  source,
+  destination,
+}: any) => {
+  const { data } = await axios.put(
+    `${API_URL}/todos/${date}/updatePriority`,
+    { data: { source, destination } },
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return data;
+};
+
+export const deleteMyTodo = async ({ todoId }: any) => {
+  const data = await axios.delete(`${API_URL}/todos/${todoId}`, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+
+  return data;
+};
+
 export const getMyGoals = async ({ queryKey }: any) => {
   const [_key, { date, access_token }] = queryKey;
 
@@ -119,20 +150,6 @@ export const getMyGoals = async ({ queryKey }: any) => {
   } else {
     return {};
   }
-};
-
-export const updateMyTodoPriority = async ({
-  date,
-  source,
-  destination,
-}: any) => {
-  const { data } = await axios.put(
-    `${API_URL}/todos/${date}/updatePriority`,
-    { data: { source, destination } },
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
-
-  return data;
 };
 
 export const updateMyTodoDone = async ({ todoId, done }: any) => {

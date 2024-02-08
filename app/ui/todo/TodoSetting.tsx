@@ -1,26 +1,112 @@
 import { useState } from "react";
 
-// type TodoSettingProps = {
-//   todo: Todo;
-//   setting: {
-//     value: string;
-//     keyword: string;
-//   };
-//   handleClose: React.MouseEventHandler<HTMLInputElement>;
-// };
+import { useSetRecoilState } from "recoil";
+import { useMutation } from "@tanstack/react-query";
 
-export default function TodoSetting({ todo, setting, handleClose }: any) {
-  const [todoSetting, setTodoSetting] = useState(todo.private);
+import { Modal } from "@mui/joy";
+import { IconButton, Menu, Switch } from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+
+import XIcon from "@/public/todo/XIcon";
+import EditIcon from "@/public/me/EditIcon";
+import { deleteMyTodo } from "@/store/api";
+import { todoListState } from "@/store/atoms";
+import CreateTodoModal from "./CreateTodoModal";
+
+export default function TodoSetting({ date, todo, setCanEdit }: any) {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+  const setTodos = useSetRecoilState(todoListState);
+
+  // update Modal
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // delete Todo
+  const { mutate: deleteTodoMutate, data } = useMutation({
+    mutationKey: ["deleteMyTodo"],
+    mutationFn: deleteMyTodo,
+    onSuccess: ({ data }) => {
+      setAnchorEl(null);
+      setTodos((prev) =>
+        prev.filter((prevTodo) => prevTodo.id !== data.todoId),
+      );
+    },
+    onError: () => {
+      window.alert("Fail to delete todo");
+    },
+  });
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  // 모달 2개 다 닫기
+  const handleAnchorModalClose = () => {
+    setModalOpen(false);
+    setAnchorEl(null);
+  };
+
+  // todo delete 버튼
+  const handleDeleteTodo = (deleteId: number) => {
+    deleteTodoMutate({ todoId: deleteId });
+  };
 
   return (
-    <div className="flex items-center gap-2" onClick={handleClose}>
-      <input
-        type="radio"
-        name="radioOption"
-        value={setting.keyword}
-        checked={todoSetting === setting.value}
-      />
-      <span>{setting.keyword}</span>
+    <div>
+      <IconButton id="basic-button" onClick={handleClick}>
+        <MoreHorizIcon sx={{ color: "#2D2422" }} />
+      </IconButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        PaperProps={{
+          style: {
+            width: "120px",
+            borderRadius: "16px",
+          },
+        }}
+      >
+        <div className="flex flex-col">
+          <button
+            onClick={() => setCanEdit(true)}
+            className="flex items-center gap-1 px-3 py-1 hover:bg-default-200 active:bg-default-300"
+          >
+            <EditIcon className="h-5 w-5 fill-current text-default-600" />
+            <span>Edit</span>
+          </button>
+          <button
+            onClick={() => handleDeleteTodo(todo.id)}
+            className="flex items-center gap-1 px-3 py-1 hover:bg-default-200 active:bg-default-300"
+          >
+            <XIcon className="h-5 w-5" color="red" />
+            <span className="text-red-500">Delete</span>
+          </button>
+
+          {/* TODO UPDATE MODAL */}
+          {/* {modalOpen && (
+            <CreateTodoModal
+              date={date}
+              todo={todo}
+              modalOpen={modalOpen}
+              handleAnchorModalClose={handleAnchorModalClose}
+            />
+          )} */}
+        </div>
+      </Menu>
     </div>
   );
 }

@@ -43,9 +43,9 @@ export default function Todo({ todo }: { todo: ITodo }) {
       <div className="flex gap-3">
         <button onClick={() => setDone((prev) => !prev)}>
           {done ? (
-            <TodoCheckTrueIcon className="hover:tedxt-default-700 h-5 w-5 fill-current text-default-600" />
+            <TodoCheckTrueIcon className="h-5 w-5 fill-current text-default-600 hover:text-default-700" />
           ) : (
-            <TodoCheckFalseIcon className="hover:tedxt-default-700 h-5 w-5 fill-current text-default-600" />
+            <TodoCheckFalseIcon className="h-5 w-5 fill-current text-default-600 hover:text-default-700" />
           )}
         </button>
         <span className="text-semibold text-sm text-default-700">

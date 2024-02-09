@@ -136,17 +136,13 @@ export const deleteMyTodo = async ({ todoId }: any) => {
   return data;
 };
 
-export const getMyGoals = async ({ queryKey }: any) => {
-  const [_key, { date, access_token }] = queryKey;
-
+export const getMyGoals = async ({ date }: any) => {
   if (access_token !== null) {
-    const {
-      data: { goals },
-    } = await axios.get(`${API_URL}/goals?date=${date}`, {
+    const { data } = await axios.get(`${API_URL}/goals?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    return goals;
+    return data;
   } else {
     return {};
   }

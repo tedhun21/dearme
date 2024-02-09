@@ -110,10 +110,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (isSuccessForMe) {
+    if (isSuccessForMe && !isTodosForTodayRefetching) {
       setMe(meData);
     }
-  }, [isSuccessForMe]);
+  }, [isSuccessForMe, isTodosForTodayRefetching]);
 
   useEffect(() => {
     // 데이터가 성공적으로 불러와지면 todos를 업데이트

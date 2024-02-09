@@ -11,15 +11,12 @@ import XIcon from "@/public/todo/XIcon";
 import EditIcon from "@/public/me/EditIcon";
 import { deleteMyTodo } from "@/store/api";
 import { todoListState } from "@/store/atoms";
-import CreateTodoModal from "./CreateTodoModal";
+import CreateTodoModal from "../todogoal/goal/CreateGoalModal";
 
 export default function TodoSetting({ date, todo, setCanEdit }: any) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const setTodos = useSetRecoilState(todoListState);
-
-  // update Modal
-  const [modalOpen, setModalOpen] = useState(false);
 
   // delete Todo
   const { mutate: deleteTodoMutate, data } = useMutation({
@@ -41,12 +38,6 @@ export default function TodoSetting({ date, todo, setCanEdit }: any) {
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  // 모달 2개 다 닫기
-  const handleAnchorModalClose = () => {
-    setModalOpen(false);
     setAnchorEl(null);
   };
 
@@ -95,16 +86,6 @@ export default function TodoSetting({ date, todo, setCanEdit }: any) {
             <XIcon className="h-5 w-5" color="red" />
             <span className="text-red-500">Delete</span>
           </button>
-
-          {/* TODO UPDATE MODAL */}
-          {/* {modalOpen && (
-            <CreateTodoModal
-              date={date}
-              todo={todo}
-              modalOpen={modalOpen}
-              handleAnchorModalClose={handleAnchorModalClose}
-            />
-          )} */}
         </div>
       </Menu>
     </div>

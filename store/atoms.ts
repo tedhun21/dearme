@@ -1,3 +1,5 @@
+import { getToday } from "@/util/date";
+import dayjs, { Dayjs } from "dayjs";
 import { atom } from "recoil";
 
 enum EPublic {
@@ -68,4 +70,28 @@ interface IPosts {
 export const postListState = atom<IPosts>({
   key: "Posts",
   default: { results: [], pagination: {} },
+});
+
+interface IGoal {
+  id: number;
+  title: string;
+  body: string;
+  startDate: string;
+  endDate: string;
+  createdAt: Dayjs;
+}
+
+export const goalListState = atom<IGoal[]>({
+  key: "Goals",
+  default: [],
+});
+
+export interface ISetting {
+  todogoalTitle: string;
+  todogoalDate: Dayjs;
+}
+
+export const settingState = atom<ISetting>({
+  key: "Settings",
+  default: { todogoalTitle: "Todo", todogoalDate: dayjs() },
 });

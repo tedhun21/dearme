@@ -3,17 +3,17 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
 
-export default function GoalList({ goal }: any) {
+export default function GoalList({ date, goal }: any) {
   const splitedGoalDate = goal.endDate.split("-");
 
   return (
     <div className="flex justify-between">
       <div className="flex flex-col">
         <div className="flex gap-2">
-          {isNew(goal.createdAt) ? (
+          {isNew({ date, createdAt: goal.createdAt }) ? (
             <span className="text-2xs font-bold text-red-600">NEW</span>
           ) : null}
-          {isImminent(goal.endDate) ? (
+          {isImminent({ date, endDate: goal.endDate }) ? (
             <span className="text-2xs font-bold text-red-600">IMMINENT</span>
           ) : null}
         </div>
@@ -26,7 +26,9 @@ export default function GoalList({ goal }: any) {
       </div>
       <div className="flex items-center justify-center">
         <span className="rounded-lg border-2 border-default-700 px-2 font-semibold">
-          {goalDday(goal.endDate)}
+          {date
+            ? goalDday({ date, endDate: goal.endDate })
+            : goalDday({ endDate: goal.endDate })}
         </span>
       </div>
     </div>

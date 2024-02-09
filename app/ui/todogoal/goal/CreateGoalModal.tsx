@@ -4,13 +4,11 @@ import { Switch } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function CreateTodoModal({
+export default function CreateGoalModal({
   date,
-  todo,
   modalOpen,
-  handleAnchorModalClose,
+  setModalOpen,
 }: any) {
-  console.log(todo);
   const [isPublicTodo, setPublicTodo] = useState(true);
   const { register: updateRegister } = useForm();
 
@@ -18,7 +16,7 @@ export default function CreateTodoModal({
     <Modal
       className="flex items-center justify-center"
       open={modalOpen}
-      onClose={() => handleAnchorModalClose()}
+      onClose={() => setModalOpen(false)}
     >
       <div className="flex h-[400px] w-[300px] flex-col justify-between rounded-2xl bg-default-300 p-6 xxs:w-[360px] xs:w-[500px]">
         <form className="flex h-full flex-col gap-8">
@@ -28,7 +26,7 @@ export default function CreateTodoModal({
               placeholder="Please wrtie your goal..."
             />
             <button
-              onClick={() => handleAnchorModalClose()}
+              onClick={() => setModalOpen(false)}
               className="rounded-full p-2 hover:bg-default-400"
             >
               <XIcon className="h-5 w-5" />

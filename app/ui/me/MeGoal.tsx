@@ -8,18 +8,15 @@ import GoalList from "./GoalList";
 
 import { getMyGoals } from "@/store/api";
 import { getToday } from "@/util/date";
-import { getCookie } from "@/util/tokenCookie";
 
 type MeGoalProps = {
   route?: string;
 };
 
-const access_token = getCookie("access_token");
-
 export default function MeGoal({ route }: MeGoalProps) {
   const { data: goalData } = useQuery({
-    queryKey: ["getMyGoals", { date: getToday(), access_token }],
-    queryFn: getMyGoals,
+    queryKey: ["getMyGoals"],
+    queryFn: () => getMyGoals({ date: getToday() }),
   });
 
   return (

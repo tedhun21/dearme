@@ -1,6 +1,6 @@
 import { selector } from "recoil";
 
-import { meState, postListState, todoListState } from "./atoms";
+import { meState, postListState, settingState, todoListState } from "./atoms";
 
 export const todoListSelector = selector({
   key: "todoListSelector",
@@ -17,4 +17,9 @@ export const postListSelector = selector({
   key: "postListSelector",
   get: ({ get }) => get(postListState),
   set: ({ set }, newValue) => set(postListState, newValue),
+});
+
+export const settingSelector = selector({
+  key: "settingSelector",
+  get: ({ get }) => get(settingState),
 });

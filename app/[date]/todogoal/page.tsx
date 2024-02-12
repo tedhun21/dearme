@@ -26,10 +26,11 @@ import CreateGoalModal from "@/app/ui/todogoal/goal/CreateGoalModal";
 import TodogoalHeader from "@/app/ui/todogoal/TodogoalHeader";
 import TodogoalDragTodo from "@/app/ui/todogoal/todo/TodogoalDragTodo";
 import TodogoalGoalList from "@/app/ui/todogoal/goal/TodogoalGoalList";
-import TodogoalCreateTodo from "@/app/ui/todogoal/todo/TodogoalCreateTodo";
-import TodogoalPropgress from "@/app/ui/todogoal/todo/TodogoalProgress";
+import TodogoalCreateTodo from "@/app/ui/todogoal/todo/CreateTodo";
+import TodogoalPropgress from "@/app/ui/todogoal/todo/TodoProgress";
+import GoalProgress from "@/app/ui/todogoal/goal/GoalProgress";
 
-export default function DailyTodo() {
+export default function DailyTodoGoal() {
   const router = useRouter();
 
   // TODO || GOAL
@@ -40,10 +41,12 @@ export default function DailyTodo() {
   const { date } = useParams<{ date: string }>();
 
   // create Goal Modal
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalCreateGoalOpen, setModalCreateGoalOpen] = useState(false);
 
   const [todos, setTodos] = useRecoilState(todoListState);
   const [goals, setGoals] = useRecoilState(goalListState);
+
+  const DdayGoal = goals?.filter((goal) => goal.endDate === date);
 
   // get todos
   const {
@@ -58,7 +61,12 @@ export default function DailyTodo() {
   });
 
   // get goals
-  const { isSuccess: isGoalSuccess, data: goalData } = useQuery({
+  const {
+    isSuccess: isGoalSuccess,
+    data: goalData,
+    refetch: refetchGoal,
+    isRefetching: isGoalRefetching,
+  } = useQuery({
     queryKey: ["getMyGoals"],
     queryFn: () =>
       getMyGoals({ date: dayjs(todogoalDate).format("YYYY-MM-DD") }),
@@ -72,6 +80,14 @@ export default function DailyTodo() {
     mutationFn: createMyTodo,
   });
 
+  useEffect(() => {
+    setSetting((prev) => ({ ...prev, todogoalDate: dayjs(date) }));
+  }, [date]);
+
+  useEffect(() => {
+    setCreateInput(false);
+  }, [todogoalTitle]);
+
   // ABOUT: get todos
   useEffect(() => {
     if (isTodoSuccess || !isTodoRefetching) {
@@ -83,14 +99,17 @@ export default function DailyTodo() {
     if (!isTodoRefetching && todogoalDate) {
       refetchTodo();
     }
-  }, [todogoalDate]);
+    if (!isGoalRefetching && todogoalDate) {
+      refetchGoal();
+    }
+  }, [todogoalDate, todogoalTitle]);
 
   // ABOUT: get goals
   useEffect(() => {
-    if (isGoalSuccess) {
+    if (isGoalSuccess || !isGoalRefetching) {
       setGoals(goalData);
     }
-  }, [isGoalSuccess]);
+  }, [isGoalSuccess, isGoalRefetching]);
 
   return (
     <main className="flex min-h-screen justify-center">
@@ -160,12 +179,7 @@ export default function DailyTodo() {
             {todogoalTitle === "Todo" ? (
               <TodogoalPropgress />
             ) : (
-              <div className="flex w-full rounded-3xl bg-default-900 p-6">
-                <div>hi</div>
-                <div>hi</div>
-                <div>hi</div>
-                <div>hi</div>
-              </div>
+              DdayGoal?.length > 0 && <GoalProgress date={date} />
             )}
             {todogoalTitle === "Todo" &&
             Array.isArray(todos) &&
@@ -188,17 +202,22 @@ export default function DailyTodo() {
                 {/* plus button */}
                 <div className="group flex h-12 w-12 items-center justify-center p-1 transition-all duration-200 hover:p-0 active:p-2">
                   <button
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => setModalCreateGoalOpen(true)}
                     className="h-full w-full rounded-full bg-default-600 p-2 duration-200 group-hover:h-12 group-hover:w-12 group-hover:bg-default-400 group-active:h-8 group-active:w-8"
                   >
-                    {createInput ? <XIcon color="white" /> : <PlusIcon />}
+                    {modalCreateGoalOpen ? (
+                      <XIcon color="white" />
+                    ) : (
+                      <PlusIcon />
+                    )}
                   </button>
                 </div>
 
                 {/* create goal modal */}
                 <CreateGoalModal
-                  modalOpen={modalOpen}
-                  setModalOpen={setModalOpen}
+                  date={date}
+                  modalOpen={modalCreateGoalOpen}
+                  setModalOpen={setModalCreateGoalOpen}
                 />
               </div>
             )}

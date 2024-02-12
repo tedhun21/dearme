@@ -38,7 +38,7 @@ export const goalDday = ({ date, endDate }: any): number | string => {
     const diff = targetDate.diff(today, "day");
     return `-${diff}`;
   } else if (targetDate.isSame(today, "day")) {
-    return "D-day";
+    return "D-Day";
   } else {
     const diff = today.diff(targetDate, "day");
     return `+${diff}`;

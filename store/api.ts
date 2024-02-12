@@ -148,6 +148,18 @@ export const getMyGoals = async ({ date }: any) => {
   }
 };
 
+export const createMyGoal = async (createData: any) => {
+  if (access_token) {
+    const { data } = await axios.post(`${API_URL}/goals`, createData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    return data;
+  } else {
+    return {};
+  }
+};
+
 export const updateMyTodoDone = async ({ todoId, done }: any) => {
   const { data } = await axios.put(
     `${API_URL}/todos/${todoId}`,

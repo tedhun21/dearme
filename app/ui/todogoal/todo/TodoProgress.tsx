@@ -23,7 +23,7 @@ export default function TodogoalPropgress() {
         <span className="text-xl font-semibold">Your Progress</span>
       </div>
       <div className="flex items-end justify-between">
-        <div className="flex w-2/3 flex-col gap-3 pb-0.5">
+        <div className="flex w-3/4 flex-col gap-3 pb-0.5">
           <div className="flex gap-4">
             <span className="text-xl">
               {percent === 0
@@ -38,23 +38,25 @@ export default function TodogoalPropgress() {
             </span>
             <div>^^</div>
           </div>
-          <LinearProgress
-            sx={{
-              height: "16px",
-              borderRadius: "12px",
-              width: "100%",
-              color: "#143422",
-              backgroundColor: "#ffffff",
-            }}
-            variant="determinate"
-            value={percent}
-            color="inherit"
-          />
-        </div>
-        <div className="flex w-1/3 items-end justify-around">
-          <div>
-            <LeftArrowIcon className="h-5 w-5" />
+          <div className="flex items-end gap-3">
+            <LinearProgress
+              sx={{
+                height: "16px",
+                borderRadius: "12px",
+                width: "100%",
+                color: "#143422",
+                backgroundColor: "#ffffff",
+              }}
+              variant="determinate"
+              value={percent}
+              color="inherit"
+            />
+            <div>
+              <LeftArrowIcon className="h-5 w-5" />
+            </div>
           </div>
+        </div>
+        <div className="flex w-1/4 items-end justify-around">
           <span className="text-5xl">{percent}%</span>
         </div>
       </div>

@@ -8,7 +8,11 @@ import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { getPostWithPage } from "@/store/api";
 
-import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 import { CircularProgress } from "@mui/material";
 
@@ -73,10 +77,6 @@ export default function Social() {
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);
   };
-
-  // api
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
   const queryClient = useQueryClient();
   const [ref, inView] = useInView();

@@ -134,12 +134,7 @@ export default function CreatePost() {
       </button>
 
       {/* 게시물 생성 modal */}
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
             position: "absolute",

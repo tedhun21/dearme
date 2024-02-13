@@ -11,8 +11,10 @@ import { getSearchGoals } from "@/store/api";
 
 import Header from "@/app/ui/header";
 import BackButton from "@/app/ui/backbutton";
+import ViewPostModal from "@/app/ui/search/ViewPostModal";
 
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import { Divider } from "@mui/material";
 
 import GoalTag from "@/public/search/GoalTag";
 
@@ -30,8 +32,17 @@ const SearchResults = () => {
     staleTime: 0,
   });
   const searchedGoals = getGoalSearchResult || [];
-  console.log(searchedGoals);
-  console.log(searchedGoals.body);
+
+  // 포스트 조회 모달
+  const [open, setOpen] = useState(false);
+
+  const [selectedPost, setSetlectedPost] = useState<number | null>(null);
+
+  const handleOpen = (postId: number) => {
+    setOpen(true);
+    setSetlectedPost(postId);
+  };
+  const handleClose = () => setOpen(false);
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -41,7 +52,8 @@ const SearchResults = () => {
           <BackButton />
         </div>
 
-        <div className=" m-5 flex items-center">
+        {/* #목표 & 목표 개수 */}
+        <div className=" mx-5 my-10 flex items-center">
           <GoalTag className="h-10 w-10" />
           <div className="flex flex-col">
             <h1 className="ml-2 text-sm font-semibold text-default-700">
@@ -54,8 +66,16 @@ const SearchResults = () => {
           </div>
         </div>
 
+        {/* #목표 관련 포스트 */}
         {searchedGoals.postsCount > 0 ? (
           <section>
+            <Divider
+              sx={{
+                borderColor: "#EBE3D5",
+                height: "2px",
+                marginBottom: "20px",
+              }}
+            />
             <h1 className=" mb-3 ml-5 mt-5 text-sm font-semibold text-default-700">
               Recent posts
             </h1>
@@ -63,7 +83,7 @@ const SearchResults = () => {
               {Array.isArray(searchedGoals.postsData) &&
                 searchedGoals.postsData.map((post: any) => (
                   <div
-                    key={post.id}
+                    key={post.postId}
                     className="flex items-center justify-center "
                   >
                     <div
@@ -72,6 +92,7 @@ const SearchResults = () => {
                         width: "100%",
                         paddingBottom: "100%",
                       }}
+                      onClick={() => handleOpen(post.postId)}
                     >
                       <Image
                         src={`${BUCKET_URL}${post.photo.formats.thumbnail.url}`}
@@ -93,6 +114,14 @@ const SearchResults = () => {
               </h1>
             </div>
           </section>
+        )}
+
+        {selectedPost && (
+          <ViewPostModal
+            open={open}
+            handleClose={handleClose}
+            postId={selectedPost}
+          />
         )}
       </div>
     </main>

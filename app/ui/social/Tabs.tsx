@@ -23,7 +23,9 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, onTabChange }) => {
         } flex-1 transition duration-300 ease-in-out`}
         onClick={() => handleTabChange("all")}
       >
-        <div className="mb-2 flex justify-center font-semibold">All</div>
+        <div className="mb-2 flex justify-center text-base font-medium">
+          All
+        </div>
       </div>
       <div
         className={` cursor-pointer  ${
@@ -33,7 +35,9 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, onTabChange }) => {
         } duration-30 flex-1 transition ease-in-out`}
         onClick={() => handleTabChange("friends")}
       >
-        <div className="mb-2 flex justify-center font-semibold">Friends</div>
+        <div className="mb-2 flex justify-center text-base font-medium">
+          Friends
+        </div>
       </div>
     </section>
   );

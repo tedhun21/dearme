@@ -1,4 +1,4 @@
-import DragTodo from "../../todo/Drag";
+import DragTodo from "../../todo/DragTodo";
 
 export default function TodogoalDragTodo({ date }: any) {
   return (

@@ -1,11 +1,12 @@
 import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
 import axios from "axios";
-import { access } from "fs";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
 
+// 유저
+/// 내 정보 가져오기
 export const getMe = async () => {
   if (access_token !== null) {
     const { data } = await axios.get(`${API_URL}/users/me`, {
@@ -18,12 +19,64 @@ export const getMe = async () => {
   }
 };
 
+// 내 정보 수정하기 (사진 제외)
+export const updateMe = async ({ userId, updateData }: any) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(updateData));
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
+};
+
+/// 유저 정보 가져오기
 export const getUser = async ({ profileId }: any) => {
   const { data } = await axios.get(`${API_URL}/users/${profileId}`);
 
   return data;
 };
 
+/// 유저 사진만 수정
+export const updateUserPhoto = async ({
+  userId,
+  selectedFile,
+}: {
+  userId: number;
+  selectedFile: File;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("photo", selectedFile);
+
+  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+
+  return data;
+};
+
+/// 유저 백그라운드 사진만 수정
+export const updateBackGroundPhoto = async ({
+  userId,
+  selectedFile,
+}: {
+  userId: number;
+  selectedFile: File;
+}) => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify({}));
+  formData.append("background", selectedFile);
+
+  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return data;
+};
+
+// todo
 export const getMyTodosWithDate = async ({ date }: any) => {
   if (access_token !== null) {
     const { data } = await axios.get(`${API_URL}/todos?date=${date}`, {
@@ -44,66 +97,77 @@ export const getUserTodosWithDate = async ({ date }: any) => {
   return data;
 };
 
-export const updateUserPhoto = async ({
-  userId,
-  selectedFile,
-}: {
-  userId: number;
-  selectedFile: File;
-}) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("photo", selectedFile);
-
-  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-
-  return data;
-};
-export const updateBackGroundPhoto = async ({
-  userId,
-  selectedFile,
-}: {
-  userId: number;
-  selectedFile: File;
-}) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("background", selectedFile);
-
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+export const createMyTodo = async ({ createData }: any) => {
+  const { data } = await axios.post(`${API_URL}/todos`, createData, {
     headers: { Authorization: `Bearer ${access_token}` },
   });
+
   return data;
 };
 
-export const updateMe = async ({ userId, updateData }: any) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify(updateData));
-
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+export const updateMyTodo = async ({ todoId, updateData }: any) => {
+  const { data } = await axios.put(`${API_URL}/todos/${todoId}`, updateData, {
     headers: { Authorization: `Bearer ${access_token}` },
   });
+
   return data;
 };
 
-export const getMyGoals = async ({ queryKey }: any) => {
-  const [_key, { date, access_token }] = queryKey;
+/// todo 우선순위 업데이트
+export const updateMyTodoPriority = async ({
+  date,
+  source,
+  destination,
+}: any) => {
+  const { data } = await axios.put(
+    `${API_URL}/todos/${date}/updatePriority`,
+    { data: { source, destination } },
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
 
+  return data;
+};
+
+export const deleteMyTodo = async ({ todoId }: any) => {
+  const data = await axios.delete(`${API_URL}/todos/${todoId}`, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+
+  return data;
+};
+
+export const getMyGoals = async ({ date }: any) => {
   if (access_token !== null) {
-    const {
-      data: { goals },
-    } = await axios.get(`${API_URL}/goals?date=${date}`, {
+    const { data } = await axios.get(`${API_URL}/goals?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    return goals;
+    return data;
   } else {
     return {};
   }
+};
+
+export const createMyGoal = async (createData: any) => {
+  if (access_token) {
+    const { data } = await axios.post(`${API_URL}/goals`, createData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    return data;
+  } else {
+    return {};
+  }
+};
+
+export const updateMyTodoDone = async ({ todoId, done }: any) => {
+  const { data } = await axios.put(
+    `${API_URL}/todos/${todoId}`,
+    { done },
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return data;
 };
 
 export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {

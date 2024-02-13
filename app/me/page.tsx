@@ -7,7 +7,6 @@ import { todoListState } from "@/store/atoms";
 
 import TodoRate from "../ui/me/TodoRate";
 import MeGoal from "../ui/me/MeGoal";
-
 import DragTodo from "../ui/todo/Drag";
 
 export default function Me() {

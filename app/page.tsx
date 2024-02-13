@@ -114,14 +114,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (isSuccessForMe) {
+    if (isSuccessForMe && !isTodosForTodayRefetching) {
       setMe(meData);
     }
-  }, []);
+  }, [isSuccessForMe, isTodosForTodayRefetching]);
 
   useEffect(() => {
     // 데이터가 성공적으로 불러와지면 todos를 업데이트
-    if (todosForToday) {
+    if (isSuccessForTodayTodos) {
       setTodos(todosForToday);
     }
   }, [date]);
@@ -141,7 +141,7 @@ export default function Home() {
       );
       setHighlightedDays(highlighted);
     }
-  }, [isSuccessForMonthTodos, todosForMonth]);
+  }, [isTodosForMonthRefetching, isSuccessForMonthTodos]);
 
   // month가 변할때마다 월별 todos refetch
   useEffect(() => {

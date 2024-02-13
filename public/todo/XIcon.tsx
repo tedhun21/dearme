@@ -1,8 +1,9 @@
 type IconProps = {
   className?: string;
+  color?: string;
 };
 
-export default function XIcon({ className }: IconProps) {
+export default function XIcon({ className, color }: IconProps) {
   return (
     <svg
       className={className}
@@ -10,7 +11,7 @@ export default function XIcon({ className }: IconProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M1 1L9 9M1 9L9 1" stroke="black" />
+      <path d="M1 1L9 9M1 9L9 1" stroke={color || "black"} />
     </svg>
   );
 }

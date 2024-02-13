@@ -14,7 +14,7 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
-import { Badge, Switch } from "@mui/material";
+import { Badge, LinearProgress, Switch } from "@mui/material";
 
 import Header from "./ui/header";
 import MeGoal from "./ui/me/MeGoal";
@@ -22,6 +22,7 @@ import Footer from "./ui/footer";
 import { getToday, getWeeksInMonth } from "@/util/date";
 import { getMe, getMyTodosWithDate } from "@/store/api";
 import { meState, todoListState } from "@/store/atoms";
+import Link from "next/link";
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -56,6 +57,10 @@ export default function Home() {
 
   const [me, setMe] = useRecoilState(meState);
   const [todos, setTodos] = useRecoilState(todoListState);
+
+  const checkedTodos = todos.filter((todo) => todo.done === true);
+
+  console.log(checkedTodos);
 
   // 내 정보 가져오기
   const { isSuccess: isSuccessForMe, data: meData } = useQuery({
@@ -151,7 +156,7 @@ export default function Home() {
           <section className="overflow-hidden rounded-xl bg-default-300 shadow-md">
             <div className="mr-3 mt-3 flex items-center justify-end gap-2">
               <span className="text-sm font-semibold">
-                {isTodo ? "할 일" : "일기"}
+                {isTodo ? "TODO" : "DIARY"}
               </span>
               <Switch
                 checked={isTodo}
@@ -262,8 +267,30 @@ export default function Home() {
             </LocalizationProvider>
             <MeGoal route="home" />
           </section>
-          <section className="mt-4 rounded-xl border-2 border-default-300 bg-default-100">
-            <div>hi</div>
+          <section className="mt-4">
+            <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todo`}>
+              <div className="flex flex-col gap-4 rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl transition-colors duration-150 hover:bg-default-400">
+                <span className="text-3xl font-semibold">Todo & Goal</span>
+
+                <div>
+                  <LinearProgress
+                    sx={{
+                      height: "6px",
+                      borderRadius: "12px",
+                      width: "100%",
+                      color: "#143422",
+                    }}
+                    variant="determinate"
+                    value={
+                      todos && todos.length !== 0
+                        ? (checkedTodos?.length / todos.length) * 100
+                        : 0
+                    }
+                    color="inherit"
+                  />
+                </div>
+              </div>
+            </Link>
           </section>
         </article>
         <Footer />

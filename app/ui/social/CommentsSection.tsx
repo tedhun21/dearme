@@ -3,14 +3,25 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+// TODO loading / all comments are loaded
+
 import React, { ChangeEvent, useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+import {
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 import { useRecoilValue } from "recoil";
 import { meState } from "@/store/atoms";
-import { createComment, updateComment } from "@/store/api";
+import {
+  readCommentsWithPage,
+  createComment,
+  updateComment,
+} from "@/store/api";
 
-import { Comment } from "@/app/social/page";
+// import { Comment } from "@/app/social/page";
 import CommentSettings from "./CommentSettings";
 import { timeSince } from "./SocialPost";
 
@@ -18,19 +29,37 @@ import InputBase from "@mui/material/InputBase";
 
 import Send from "@/public/social/Send";
 
-interface CommentProps {
-  comments: Comment[];
-  postId: number;
-}
-
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function CommentsSection({ comments, postId }: CommentProps) {
+export default function CommentsSection({ postId }: { postId: number }) {
   const queryClient = useQueryClient();
+  const [ref, inView] = useInView();
+
+  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
+    any[],
+    Error
+  >({
+    queryKey: ["getCommentsWithPage", postId],
+    queryFn: ({ pageParam }: { pageParam: number }) =>
+      readCommentsWithPage({ postId: postId, pageParam: pageParam }),
+    getNextPageParam: (lastPage, allPages: any) => {
+      const maxPage = lastPage.length / 6;
+      const nextPage = allPages.length + 1;
+
+      return lastPage.length >= 6 ? lastPage.length / 6 + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
+
+  useEffect(() => {
+    if (!inView) {
+      return;
+    }
+    fetchNextPage();
+  }, [inView]);
 
   // me
   const me = useRecoilValue(meState);
-  console.log(me);
 
   // 댓글 입력 상태
   const [comment, setComment] = useState<string>("");
@@ -64,14 +93,6 @@ export default function CommentsSection({ comments, postId }: CommentProps) {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (isEditing) {
-      setEditingComment(
-        comments.find((comment) => comment.id === editingCommentId)?.body || "",
-      );
-    }
-  }, [isEditing, editingCommentId, comments]);
-
   // 댓글 Edit Request
   const { mutateAsync: updateCommentMutation } = useMutation({
     mutationFn: updateComment,
@@ -97,79 +118,78 @@ export default function CommentsSection({ comments, postId }: CommentProps) {
 
   return (
     <section className="mt-4  ">
-      {comments.map((comment, index) => {
-        return (
-          <section key={index} className="mb-3 flex w-full gap-2  px-5">
-            {/* 이미지*/}
-            {/* FIXME */}
-            <img
-              src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-              alt="User Image"
-              className="h-8 w-8 overflow-hidden rounded-full object-cover"
-            />
+      {data?.pages &&
+        data.pages.map((comments: any) =>
+          comments.map((comment: any) => (
+            <section key={comment.id} className="mb-3 flex w-full gap-2  px-5">
+              {/* 이미지*/}
+              <img
+                src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
+                alt="User Image"
+                className="h-8 w-8 overflow-hidden rounded-full object-cover"
+              />
 
-            <div className="flex w-full flex-col justify-center">
-              {/* 작성자 & 댓글 */}
-              <div className="flex gap-2">
-                <span className="text-sm font-semibold">
-                  {comment.user.nickname}
-                </span>
-                <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
-                  {isEditing && editingCommentId === comment.id ? (
-                    <InputBase
-                      multiline
-                      sx={{
-                        fontSize: "12px",
-                        fontWeight: 400,
-                        width: "100%",
-                        overflowWrap: "break-word",
-                        // border: 1,
-                        // borderColor: "grey.500",
-                      }}
-                      value={editingComment}
-                      onChange={(e) => setEditingComment(e.target.value)}
-                      autoFocus
-                    />
-                  ) : (
-                    comment.body
-                  )}
-                </span>
-              </div>
-
-              {/* 작성 시간 & 댓글 설정 */}
-              <div className="flex items-center justify-end">
-                <div
-                  className="text-2xs  text-default-500"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-                  {timeSince(comment.createdAt)}
+              <div className="flex w-full flex-col justify-center">
+                {/* 작성자 & 댓글 */}
+                <div className="flex gap-2">
+                  <span className="text-sm font-semibold">
+                    {comment.user.nickname}
+                  </span>
+                  <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
+                    {isEditing && editingCommentId === comment.id ? (
+                      <InputBase
+                        multiline
+                        sx={{
+                          fontSize: "12px",
+                          fontWeight: 400,
+                          width: "100%",
+                          overflowWrap: "break-word",
+                          // border: 1,
+                          // borderColor: "grey.500",
+                        }}
+                        value={editingComment}
+                        onChange={(e) => setEditingComment(e.target.value)}
+                        autoFocus
+                      />
+                    ) : (
+                      comment.body
+                    )}
+                  </span>
                 </div>
-                {isEditing && editingCommentId === comment.id ? (
-                  <div
-                    className="ml-2 cursor-pointer text-xs font-normal text-default-700"
-                    onClick={handleEdit}
-                  >
-                    Edit
-                  </div>
-                ) : (
-                  <div>
-                    <CommentSettings
-                      postId={postId}
-                      commentId={comment.id}
-                      onEditClick={() => {
-                        setIsEditing(true);
-                        setEditingCommentId(comment.id);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        );
-      })}
 
+                {/* 작성 시간 & 댓글 설정 */}
+                <div className="flex items-center justify-end">
+                  <div
+                    className="text-2xs  text-default-500"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                  >
+                    {timeSince(comment.createdAt)}
+                  </div>
+                  {isEditing && editingCommentId === comment.id ? (
+                    <div
+                      className="ml-2 cursor-pointer text-xs font-normal text-default-700"
+                      onClick={handleEdit}
+                    >
+                      Edit
+                    </div>
+                  ) : (
+                    <div>
+                      <CommentSettings
+                        postId={postId}
+                        commentId={comment.id}
+                        onEditClick={() => {
+                          setIsEditing(true);
+                          setEditingCommentId(comment.id);
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )),
+        )}
       {/* 댓글 작성 */}
       <div className="mb-2 mt-5 flex items-center px-5">
         <div>

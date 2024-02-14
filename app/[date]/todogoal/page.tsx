@@ -196,12 +196,7 @@ export default function DailyTodoGoal() {
             ) : (
               todogoalTitle === "Goal" &&
               Array.isArray(goals) &&
-              goals.length > 0 && (
-                <TodogoalGoalList
-                  date={date}
-                  setModalCreateGoalOpen={setModalCreateGoalOpen}
-                />
-              )
+              goals.length > 0 && <TodogoalGoalList date={date} />
             )}
             {/* 섹션 4: plus button  */}
             {todogoalTitle === "Todo" ? (

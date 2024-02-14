@@ -7,7 +7,8 @@ import { todoListState } from "@/store/atoms";
 
 import TodoRate from "../ui/me/TodoRate";
 import MeGoal from "../ui/me/MeGoal";
-import DragTodo from "../ui/todo/Drag";
+import DragTodo from "../ui/todo/DragTodo";
+import { getToday } from "@/util/date";
 
 export default function Me() {
   const [isDrop, setIsDrop] = useState(false);
@@ -19,7 +20,7 @@ export default function Me() {
       <TodoRate todos={todos} isDrop={isDrop} setIsDrop={setIsDrop} />
       {isDrop && todos?.length !== 0 ? (
         <section>
-          <DragTodo />
+          <DragTodo date={getToday()} />
         </section>
       ) : null}
       <MeGoal />

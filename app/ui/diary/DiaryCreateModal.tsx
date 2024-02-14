@@ -21,7 +21,11 @@ type DiaryEntry = {
   weatherId: number | null;
 };
 
-export default function DiaryCreateModal({ onSubmit }) {
+export default function DiaryCreateModal({
+  onSubmit,
+}: {
+  onSubmit: (data: DiaryEntry) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -37,14 +41,6 @@ export default function DiaryCreateModal({ onSubmit }) {
       setOpen(false);
     }
   };
-
-  // 일기 수정
-  // const handleEditModal = (entry: any) => {
-  //   setTitle(entry.title);
-  //   setContent(entry.content);
-  //   setWeather(entry.weather);
-  //   setOpen(true);
-  // };
 
   //일기 삭제
   const handleDeleteDiary = (e: any) => {
@@ -82,10 +78,7 @@ export default function DiaryCreateModal({ onSubmit }) {
     // 모달창을 띄우는 버튼
     <>
       {diaryEntry ? (
-        <div
-          className="flex flex-col rounded bg-white p-4 py-8 pl-8 shadow hover:bg-default-400"
-          // onClick={handleEditModal}
-        >
+        <div className="flex flex-col rounded bg-white p-4 py-8 pl-8 shadow hover:bg-default-400">
           <button
             onClick={handleDeleteDiary}
             className="mr-2 flex items-center justify-end"

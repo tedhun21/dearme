@@ -21,11 +21,15 @@ type UploadTodayPickProps = {
   image: string | null;
 };
 
-export default function UploadTodayPick({ onSubmit }) {
+export default function UploadTodayPick({
+  onSubmit,
+}: {
+  onSubmit: (formData: FormData) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
   const [picks, setPicks] = useState<UploadTodayPickProps[]>([]);
-  const [hovered, setHovered] = useState({});
+  const [hovered, setHovered] = useState<{ [key: number]: boolean }>({});
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [newPick, setNewPick] = useState<UploadTodayPickProps>({
     id: Date.now(),
     title: "",
@@ -41,8 +45,9 @@ export default function UploadTodayPick({ onSubmit }) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
+      setImageFile(file);
       const image = URL.createObjectURL(file);
-      setNewPick((prev) => ({ ...prev, image }));
+      setNewPick((prev) => ({ ...prev, image: image }));
       console.log(image);
     }
   };
@@ -52,11 +57,26 @@ export default function UploadTodayPick({ onSubmit }) {
   };
 
   const handleComplete = () => {
-    const completedPick = { ...newPick, id: Date.now() };
-    setPicks((picks) => [...picks, completedPick]);
-    if (onSubmit) {
-      onSubmit(completedPick);
+    const formData = new FormData();
+    if (imageFile) {
+      formData.append("image", imageFile);
     }
+    formData.append("title", newPick.title);
+    formData.append("date", newPick.date);
+    formData.append("contributors", newPick.contributors);
+
+    const completedPick = {
+      ...newPick,
+      id: Date.now(),
+      image: imageFile ? URL.createObjectURL(imageFile) : null,
+    };
+
+    setPicks((prevPicks) => [...prevPicks, completedPick]);
+
+    if (onSubmit) {
+      onSubmit(formData);
+    }
+
     setNewPick({
       id: Date.now(),
       title: "",
@@ -67,6 +87,7 @@ export default function UploadTodayPick({ onSubmit }) {
     setOpen(false);
   };
 
+  // 생성된 Pick을 삭제
   const handleRemove = (id: number) => {
     setPicks(picks.filter((pick) => pick.id !== id));
   };
@@ -79,12 +100,12 @@ export default function UploadTodayPick({ onSubmit }) {
   };
 
   // 마우스가 이미지 위로 이동했을 때 호출될 핸들러입니다.
-  const handleMouseEnter = (id) => {
+  const handleMouseEnter = (id: number) => {
     setHovered((prev) => ({ ...prev, [id]: true }));
   };
 
   // 마우스가 이미지에서 벗어났을 때 호출될 핸들러입니다.
-  const handleMouseLeave = (id) => {
+  const handleMouseLeave = (id: number) => {
     setHovered((prev) => ({ ...prev, [id]: false }));
   };
 

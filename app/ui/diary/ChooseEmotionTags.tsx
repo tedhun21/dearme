@@ -2,7 +2,11 @@ import { useState } from "react";
 
 import Tags from "@/public/diary/Tags";
 
-export default function ChooseEmotionTags({ onTagSelect }) {
+export default function ChooseEmotionTags({
+  onTagSelect,
+}: {
+  onTagSelect: (tags: string[]) => void;
+}) {
   const [selectedTags, setSelectedTags] = useState([] as string[]);
 
   const tags = [
@@ -34,7 +38,6 @@ export default function ChooseEmotionTags({ onTagSelect }) {
       onTagSelect(newTags);
       return newTags;
     });
-    console.log("Clicked on tag:", tag);
   };
 
   return (

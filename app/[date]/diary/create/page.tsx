@@ -23,7 +23,17 @@ export default function Create() {
     emotionTags: [],
     companions: [],
     photo: [],
-    todayPick: "",
+    title: "",
+    content: "",
+    weather: "",
+    weatherId: "",
+    todayPick: {
+      title: "",
+      contributor: "",
+      date: "",
+      id: "",
+      image: [],
+    },
   });
 
   // 최상단 날짜 표시
@@ -50,12 +60,64 @@ export default function Create() {
   }, [params]);
 
   // 일기 데이터 Submit
-  const handleSubmitDiary = async () => {
+  const handleSubmitDiary = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault(); // 폼 제출의 기본 동작 방지
+
     const jwtToken = getCookie("access_token");
     if (!jwtToken) {
       alert("로그인이 필요합니다.");
       console.error("로그인이 필요합니다.");
       return;
+    }
+
+    // FormData 객체 생성
+    const formData = new FormData();
+
+    const mapCompanionToServerValue = (companion: any) => {
+      const mapping = {
+        가족: "FAMILY",
+        친구: "FRIEND",
+        연인: "LOVER",
+        지인: "ACQUAINTANCE",
+        안만남: "ALONE",
+      };
+      return mapping[companion] || companion; // 매핑되는 값이 없으면 원본 값을 반환
+    };
+
+    // feelings와 companions 배열을 콤마로 구분된 문자열로 변환
+    const feelingsStr = diaryData.emotionTags.join(",");
+    const companionsStr = diaryData.companions
+      .map(mapCompanionToServerValue)
+      .join(",");
+
+    const data = {
+      title: diaryData.title,
+      body: diaryData.content,
+      mood: diaryData.mood,
+      feelings: feelingsStr, // // 프론트에서는 emotionTags, 서버에서는 feelings로 처리
+      companions: companionsStr,
+      weather: diaryData.weather,
+      weatherId: diaryData.weatherId.toString(),
+      remember: false, // 기본값 false 등록
+      todayPickTitle: diaryData.todayPick.title,
+      todayPickContributors: diaryData.todayPick.contributor,
+      todayPickDate: diaryData.todayPick.date,
+      todayPickId: diaryData.todayPick.id,
+    };
+    formData.append("data", JSON.stringify(data));
+
+    // `photos` 파일 추가
+    diaryData.photo.forEach((file, index) => {
+      formData.append(`photos`, file); // 인덱스 없이 photos로 모든 파일 추가
+    });
+
+    // `todayPickImage` 파일 추가
+    if (diaryData.todayPick.image && diaryData.todayPick.image.length > 0) {
+      diaryData.todayPick.image.forEach((file, index) => {
+        formData.append(`todayPickImage`, file); // 인덱스 없이 todayPickImage로 모든 파일 추가
+      });
     }
 
     // diaryData 상태 로깅
@@ -64,16 +126,14 @@ export default function Create() {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/diaries?date=${params.date}`,
-        {
-          data: diaryData,
-        },
+        formData,
         {
           headers: {
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${jwtToken}`,
           },
         },
       );
-      console.log(response.data);
       console.log("일기 생성 성공", response.data);
     } catch (error) {
       console.error("일기 생성 실패", error);

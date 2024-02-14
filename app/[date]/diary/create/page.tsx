@@ -29,10 +29,10 @@ export default function Create() {
     weatherId: "",
     todayPick: {
       title: "",
-      contributor: "",
+      contributors: "",
       date: "",
       id: "",
-      image: [],
+      imageFile: [],
     },
   });
 
@@ -75,8 +75,8 @@ export default function Create() {
     // FormData 객체 생성
     const formData = new FormData();
 
-    const mapCompanionToServerValue = (companion: any) => {
-      const mapping = {
+    const mapCompanionToServerValue = (companion: string) => {
+      const mapping: { [key: string]: string } = {
         가족: "FAMILY",
         친구: "FRIEND",
         연인: "LOVER",
@@ -86,7 +86,10 @@ export default function Create() {
       return mapping[companion] || companion; // 매핑되는 값이 없으면 원본 값을 반환
     };
 
+    console.log("UploadTodayPick에서 todayPickData:", diaryData.todayPick);
+
     // feelings와 companions 배열을 콤마로 구분된 문자열로 변환
+    const todaypickIdStr = diaryData.todayPick.id.toString();
     const feelingsStr = diaryData.emotionTags.join(",");
     const companionsStr = diaryData.companions
       .map(mapCompanionToServerValue)
@@ -102,9 +105,9 @@ export default function Create() {
       weatherId: diaryData.weatherId.toString(),
       remember: false, // 기본값 false 등록
       todayPickTitle: diaryData.todayPick.title,
-      todayPickContributors: diaryData.todayPick.contributor,
+      todayPickContributors: diaryData.todayPick.contributors,
       todayPickDate: diaryData.todayPick.date,
-      todayPickId: diaryData.todayPick.id,
+      todayPickId: todaypickIdStr,
     };
     formData.append("data", JSON.stringify(data));
 
@@ -114,9 +117,13 @@ export default function Create() {
     });
 
     // `todayPickImage` 파일 추가
-    if (diaryData.todayPick.image && diaryData.todayPick.image.length > 0) {
-      diaryData.todayPick.image.forEach((file, index) => {
-        formData.append(`todayPickImage`, file); // 인덱스 없이 todayPickImage로 모든 파일 추가
+    if (diaryData.todayPick.imageFile) {
+      // 이미지가 단일 파일인 경우 배열로 변환
+      const images = Array.isArray(diaryData.todayPick.imageFile)
+        ? diaryData.todayPick.imageFile
+        : [diaryData.todayPick.imageFile];
+      images.forEach((file) => {
+        formData.append(`todayPickImage`, file); // 배열의 모든 이미지를 추가
       });
     }
 

@@ -24,7 +24,7 @@ type UploadTodayPickProps = {
 export default function UploadTodayPick({
   onSubmit,
 }: {
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (data: UploadTodayPickProps) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [picks, setPicks] = useState<UploadTodayPickProps[]>([]);
@@ -57,25 +57,16 @@ export default function UploadTodayPick({
   };
 
   const handleComplete = () => {
-    const formData = new FormData();
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
-    formData.append("title", newPick.title);
-    formData.append("date", newPick.date);
-    formData.append("contributors", newPick.contributors);
-
     const completedPick = {
       ...newPick,
-      id: Date.now(),
-      image: imageFile ? URL.createObjectURL(imageFile) : null,
+      // image: imageFile ? URL.createObjectURL(imageFile) : null,
+      imageFile: imageFile, // File 객체를 저장
     };
 
-    setPicks((prevPicks) => [...prevPicks, completedPick]);
+    onSubmit(completedPick);
 
-    if (onSubmit) {
-      onSubmit(formData);
-    }
+    // 상위 컴포넌트에서 처리할 수 있도록 picks 상태 업데이트
+    setPicks((prevPicks) => [...prevPicks, completedPick]);
 
     setNewPick({
       id: Date.now(),

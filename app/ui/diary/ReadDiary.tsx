@@ -21,7 +21,19 @@ import Remembered from "@/public/diary/Remembered";
 
 import WeatherCloudy from "@/public/diary/WeatherCloudy";
 
-export default function ReadDiary() {
+interface DiaryData {
+  date: string;
+  title: string;
+  content: string;
+  images: string[];
+  tags: string[];
+}
+
+interface ReadDiaryProps {
+  diaryData: DiaryData | null;
+}
+
+export default function ReadDiary({ diaryData }: ReadDiaryProps) {
   // 임시 사진 (지우기)
   const images = [
     "https://i.pinimg.com/564x/e1/4d/a4/e14da4a1e8bacd710080d446d87c4613.jpg",

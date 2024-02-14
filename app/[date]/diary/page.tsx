@@ -2,7 +2,9 @@
 "use client";
 
 import "../../globals.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import axios from "axios";
 
 import Header from "@/app/ui/header";
 import ReadDiary from "@/app/ui/diary/ReadDiary";
@@ -10,16 +12,65 @@ import TodayPick from "@/app/ui/diary/TodayPick";
 import SentimentalQuotes from "@/app/ui/diary/Sentimental Quotes";
 import CreateDiaryButton from "@/app/ui/diary/CreateDiaryButton";
 import MonthlyDiary from "@/app/ui/diary/MonthlyDiary";
+import { getCookie } from "@/util/tokenCookie";
 
 import EditPost from "@/public/social/EditPost";
 import Delete from "@/public/social/Delete";
 import Footer from "@/app/ui/footer";
 
+interface DiaryData {
+  date: string;
+  title: string;
+  content: string;
+  images: string[];
+  tags: string[];
+}
+
 export default function Diary() {
-  const [diaryData, setDiaryData] = useState([]);
+  const params = useParams();
+  const [diaryData, setDiaryData] = useState<DiaryData | null>(null);
+
+  useEffect(() => {
+    // 로그인 여부 확인
+    const jwtToken = getCookie("access_token");
+    if (!jwtToken) {
+      alert("로그인이 필요합니다.");
+      console.error("로그인이 필요합니다.");
+      return;
+    }
+
+    // params.date가 변경될 때마다 함수를 실행
+    const fetchDiaryData = async () => {
+      try {
+        // params.date를 이용하여 서버에 GET 요청
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/diaries?date=${params.date}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          },
+        );
+        // 응답 데이터가 존재한다면
+        if (response.data) {
+          setDiaryData(response.data);
+        } else {
+          // 응답 데이터가 없으면
+          setDiaryData(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch diary data:", error);
+        setDiaryData(null); // 에러 발생 시, 일기 데이터 없음으로 처리
+      }
+    };
+
+    if (params.date) {
+      fetchDiaryData();
+    }
+  }, [params.date]); // params.date가 변경될 때마다 useEffect를 실행
 
   // 일기 데이터가 있는지 확인하는 함수
-  const hasDiaryData = diaryData.length > 0;
+  const hasDiaryData = diaryData !== null;
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -28,7 +79,7 @@ export default function Diary() {
           <>
             <Header />
             {/* 일기 데이터가 있을 경우 렌더링 */}
-            <ReadDiary />
+            <ReadDiary diaryData={diaryData} />
             <TodayPick />
             <section className="p-5">
               <div className="mb-3 flex justify-end ">

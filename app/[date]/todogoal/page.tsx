@@ -22,13 +22,15 @@ import CalendarIcon from "@/public/todogoal/CalendarIcon";
 import Footer from "@/app/ui/footer";
 import { createMyTodo, getMyGoals, getMyTodosWithDate } from "@/store/api";
 
-import CreateGoalModal from "@/app/ui/todogoal/goal/CreateGoalModal";
 import TodogoalHeader from "@/app/ui/todogoal/TodogoalHeader";
 import TodogoalDragTodo from "@/app/ui/todogoal/todo/TodogoalDragTodo";
 import TodogoalGoalList from "@/app/ui/todogoal/goal/TodogoalGoalList";
 import TodogoalCreateTodo from "@/app/ui/todogoal/todo/CreateTodo";
 import TodogoalPropgress from "@/app/ui/todogoal/todo/TodoProgress";
 import GoalProgress from "@/app/ui/todogoal/goal/GoalProgress";
+import GoalModal from "@/app/ui/todogoal/goal/GoalModal";
+import Link from "next/link";
+import { getToday } from "@/util/date";
 
 export default function DailyTodoGoal() {
   const router = useRouter();
@@ -147,9 +149,13 @@ export default function DailyTodoGoal() {
                   </LocalizationProvider>
                 </div>
                 <button
-                  onClick={() =>
-                    setSetting((prev) => ({ ...prev, todogoalDate: dayjs() }))
-                  }
+                  onClick={() => {
+                    router.push(`/${getToday()}/todogoal`);
+                    setSetting((prev) => ({
+                      ...prev,
+                      todogoalDate: dayjs(getToday()),
+                    }));
+                  }}
                   className="rounded-2xl bg-default-300 px-3 py-1 text-default-700 hover:bg-default-500 active:bg-default-900"
                 >
                   <span className="font-semibold hover:text-black">Today</span>
@@ -176,11 +182,13 @@ export default function DailyTodoGoal() {
                 <span>#youthfulness</span>
               </div>
             </div>
+            {/* 섹션 2: todo/goal progress */}
             {todogoalTitle === "Todo" ? (
               <TodogoalPropgress />
             ) : (
-              DdayGoal?.length > 0 && <GoalProgress date={date} />
+              DdayGoal?.length > 0 && <GoalProgress />
             )}
+            {/* 섹션 3: togo/goal list */}
             {todogoalTitle === "Todo" &&
             Array.isArray(todos) &&
             todos.length > 0 ? (
@@ -190,7 +198,9 @@ export default function DailyTodoGoal() {
               Array.isArray(goals) &&
               goals.length > 0 && <TodogoalGoalList date={date} />
             )}
+            {/* 섹션 4: plus button  */}
             {todogoalTitle === "Todo" ? (
+              // Create Todo
               <TodogoalCreateTodo
                 date={date}
                 createInput={createInput}
@@ -213,8 +223,9 @@ export default function DailyTodoGoal() {
                   </button>
                 </div>
 
-                {/* create goal modal */}
-                <CreateGoalModal
+                {/* Create Goal */}
+                <GoalModal
+                  type="create"
                   date={date}
                   modalOpen={modalCreateGoalOpen}
                   setModalOpen={setModalCreateGoalOpen}
@@ -223,6 +234,7 @@ export default function DailyTodoGoal() {
             )}
           </section>
         </article>
+
         <Footer />
       </div>
     </main>

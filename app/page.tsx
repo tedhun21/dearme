@@ -60,8 +60,6 @@ export default function Home() {
 
   const checkedTodos = todos.filter((todo) => todo.done === true);
 
-  console.log(checkedTodos);
-
   // 내 정보 가져오기
   const { isSuccess: isSuccessForMe, data: meData } = useQuery({
     queryKey: ["getMe"],
@@ -265,10 +263,10 @@ export default function Home() {
                 slotProps={{ day: { highlightedDays } as any }}
               />
             </LocalizationProvider>
-            <MeGoal route="home" />
+            <MeGoal />
           </section>
           <section className="mt-4">
-            <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todo`}>
+            <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todogoal`}>
               <div className="flex flex-col gap-4 rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl transition-colors duration-150 hover:bg-default-400">
                 <span className="text-3xl font-semibold">Todo & Goal</span>
 

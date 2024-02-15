@@ -128,6 +128,16 @@ export const updateMyTodoPriority = async ({
   return data;
 };
 
+export const updateMyTodoDone = async ({ todoId, done }: any) => {
+  const { data } = await axios.put(
+    `${API_URL}/todos/${todoId}`,
+    { done },
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return data;
+};
+
 export const deleteMyTodo = async ({ todoId }: any) => {
   const data = await axios.delete(`${API_URL}/todos/${todoId}`, {
     headers: { Authorization: `Bearer ${access_token}` },
@@ -160,14 +170,22 @@ export const createMyGoal = async (createData: any) => {
   }
 };
 
-export const updateMyTodoDone = async ({ todoId, done }: any) => {
-  const { data } = await axios.put(
-    `${API_URL}/todos/${todoId}`,
-    { done },
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
+export const updateMyGoal = async ({ updateData, goalId }: any) => {
+  const { data } = await axios.put(`${API_URL}/goals/${goalId}`, updateData, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
 
   return data;
+};
+
+export const deleteMyGoal = async ({ deleteId }: any) => {
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/goals/${deleteId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    return data;
+  }
 };
 
 export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {

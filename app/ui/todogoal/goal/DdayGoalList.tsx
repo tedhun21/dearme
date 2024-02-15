@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export default function DdayGoalList({ date, goal }: any) {
+export default function DdayGoalList({ goal }: any) {
   const splitedGoalDate = goal.endDate.split("-");
 
   // 월

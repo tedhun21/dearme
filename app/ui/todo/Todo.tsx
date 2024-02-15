@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
 import TodoCheckTrueIcon from "@/public/me/TodoCheckTrueIcon";
-import TodoSetting from "./TodoSetting";
+import TodoMenu from "./TodoMenu";
 import { todoListState } from "@/store/atoms";
 import { useMutation } from "@tanstack/react-query";
 import { updateMyTodo, updateMyTodoDone } from "@/store/api";
@@ -9,13 +9,16 @@ import { useSetRecoilState } from "recoil";
 import XIcon from "@/public/todo/XIcon";
 import SendIcon from "@/public/todogoal/SendIcon";
 import { useForm } from "react-hook-form";
+import { usePathname } from "next/navigation";
 
 export default function Todo({ date, todo }: any) {
+  const pathname = usePathname();
+
   const [done, setDone] = useState(todo.done);
   const setTodos = useSetRecoilState(todoListState);
 
   const [canEdit, setCanEdit] = useState(false);
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit } = useForm();
 
   // todo done 업데이트
   const {
@@ -115,7 +118,7 @@ export default function Todo({ date, todo }: any) {
           </div>
         </div>
       ) : (
-        <TodoSetting date={date} todo={todo} setCanEdit={setCanEdit} />
+        <TodoMenu date={date} todo={todo} setCanEdit={setCanEdit} />
       )}
     </div>
   );

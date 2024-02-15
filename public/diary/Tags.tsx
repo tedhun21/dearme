@@ -1,21 +1,19 @@
 import React, { useState } from "react";
 
-export default function Tag({ text }) {
-  // isSelected 상태를 사용하여 태그의 선택 여부를 관리합니다.
-  const [isSelected, setIsSelected] = useState(false);
+interface TagsProps {
+  text: string;
+  selected: boolean;
+  onClick: () => void;
+}
 
-  // 태그 클릭 핸들러
-  const handleTagClick = () => {
-    setIsSelected(!isSelected);
-  };
-
+export default function Tag({ text, selected, onClick }: TagsProps) {
   // 조건부 클래스 적용
-  const tagClasses = isSelected
+  const tagClasses = selected
     ? "mt-1 rounded-full border-2 border-default-800 bg-default-800 px-2 py-0.5 text-base font-semibold text-default-100 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
     : "mt-1 rounded-full border-2 border-default-400 bg-default-300 px-2 py-0.5 text-base font-semibold text-default-800 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2";
 
   return (
-    <button onClick={handleTagClick} className={tagClasses}>
+    <button onClick={onClick} className={tagClasses}>
       {text}
     </button>
   );

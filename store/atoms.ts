@@ -1,11 +1,10 @@
-import { getToday } from "@/util/date";
-import dayjs, { Dayjs } from "dayjs";
 import { atom } from "recoil";
+import dayjs, { Dayjs } from "dayjs";
 
 enum EPublic {
-  all,
-  friend,
-  private,
+  ALL,
+  FRIEND,
+  PRIVATE,
 }
 
 export interface ITodo {
@@ -94,4 +93,46 @@ export interface ISetting {
 export const settingState = atom<ISetting>({
   key: "Settings",
   default: { todogoalTitle: "Todo", todogoalDate: dayjs() },
+});
+
+enum ECompanion {
+  FAMILY,
+  FRIEND,
+  LOVER,
+  ACQUAINTANCE,
+  ALONE,
+}
+
+enum EMood {
+  JOYFUL,
+  HAPPY,
+  NEUTRAL,
+  UNHAPPY,
+  SAD,
+}
+export interface IDiary {
+  id: number;
+  date: string;
+  title: string;
+  body: string;
+  startSleep: string;
+  endSleep: string;
+  feelings: string;
+  companions: ECompanion;
+  mood: EMood;
+  remember: boolean;
+  weatherId: string;
+  weather: string;
+  todayPickTitle: string;
+  todayPickContributors: string;
+  todayPickDate: string;
+  todayPickImage: string;
+  todayPickId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const diaryListState = atom({
+  key: "Diaries",
+  default: [],
 });

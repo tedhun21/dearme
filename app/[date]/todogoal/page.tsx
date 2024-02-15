@@ -59,7 +59,7 @@ export default function DailyTodoGoal() {
   } = useQuery({
     queryKey: ["getMyTodosWithDate"],
     queryFn: () =>
-      getMyTodosWithDate({ date: dayjs(todogoalDate).format("YYYY-MM-DD") }),
+      getMyTodosWithDate({ date: dayjs(date).format("YYYY-MM-DD") }),
   });
 
   // get goals
@@ -70,8 +70,7 @@ export default function DailyTodoGoal() {
     isRefetching: isGoalRefetching,
   } = useQuery({
     queryKey: ["getMyGoals"],
-    queryFn: () =>
-      getMyGoals({ date: dayjs(todogoalDate).format("YYYY-MM-DD") }),
+    queryFn: () => getMyGoals({ date: dayjs(date).format("YYYY-MM-DD") }),
   });
 
   // ABOUT: create Todo
@@ -98,10 +97,10 @@ export default function DailyTodoGoal() {
   }, [isTodoSuccess, isTodoRefetching]);
 
   useEffect(() => {
-    if (!isTodoRefetching && todogoalDate) {
+    if (!isTodoRefetching && todogoalDate && todogoalTitle === "Todo") {
       refetchTodo();
     }
-    if (!isGoalRefetching && todogoalDate) {
+    if (!isGoalRefetching && todogoalDate && todogoalTitle === "Goal") {
       refetchGoal();
     }
   }, [todogoalDate, todogoalTitle]);

@@ -1,6 +1,7 @@
 import { selector } from "recoil";
 
 import {
+  diaryListState,
   goalListState,
   meState,
   postListState,
@@ -34,4 +35,10 @@ export const postListSelector = selector({
 export const settingSelector = selector({
   key: "settingSelector",
   get: ({ get }) => get(settingState),
+});
+
+export const diaryListSelector = selector({
+  key: "diaryListSelector",
+  get: ({ get }) => get(diaryListState),
+  set: ({ set }, newValue) => set(diaryListState, newValue),
 });

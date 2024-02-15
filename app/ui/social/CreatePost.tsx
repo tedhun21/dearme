@@ -1,7 +1,7 @@
 "use client";
 // TODO In 목표 디자인 수정
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -49,7 +49,7 @@ export default function CreatePost() {
   const goals = goalsData?.data?.data.results;
 
   //   Select 목표 선택
-  const [selectedGoal, setSelectedGoal] = useState("");
+  const [selectedGoal, setSelectedGoal] = useState<string>("");
   const handleGoalChange = (e: any) => {
     setSelectedGoal(e.target.value);
   };
@@ -57,7 +57,8 @@ export default function CreatePost() {
   // Private
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const handlePrivacyToggle = () => {
-    setIsPrivate((prevIsPrivate) => !prevIsPrivate);
+    setIsPrivate((isPrivate) => !isPrivate);
+    console.log(isPrivate);
   };
 
   // 게시물 사진
@@ -88,8 +89,6 @@ export default function CreatePost() {
   };
 
   // Post Request
-  // const mutation = useMutation({ mutationFn: createPost });
-
   const { mutateAsync: addPostMutation } = useMutation({
     mutationFn: createPost,
     onSuccess: () => {
@@ -98,6 +97,13 @@ export default function CreatePost() {
   });
 
   const handlePost = async () => {
+    if (!selectedGoal) {
+      window.alert("Please select your goal.");
+      return;
+    } else if (!imageFile) {
+      window.alert("Please select the photo.");
+      return;
+    }
     try {
       const postData = {
         selectedGoal,
@@ -107,7 +113,6 @@ export default function CreatePost() {
         selectedOption,
       };
 
-      // await mutation.mutateAsync(postData);
       await addPostMutation(postData);
 
       window.alert("Uploaded!");
@@ -127,7 +132,7 @@ export default function CreatePost() {
   return (
     <div>
       <button
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-default-800"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-default-800 hover:bg-opacity-75"
         onClick={handleOpen}
       >
         <AddIcon sx={{ color: "white" }} />
@@ -147,6 +152,7 @@ export default function CreatePost() {
             p: 4,
           }}
         >
+          {/* 로고 & x 버튼 */}
           <div className="mb-4 flex items-center justify-between">
             <Link href="/">
               <Image
@@ -165,16 +171,18 @@ export default function CreatePost() {
           </div>
 
           <div className="mb-4 flex items-center justify-between">
+            {/* 목표 선택 */}
             <div className="flex items-center">
-              <div className="text-base font-semibold text-default-500">In</div>
+              <span className="text-base font-semibold text-default-500">
+                In
+              </span>
               <Select
-                // 스타일 안먹음..?
                 sx={{
                   marginLeft: 1,
                   "&.MuiOutlinedInput-root": {
                     borderRadius: "20px",
-                    width: "160px", // Set the width
-                    height: "25px", // Set the height
+                    width: "160px",
+                    height: "25px",
                     fontSize: "14px",
                     color: "black",
                     "& fieldset": {
@@ -211,6 +219,7 @@ export default function CreatePost() {
               </Select>
             </div>
 
+            {/* Private 토글 */}
             <div className="flex items-center">
               <span className="text-sm font-medium text-default-700">
                 Private
@@ -264,7 +273,7 @@ export default function CreatePost() {
             <span className="text-sm font-medium text-default-700">
               {formattedDate}
             </span>
-            {/* <Triangle className="text-default-900 ml-1 h-3 w-3 cursor-pointer fill-current" /> */}
+
             <ArrowDropDownRoundedIcon sx={{ color: "#EDA323" }} />
           </div>
 
@@ -299,12 +308,13 @@ export default function CreatePost() {
           />
 
           {/* Comments Settings */}
+          {/* 친구 공개 게시물: Friends / Off */}
+          {/* 전체 공개 게시물: All / Off */}
           <div className="mb-4 flex items-center">
             <span className="mr-2 text-sm font-medium text-default-700">
               Comments
             </span>
             <Select
-              // 스타일 안먹음..?
               sx={{
                 marginLeft: 1,
                 "&.MuiOutlinedInput-root": {
@@ -327,14 +337,20 @@ export default function CreatePost() {
               value={selectedOption}
               onChange={handleOptionChange}
             >
-              <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
-                All
-              </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
-                Friends
-              </MenuItem>
+              {!isPrivate && (
+                <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
+                  All
+                </MenuItem>
+              )}
+
+              {isPrivate && (
+                <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
+                  Friends
+                </MenuItem>
+              )}
+
               <MenuItem sx={{ fontSize: "14px" }} value="OFF">
-                Turn off
+                Off
               </MenuItem>
             </Select>
           </div>

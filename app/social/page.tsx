@@ -1,18 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-// TODO: CreatePost 플로팅 버튼 위치 수정
-// TODO: commentSettings (public, friends, off)
 
 import React, { useEffect, useState } from "react";
 
 import { useInView } from "react-intersection-observer";
 import { getPostWithPage } from "@/store/api";
 
-import {
-  useQuery,
-  useQueryClient,
-  useInfiniteQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 
 import { CircularProgress } from "@mui/material";
 
@@ -61,6 +55,8 @@ export interface Post {
 }
 
 export default function Social() {
+  const queryClient = useQueryClient();
+
   const [posts, setPosts] = useState<Post[]>([]);
 
   // 선택된 탭 -> 쿼리
@@ -69,16 +65,15 @@ export default function Social() {
     setSelectedTab(tab);
   };
 
-  const queryClient = useQueryClient();
+  // infinite scroll
   const [ref, inView] = useInView();
 
-  // infinite scroll
   const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
     Post[],
     Error
   >({
     queryKey: ["getPostsWithPage", { tab: selectedTab }],
-    queryFn: ({ pageParam }: { pageParam: number }) =>
+    queryFn: ({ pageParam }) =>
       getPostWithPage({ tab: selectedTab, pageParam: pageParam }),
 
     getNextPageParam: (lastPage, allPages: any) => {
@@ -97,6 +92,8 @@ export default function Social() {
     fetchNextPage();
   }, [inView]);
 
+  console.log(data);
+
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 pb-[90px] shadow-lg">
@@ -112,13 +109,20 @@ export default function Social() {
                   <SocialPost key={post.id} post={post} />
                 )),
             )}
+
+          {!hasNextPage &&
+          Array.isArray(data?.pages?.[0]) &&
+          data?.pages?.[0].length === 0 ? (
+            <div className="flex justify-center px-5 py-2 text-sm text-default-500">
+              No post yet.
+            </div>
+          ) : (
+            <div className="flex justify-center px-5 py-2 text-sm text-default-500">
+              All posts are loaded.
+            </div>
+          )}
         </div>
 
-        {!hasNextPage && (
-          <div className="flex justify-center px-5 py-2 text-sm text-default-500">
-            All posts are loaded.
-          </div>
-        )}
         {hasNextPage && (
           <div ref={ref}>
             <CircularProgress />
@@ -126,11 +130,13 @@ export default function Social() {
         )}
 
         {/* 게시물 작성 버튼 */}
-        <div className="fixed bottom-20 right-20">
-          <CreatePost />
+        <div className="fixed bottom-0 w-full max-w-[600px]">
+          <div className="absolute bottom-20 right-5 flex">
+            <CreatePost />
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </main>
   );
 }

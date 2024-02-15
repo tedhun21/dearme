@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-// TODO: 메뉴 디자인 수정 (라디오 버튼, 호버링)
 // FIXME: 세팅 메뉴 -> 푸터 이동
+// TODO 친구 x: About this account & Report
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -13,7 +13,7 @@ import Menu from "@mui/material/Menu";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Divider from "@mui/material/Divider";
 
-import Comments from "@/public/social/Comments";
+// import Comments from "@/public/social/Comments";
 import Delete from "@/public/social/Delete";
 import Edit from "@/public/social/Edit";
 import User from "@/public/social/User";
@@ -73,36 +73,25 @@ export default function PostSettings({
   };
 
   return (
-    <div>
-      <IconButton
-        aria-label="more"
-        id="long-button"
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-expanded={open ? "true" : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
+    <div className="relative">
+      <IconButton onClick={handleClick}>
         <MoreHorizIcon sx={{ color: "#2D2422", fontSize: 20 }} />
       </IconButton>
       <Menu
-        id="basic-menu"
+        // id="basic-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        PaperProps={{
-          style: {
-            width: "160px",
+        // MenuListProps={{
+        //   "aria-labelledby": "basic-button",
+        // }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        sx={{
+          "& .MuiMenu-paper": {
+            // backgroundColor: "transparent",
+            boxShadow: "none",
+            width: "200px",
             borderRadius: "16px",
           },
         }}
@@ -110,35 +99,6 @@ export default function PostSettings({
         {/* 나의 게시물 or 친구 게시물 */}
         {isMyPost ? (
           <div className="flex flex-col pb-3 pl-5 pr-5 pt-3">
-            <div className="mb-3 flex items-center">
-              <Comments className="mr-1 h-5 w-5 fill-current text-default-600" />
-
-              <div className="text-sm font-medium text-default-700">
-                Comments
-              </div>
-            </div>
-
-            <div className=" ml-3  flex-col ">
-              <div className="mb-2 flex items-center">
-                <input type="radio" name="radioOption" />
-                <span className="text- ml-2 font-normal text-default-700">
-                  All
-                </span>
-              </div>
-              <div className="mb-2 flex items-center">
-                <input type="radio" name="radioOption" />
-                <span className="ml-2 text-sm font-normal text-default-700">
-                  Friends
-                </span>
-              </div>
-              <div className="mb-2 flex items-center">
-                <input type="radio" name="radioOption" />
-                <span className="ml-2 text-sm font-normal text-default-700">
-                  Turn off
-                </span>
-              </div>
-            </div>
-
             {/* <Divider sx={{ m: 0 }} /> */}
 
             <button
@@ -164,22 +124,23 @@ export default function PostSettings({
               <User className="mr-1 h-5 w-5 fill-current text-default-600" />
 
               <div className="text-sm font-medium text-default-700">
-                About the account
+                About this account
               </div>
             </div>
 
-            <div className="mb-3 mt-3 flex items-center">
+            {/* <div className="mb-3 mt-3 flex items-center">
               <FriendRequest className="mr-1 h-5 w-5 fill-current text-default-600" />
 
               <div className="text-sm font-medium text-default-700">
                 Friend Request
               </div>
-            </div>
+            </div> */}
 
             <div className="mt-2 flex items-center">
               <Report className="mr-1 h-4 w-4 fill-current text-default-600" />
-
-              <div className="text-sm font-semibold text-default-700">신고</div>
+              <div className="text-sm font-semibold text-default-700">
+                Report
+              </div>
             </div>
           </div>
         )}

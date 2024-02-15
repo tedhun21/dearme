@@ -67,7 +67,8 @@ export default function EditPost({
     postData && !postData.public,
   );
   const handlePrivacyToggle = () => {
-    setIsPrivate((prevIsPrivate) => !prevIsPrivate);
+    setIsPrivate((isPrivate) => !isPrivate);
+    console.log(isPrivate);
   };
 
   // 게시물 사진
@@ -335,14 +336,19 @@ export default function EditPost({
               value={selectedOption}
               onChange={handleOptionChange}
             >
-              <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
-                All
-              </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
-                Friends
-              </MenuItem>
+              {!isPrivate && (
+                <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
+                  All
+                </MenuItem>
+              )}
+
+              {isPrivate && (
+                <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
+                  Friends
+                </MenuItem>
+              )}
               <MenuItem sx={{ fontSize: "14px" }} value="OFF">
-                Turn off
+                Off
               </MenuItem>
             </Select>
           </div>

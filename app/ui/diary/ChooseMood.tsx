@@ -26,24 +26,24 @@ export default function ChooseMood({ onMoodSelect }) {
     <div className="transition duration-300 ease-in-out group-hover:bg-blue-500">
       <span className="flex items-center justify-between px-20">
         <JoyfulEmoji
-          onClick={() => handleMoodClick("joyful")}
-          selected={selectedMood === "joyful"}
+          onClick={() => handleMoodClick("JOYFUL")}
+          selected={selectedMood === "JOYFUL"}
         />
         <HappyEmoji
-          onClick={() => handleMoodClick("happy")}
-          selected={selectedMood === "happy"}
+          onClick={() => handleMoodClick("HAPPY")}
+          selected={selectedMood === "HAPPY"}
         />
         <NeutralEmoji
-          onClick={() => handleMoodClick("neutral")}
-          selected={selectedMood === "neutral"}
+          onClick={() => handleMoodClick("NEUTRAL")}
+          selected={selectedMood === "NEUTRAL"}
         />
         <UnhappyEmoji
-          onClick={() => handleMoodClick("unhappy")}
-          selected={selectedMood === "unhappy"}
+          onClick={() => handleMoodClick("UNHAPPY")}
+          selected={selectedMood === "UNHAPPY"}
         />
         <SadEmoji
-          onClick={() => handleMoodClick("sad")}
-          selected={selectedMood === "sad"}
+          onClick={() => handleMoodClick("SAD")}
+          selected={selectedMood === "SAD"}
         />
       </span>
     </div>

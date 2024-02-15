@@ -17,14 +17,14 @@ import { getCookie } from "@/util/tokenCookie";
 import EditPost from "@/public/social/EditPost";
 import Delete from "@/public/social/Delete";
 import Footer from "@/app/ui/footer";
-import { set } from "react-hook-form";
 
 interface DiaryData {
   date: string;
   title: string;
-  content: string;
+  body: string;
   photos: { url: string }[];
   tags: string[];
+  feelings: string;
 }
 
 export default function Diary() {

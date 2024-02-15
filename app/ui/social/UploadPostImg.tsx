@@ -61,7 +61,7 @@ export default function UploadPostImg({ setImageFile, currentImageUrl }: any) {
         <img
           src={previewImage}
           alt="Image selected by the user"
-          className="max-h-full max-w-full object-cover"
+          className="max-h-auto max-w-full object-cover"
         />
       ) : (
         <SelectPhotos className="m-10 h-7 w-7 cursor-pointer" />

@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-
+//TODO 이미지 크기 수정 react-cropper
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 
-import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { useRecoilValue } from "recoil";
+import { meState } from "@/store/atoms";
 import { likePost } from "@/store/api";
 
 import { Post } from "@/app/social/page";
@@ -56,12 +56,14 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 export default function SocialPost({ post }: SocialPostProps) {
   const queryClient = useQueryClient();
 
-  // const me = useRecoilValue<IMe>(meState);
+  const me = useRecoilValue(meState);
+
+  // 나의 게시물 (boolean)
+  const isMe = me.id === post.user.id;
 
   // 좋아요 상태
-  // TODO 2 => userId
   const [liked, setLiked] = useState(
-    post.likes.length >= 1 && post.likes.some((like) => like.id === 2),
+    post.likes.length >= 1 && post.likes.some((like) => like.id === me.id),
   );
 
   const likeMutation = useMutation({
@@ -124,30 +126,26 @@ export default function SocialPost({ post }: SocialPostProps) {
           </div>
 
           <div className="ml-auto ">
-            {/* TODO (···) 나의 게시물 or 친구 게시물 -> boolean값 전달 */}
-            <PostSettings isMyPost={true} postId={post.id} postData={post} />
+            <PostSettings isMyPost={isMe} postId={post.id} postData={post} />
           </div>
         </div>
         {/* Image && 게시물 사진 */}
-        <div className=" relative mb-2 mt-1 h-auto w-full">
-          {post.photo?.url ? (
-            // next Image
-            // <Image
-            //   src={`${BUCKET_URL}${post.photo?.url}`}
-            //   alt="Post Image"
-            //   fill
-            //   objectFit="fill"
-            //   className="mb-3  w-full rounded-sm "
-            // />
-            <img
+        <div className="relative mb-2 mt-1  px-5">
+          {post.photo?.url && (
+            <Image
               src={`${BUCKET_URL}${post.photo?.url}`}
               alt="Post Image"
-              // fill
-              // objectFit="fill"
-              className=" w-full rounded-sm "
+              priority
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{
+                width: "100%",
+                height: "auto",
+                maxHeight: "680px",
+                borderRadius: "4px",
+              }}
             />
-          ) : (
-            <div>hi</div>
           )}
         </div>
         <div className="flex items-center justify-between px-5">
@@ -163,18 +161,19 @@ export default function SocialPost({ post }: SocialPostProps) {
                 <EmptyHeart className="h-6 w-5 fill-current text-default-600" />
               )}
             </div>
-
-            <div className="flex items-center" onClick={toggleComments}>
-              <Comments className="ml-1 h-6 w-5 cursor-pointer fill-current text-default-600" />
-            </div>
+            {post.commentSettings !== "OFF" && (
+              <div className="flex items-center" onClick={toggleComments}>
+                <Comments className="ml-1 h-6 w-5 cursor-pointer fill-current text-default-600" />
+              </div>
+            )}
           </div>
           {/* 게시글 작성시간 */}
           <div className=" flex justify-end  text-xs  text-default-500">
             {timeSince(post.createdAt)}
           </div>
         </div>
+
         {/* Likes 목록 */}
-        {/* TODO default image */}
         <div className="items-centers my-2 flex px-5">
           <div className="flex">
             {post.likes.slice(0, 3).map((like, index) => {
@@ -213,6 +212,7 @@ export default function SocialPost({ post }: SocialPostProps) {
             </div>
           </div>
         </div>
+
         {/* Like Modal */}
         <LikeModal
           open={isLikeModalOpen}
@@ -220,10 +220,11 @@ export default function SocialPost({ post }: SocialPostProps) {
           postId={post.id}
           // likes={post.likes}
         />
+
         {/* 게시물 body */}
         <div className="flex w-full items-start gap-2 px-5 py-4 text-sm font-medium text-default-700">
           <div className="text-sm font-semibold">
-            {post.user?.nickname || "Unknown User"}
+            {post.body && post.user?.nickname}
           </div>
 
           <div
@@ -254,22 +255,28 @@ export default function SocialPost({ post }: SocialPostProps) {
             )}
           </div>
         </div>
+
         {/* View n Comments */}
-        <div
-          className="cursor-pointer px-5 text-xs font-medium text-default-500"
-          onClick={toggleComments}
-        >
-          {!showComments &&
-            (post.comments === 0
-              ? ""
-              : post.comments === 1
-                ? "View 1 comment"
-                : `View all ${post.comments} comments`)}
-        </div>
+        {post.commentSettings !== "OFF" && (
+          <div
+            className="cursor-pointer px-5 text-xs font-medium text-default-500"
+            onClick={toggleComments}
+          >
+            {!showComments &&
+              (post.comments === 0
+                ? ""
+                : post.comments === 1
+                  ? "View 1 comment"
+                  : `View all ${post.comments} comments`)}
+          </div>
+        )}
+
         {/* 댓글 보기 */}
         {showComments && (
-          // <CommentsSection postId={post.id} comments={post.comments} />
-          <CommentsSection postId={post.id} />
+          <CommentsSection
+            postId={post.id}
+            commentSettings={post.commentSettings}
+          />
         )}
         <Divider className="mt-5" sx={{ border: "1px solid #EBE3D5" }} />
       </div>

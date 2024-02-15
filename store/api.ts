@@ -383,21 +383,13 @@ export const createComment = async ({
 };
 
 // Read _ comment
-export const readCommentsWithPage = async ({
-  postId,
-  pageParam,
-}: {
-  postId: number;
-  pageParam: number;
-}) => {
+export const readCommentsWithPage = async ({ postId, pageParam }: any) => {
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
-      `${API_URL}/comments?page=${pageParam}&size=4&postId=${postId}`,
+      `${API_URL}/comments?page=${pageParam}&size=5&postId=${postId}`,
       { headers },
     );
-    // console.log(response);
-    // console.log(response.data.results);
     return response.data.results;
   } catch (e) {
     console.error(e);

@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-// TODO: Likes > follow 버튼 기능
-// TODO 유저 디폴트 이미지 AccountCircleIcon x
 
 import React, { useEffect } from "react";
 import {
@@ -45,8 +43,6 @@ export default function LikeModal({
     queryKey: ["getLikeship", postId],
     queryFn: () => getLikeship(postId),
   });
-
-  console.log(likes);
 
   // me
   const me = useRecoilValue(meState);
@@ -102,7 +98,6 @@ export default function LikeModal({
         <Divider className="" sx={{ border: "1px solid #EBE3D5" }} />
         {Array.isArray(likes) &&
           likes.map((like: any) => (
-            // TODO 친구 아니면 Follow
             <section
               key={like.likeId}
               className="my-3 flex items-center justify-between px-5"

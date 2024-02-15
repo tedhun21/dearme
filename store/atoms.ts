@@ -86,13 +86,14 @@ export const goalListState = atom<IGoal[]>({
 });
 
 export interface ISetting {
+  isDiary: boolean;
   todogoalTitle: string;
   todogoalDate: Dayjs;
 }
 
 export const settingState = atom<ISetting>({
   key: "Settings",
-  default: { todogoalTitle: "Todo", todogoalDate: dayjs() },
+  default: { isDiary: false, todogoalTitle: "Todo", todogoalDate: dayjs() },
 });
 
 enum ECompanion {
@@ -119,6 +120,7 @@ export interface IDiary {
   endSleep: string;
   feelings: string;
   companions: ECompanion;
+  photos: IImage[];
   mood: EMood;
   remember: boolean;
   weatherId: string;

@@ -7,7 +7,7 @@ import { todoListState } from "@/store/atoms";
 
 import TodoRate from "../ui/me/TodoRate";
 import MeGoal from "../ui/me/MeGoal";
-import DragTodo from "../ui/todo/Drag";
+import DragTodo from "../ui/todo/DragTodo";
 
 export default function Me() {
   const [isDrop, setIsDrop] = useState(false);

@@ -25,12 +25,12 @@ interface DiaryData {
   date: string;
   title: string;
   content: string;
-  images: string[];
+  photos: { url: string }[];
   tags: string[];
 }
 
 interface ReadDiaryProps {
-  diaryData: DiaryData | null;
+  diaryData: DiaryData[];
 }
 
 export default function ReadDiary({ diaryData }: ReadDiaryProps) {
@@ -84,40 +84,46 @@ export default function ReadDiary({ diaryData }: ReadDiaryProps) {
           /> */}
 
         {/* 이미지 있을 경우에만 (images &&)*/}
-        <div>
-          <Swiper
-            effect={"cards"}
-            cardsEffect={{
-              perSlideOffset: 3,
-              perSlideRotate: 3,
-              rotate: true,
-              slideShadows: false,
-            }}
-            grabCursor={true}
-            modules={[EffectCards]}
-            scrollbar={{ draggable: true }}
-            mousewheel={true}
-            className=" h-96 w-11/12 "
-          >
-            {images.map((image, index) => (
-              <SwiperSlide
-                key={index}
-                className="flex items-center justify-center rounded-lg"
+        {diaryData &&
+          diaryData.length > 0 &&
+          diaryData[0].photos &&
+          diaryData[0].photos.length > 0 && (
+            <div>
+              <Swiper
+                effect={"cards"}
+                cardsEffect={{
+                  perSlideOffset: 3,
+                  perSlideRotate: 3,
+                  rotate: true,
+                  slideShadows: false,
+                }}
+                grabCursor={true}
+                modules={[EffectCards]}
+                scrollbar={{ draggable: true }}
+                mousewheel={true}
+                className=" h-96 w-11/12 "
               >
-                <img
-                  src={image}
-                  alt={`Diary Image ${index}`}
-                  className="h-full w-full object-cover"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          {/* 이미지 개수 -> text */}
-          <Yellow
-            className="top-70 absolute right-10 z-30 h-10 w-10 -translate-y-1/2 transform fill-current text-default-900"
-            text="+3"
-          />
-        </div>
+                {diaryData &&
+                  diaryData[0].photos.map((photo, index) => (
+                    <SwiperSlide
+                      key={index}
+                      className="flex items-center justify-center rounded-lg"
+                    >
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_BUCKET_URL}${photo.url}`} // 이미지 URL을 버킷으로 설정
+                        alt={`Diary Image ${index}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+              {/* 이미지 개수 -> text */}
+              <Yellow
+                className="top-70 absolute right-10 z-30 h-10 w-10 -translate-y-1/2 transform fill-current text-default-900"
+                text={`+${diaryData[0].photos.length}`}
+              />
+            </div>
+          )}
 
         <div className="p-10">
           <div className="mb-3 mt-4 flex items-center">

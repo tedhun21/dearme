@@ -17,18 +17,19 @@ import { getCookie } from "@/util/tokenCookie";
 import EditPost from "@/public/social/EditPost";
 import Delete from "@/public/social/Delete";
 import Footer from "@/app/ui/footer";
+import { set } from "react-hook-form";
 
 interface DiaryData {
   date: string;
   title: string;
   content: string;
-  images: string[];
+  photos: { url: string }[];
   tags: string[];
 }
 
 export default function Diary() {
   const params = useParams();
-  const [diaryData, setDiaryData] = useState<DiaryData | null>(null);
+  const [diaryData, setDiaryData] = useState<DiaryData[]>([]);
 
   useEffect(() => {
     // 로그인 여부 확인
@@ -47,20 +48,14 @@ export default function Diary() {
           `${process.env.NEXT_PUBLIC_API_URL}/diaries?date=${params.date}`,
           {
             headers: {
-              Authorization: `Bearer ${jwtToken}`,
+              Authorization: `Bearer ${jwtToken}`, // JWT 토큰을 Authorization 헤더에 추가
             },
           },
         );
-        // 응답 데이터가 존재한다면
-        if (response.data) {
-          setDiaryData(response.data);
-        } else {
-          // 응답 데이터가 없으면
-          setDiaryData(null);
-        }
+        setDiaryData(response.data.results);
       } catch (error) {
         console.error("Failed to fetch diary data:", error);
-        setDiaryData(null); // 에러 발생 시, 일기 데이터 없음으로 처리
+        setDiaryData([]);
       }
     };
 
@@ -71,6 +66,7 @@ export default function Diary() {
 
   // 일기 데이터가 있는지 확인하는 함수
   const hasDiaryData = diaryData !== null;
+  console.log(hasDiaryData, diaryData);
 
   return (
     <main className="relative flex min-h-screen justify-center">

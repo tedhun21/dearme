@@ -1,27 +1,66 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
-import { Comment } from "@/app/social/page";
+// TODO loading / all comments are loaded
+
+import React, { ChangeEvent, useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import {
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
+
+import { useRecoilValue } from "recoil";
+import { meState } from "@/store/atoms";
+import {
+  readCommentsWithPage,
+  createComment,
+  updateComment,
+} from "@/store/api";
+
+// import { Comment } from "@/app/social/page";
+import CommentSettings from "./CommentSettings";
 import { timeSince } from "./SocialPost";
 
 import InputBase from "@mui/material/InputBase";
 
 import Send from "@/public/social/Send";
 
-interface CommentProps {
-  comments: Comment[];
-  onCommentSubmit: (comment: string) => void;
-  postId: number;
-}
-
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function CommentsSection({
-  comments,
-  onCommentSubmit,
-  postId,
-}: CommentProps) {
+export default function CommentsSection({ postId }: { postId: number }) {
+  const queryClient = useQueryClient();
+  const [ref, inView] = useInView();
+
+  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
+    any[],
+    Error
+  >({
+    queryKey: ["getCommentsWithPage", postId],
+    queryFn: ({ pageParam }: { pageParam: number }) =>
+      readCommentsWithPage({ postId: postId, pageParam: pageParam }),
+    getNextPageParam: (lastPage, allPages: any) => {
+      const maxPage = lastPage.length / 6;
+      const nextPage = allPages.length + 1;
+
+      return lastPage.length >= 6 ? lastPage.length / 6 + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
+
+  useEffect(() => {
+    if (!inView) {
+      return;
+    }
+    fetchNextPage();
+  }, [inView]);
+
+  // me
+  const me = useRecoilValue(meState);
+
   // 댓글 입력 상태
   const [comment, setComment] = useState<string>("");
 
@@ -29,48 +68,133 @@ export default function CommentsSection({
     setComment(e.target.value);
   };
 
-  const handleSubmit = () => {
-    onCommentSubmit(comment);
+  // 댓글 Post Request
+  const { mutateAsync: addCommentMutation } = useMutation({
+    mutationFn: createComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+
+  const handleSubmit = async () => {
+    try {
+      await addCommentMutation({ postId, comment });
+    } catch (e) {
+      console.error(e);
+    }
     setComment("");
   };
 
-  // console.log(comments[0]);
-  // console.log(postId);
+  // TODO 댓글 호버(...)
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+
+  // 댓글 수정 상태
+  const [editingComment, setEditingComment] = useState<string>("");
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  // 댓글 Edit Request
+  const { mutateAsync: updateCommentMutation } = useMutation({
+    mutationFn: updateComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      setIsEditing(false);
+      setEditingComment("");
+      setEditingCommentId(null);
+    },
+  });
+
+  const handleEdit = async () => {
+    try {
+      await updateCommentMutation({
+        postId,
+        commentId: editingCommentId,
+        comment: editingComment,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
-    <section className="mt-4 ">
-      {comments.map((comment, index) => (
-        <div key={index} className="mb-2 flex items-center px-5">
-          <div>
-            <img
-              src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-              alt="User Image"
-              className="h-8 w-8 rounded-full"
-            />
-          </div>
+    <section className="mt-4  ">
+      {data?.pages &&
+        data.pages.map((comments: any) =>
+          comments.map((comment: any) => (
+            <section key={comment.id} className="mb-3 flex w-full gap-2  px-5">
+              {/* 이미지*/}
+              <img
+                src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
+                alt="User Image"
+                className="h-8 w-8 overflow-hidden rounded-full object-cover"
+              />
 
-          <div className="w-full flex-col  pl-3">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-default-700">
-                {comment.user.nickname}
-              </div>
-              <div className="flex justify-end text-xs  text-default-500">
-                {timeSince(comment.createdAt)}
-              </div>
-            </div>
-            <div className="text-xs font-medium text-default-500">
-              {comment.body}
-            </div>
-          </div>
-        </div>
-      ))}
+              <div className="flex w-full flex-col justify-center">
+                {/* 작성자 & 댓글 */}
+                <div className="flex gap-2">
+                  <span className="text-sm font-semibold">
+                    {comment.user.nickname}
+                  </span>
+                  <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
+                    {isEditing && editingCommentId === comment.id ? (
+                      <InputBase
+                        multiline
+                        sx={{
+                          fontSize: "12px",
+                          fontWeight: 400,
+                          width: "100%",
+                          overflowWrap: "break-word",
+                          // border: 1,
+                          // borderColor: "grey.500",
+                        }}
+                        value={editingComment}
+                        onChange={(e) => setEditingComment(e.target.value)}
+                        autoFocus
+                      />
+                    ) : (
+                      comment.body
+                    )}
+                  </span>
+                </div>
 
+                {/* 작성 시간 & 댓글 설정 */}
+                <div className="flex items-center justify-end">
+                  <div
+                    className="text-2xs  text-default-500"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                  >
+                    {timeSince(comment.createdAt)}
+                  </div>
+                  {isEditing && editingCommentId === comment.id ? (
+                    <div
+                      className="ml-2 cursor-pointer text-xs font-normal text-default-700"
+                      onClick={handleEdit}
+                    >
+                      Edit
+                    </div>
+                  ) : (
+                    <div>
+                      <CommentSettings
+                        postId={postId}
+                        commentId={comment.id}
+                        onEditClick={() => {
+                          setIsEditing(true);
+                          setEditingCommentId(comment.id);
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )),
+        )}
       {/* 댓글 작성 */}
-      {/* TODO 로그인 유저 프로필 이미지로 변경 */}
       <div className="mb-2 mt-5 flex items-center px-5">
         <div>
           <img
-            src="https://i.pinimg.com/564x/e3/5b/90/e35b90f73b94757a55448aa157d5891e.jpg"
+            src={`${BUCKET_URL}${me.photo.url}`}
             alt="User Image"
             className="h-8 w-8 rounded-full"
           />
@@ -86,14 +210,15 @@ export default function CommentsSection({
                 fontSize: 14,
                 fontWeight: 500,
               }}
-              placeholder="댓글 작성"
+              placeholder="Add a comment..."
               inputProps={{ "aria-label": "댓글 남기기..." }}
               onChange={handleInputChange}
               value={comment}
             />
-            {/* onClick 이벤트 */}
             {comment && (
-              <Send className="mr-1 h-5 w-5 fill-current text-default-600" />
+              <div onClick={handleSubmit}>
+                <Send className="mr-1 h-5 w-5 fill-current text-default-600" />
+              </div>
             )}
           </div>
         </div>

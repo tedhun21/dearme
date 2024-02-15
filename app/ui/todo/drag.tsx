@@ -10,6 +10,8 @@ import {
 import Todo from "./Todo";
 
 import { ITodo, todoListState } from "@/store/atoms";
+import { useMutation } from "@tanstack/react-query";
+import { updateMyTodoPriority } from "@/store/api";
 
 // 배열 순서 바꾸는 함수
 const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {
@@ -44,20 +46,38 @@ const getTodoStyle = (isDragging: any, draggableStyle: any) => ({
   ...draggableStyle,
 });
 
-export default function DragTodo() {
+export default function DragTodo({ date }: any) {
   const [enabled, setEnabled] = useState(false);
   const [todos, setTodos] = useRecoilState(todoListState);
 
-  const onDragEnd = ({ source, destination }: DropResult) => {
-    // console.log(">>> source", source.index);
-    // console.log(">>> destination", destination);
+  const { mutate: updateMyTodoPriorityMutate } = useMutation({
+    mutationKey: ["updateMyTodoPriority"],
+    mutationFn: updateMyTodoPriority,
+    onError: ({ response }: any) => {
+      window.alert(response.data.error.message);
+    },
+  });
 
+  const onDragEnd = ({ source, destination }: DropResult) => {
     if (!destination) {
       return;
     }
 
-    const _todos = reorder(todos, source.index, destination.index) as ITodo[];
-    setTodos(_todos);
+    updateMyTodoPriorityMutate({
+      date,
+      source: source.index,
+      destination: destination.index,
+    });
+
+    setTodos((prevTodos) => {
+      const reorderedResults = reorder(
+        prevTodos,
+        source.index,
+        destination.index,
+      );
+
+      return reorderedResults;
+    });
   };
 
   useEffect(() => {
@@ -98,7 +118,7 @@ export default function DragTodo() {
                       provided.draggableProps.style,
                     )}
                   >
-                    <Todo todo={todo} />
+                    <Todo date={date} todo={todo} />
                   </div>
                 )}
               </Draggable>

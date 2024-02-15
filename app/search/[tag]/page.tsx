@@ -4,14 +4,46 @@
 import "../../globals.css";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+
+import { useQuery } from "@tanstack/react-query";
+import { getSearchGoals } from "@/store/api";
+
 import Header from "@/app/ui/header";
 import BackButton from "@/app/ui/backbutton";
-import InputBase from "@mui/material/InputBase";
+import ViewPostModal from "@/app/ui/search/ViewPostModal";
 
-import Find from "@/public/search/Find";
-import Tag from "@/public/search/Tag";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import { Divider } from "@mui/material";
+
+import GoalTag from "@/public/search/GoalTag";
+
+const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 const SearchResults = () => {
+  const params = useParams();
+  const searchTerm = params.tag;
+  console.log(typeof searchTerm);
+
+  // # 목표 검색
+  const { data: getGoalSearchResult } = useQuery({
+    queryKey: ["geGoalSearchResult"],
+    queryFn: () => getSearchGoals(searchTerm, true),
+    staleTime: 0,
+  });
+  const searchedGoals = getGoalSearchResult || [];
+
+  // 포스트 조회 모달
+  const [open, setOpen] = useState(false);
+
+  const [selectedPost, setSetlectedPost] = useState<number | null>(null);
+
+  const handleOpen = (postId: number) => {
+    setOpen(true);
+    setSetlectedPost(postId);
+  };
+  const handleClose = () => setOpen(false);
+
   return (
     <main className="relative flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -19,68 +51,78 @@ const SearchResults = () => {
         <div className="flex items-center px-6">
           <BackButton />
         </div>
-        <article className="m-5">
-          <div className=" mb-10 flex items-center">
-            <Tag className="h-10 w-10" />
-            <div className="flex flex-col">
-              <h1 className="ml-2 text-sm font-semibold text-default-700">
-                #프로그래밍
-              </h1>
-              <h2 className="ml-2 text-sm font-semibold text-default-500">
-                게시물 6개
-              </h2>
-            </div>
-          </div>
 
-          <section>
-            <h1 className=" mb-3 text-sm font-semibold text-default-700">
-              최근 게시물
+        {/* #목표 & 목표 개수 */}
+        <div className=" mx-5 my-10 flex items-center">
+          <GoalTag className="h-10 w-10" />
+          <div className="flex flex-col">
+            <h1 className="ml-2 text-sm font-semibold text-default-700">
+              #{searchedGoals.body}
             </h1>
+            <h2 className="ml-2 text-sm font-semibold text-default-500">
+              {searchedGoals.postsCount}{" "}
+              {searchedGoals.postsCount <= 1 ? " post" : " posts"}
+            </h2>
+          </div>
+        </div>
 
-            <div className="xxs:grid-cols-4 xs:grid-cols-5 grid grid-cols-3">
-              <div className="flex items-center justify-center">
-                <img
-                  src="https://i.pinimg.com/736x/cb/29/5d/cb295d1af516ae6995033ff8475b685d.jpg"
-                  width={200}
-                  height={200}
-                  alt="posts"
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <img
-                  src="https://i.pinimg.com/736x/cb/29/5d/cb295d1af516ae6995033ff8475b685d.jpg"
-                  width={200}
-                  height={200}
-                  alt="posts"
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <img
-                  src="https://i.pinimg.com/736x/cb/29/5d/cb295d1af516ae6995033ff8475b685d.jpg"
-                  width={200}
-                  height={200}
-                  alt="posts"
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <img
-                  src="https://i.pinimg.com/736x/cb/29/5d/cb295d1af516ae6995033ff8475b685d.jpg"
-                  width={200}
-                  height={200}
-                  alt="posts"
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <img
-                  src="https://i.pinimg.com/736x/cb/29/5d/cb295d1af516ae6995033ff8475b685d.jpg"
-                  width={200}
-                  height={200}
-                  alt="posts"
-                />
-              </div>
+        {/* #목표 관련 포스트 */}
+        {searchedGoals.postsCount > 0 ? (
+          <section>
+            <Divider
+              sx={{
+                borderColor: "#EBE3D5",
+                height: "2px",
+                marginBottom: "20px",
+              }}
+            />
+            <h1 className=" mb-3 ml-5 mt-5 text-sm font-semibold text-default-700">
+              Recent posts
+            </h1>
+            <div className="grid grid-cols-3 gap-0.5">
+              {Array.isArray(searchedGoals.postsData) &&
+                searchedGoals.postsData.map((post: any) => (
+                  <div
+                    key={post.postId}
+                    className="flex items-center justify-center "
+                  >
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        paddingBottom: "100%",
+                      }}
+                      onClick={() => handleOpen(post.postId)}
+                    >
+                      <Image
+                        src={`${BUCKET_URL}${post.photo.formats.thumbnail.url}`}
+                        alt="Post Image"
+                        layout={"fill"}
+                        objectFit="fill"
+                      />
+                    </div>
+                  </div>
+                ))}
             </div>
           </section>
-        </article>
+        ) : (
+          <section className="flex h-full w-full items-center justify-center ">
+            <div className="flex flex-col items-center">
+              <AutoAwesomeMotionIcon className="mb-3 h-10 w-10 text-default-400" />
+              <h1 className=" mb-3 text-sm font-semibold text-default-400">
+                No posts yet
+              </h1>
+            </div>
+          </section>
+        )}
+
+        {selectedPost && (
+          <ViewPostModal
+            open={open}
+            handleClose={handleClose}
+            postId={selectedPost}
+          />
+        )}
       </div>
     </main>
   );

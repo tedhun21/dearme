@@ -9,21 +9,25 @@ import { CircularProgress } from "@mui/material";
 import MePostCard from "@/app/ui/me/MePostCard";
 import { getCookie } from "@/util/tokenCookie";
 import { getMyPostsWithPage } from "@/store/api";
+import { useRecoilState } from "recoil";
+import { postListState } from "@/store/atoms";
 
 const access_token = getCookie("access_token");
 
 export default function MePost() {
   const [ref, inView] = useInView();
+  const [posts, setPosts] = useRecoilState(postListState);
+
   const {
     data: postData,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["getMyPostsWithPage", { access_token }],
+    queryKey: ["getMyPostsWithPage"],
     queryFn: ({ pageParam }: { pageParam: number }) =>
       getMyPostsWithPage({ pageParam, access_token }),
-    getNextPageParam: (lastPage, allPages: any) => {
-      const maxPage = lastPage.data?.length / 20;
+    getNextPageParam: (lastPage: any, allPages: any) => {
+      const maxPage = lastPage.results?.length / 12;
       const nextPage = allPages.length + 1;
 
       return maxPage < 1 ? undefined : nextPage;
@@ -39,36 +43,25 @@ export default function MePost() {
     fetchNextPage();
   }, [inView]);
 
-  // console.log(postData?.pages[0].data);
+  useEffect(() => {
+    if (postData) {
+      setPosts({
+        results: postData.pages,
+        pagination: postData.pages[0].pagination,
+      });
+    }
+  }, []);
 
   return (
     <section className="mb-20 mt-4">
       <h1 className="mx-5 mb-3 text-base font-semibold">포스트</h1>
       <section>
         <div className="grid grid-cols-3 xs:grid-cols-4">
-          {/* {postData?.pages &&
-            postData?.pages.map(
-              (page: any) =>
-                Array.isArray(page.data) &&
-                page.data.map((post: any) => (
-                  <MePost key={post.id} post={post} />
-                )),
-            )} */}
-
           {postData?.pages.map((page: any) =>
-            page.data.map((post: any) => (
+            page.results.map((post: any) => (
               <MePostCard key={post.id} post={post} />
             )),
           )}
-          {/* <div className="flex items-center justify-center">
-            <Image
-              src="/me/petmily.png"
-              width={200}
-              height={200}
-              alt="petmily"
-            />
-          </div> */}
-
           {hasNextPage ? (
             <div ref={ref}>
               <CircularProgress />

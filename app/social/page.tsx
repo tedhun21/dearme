@@ -8,7 +8,11 @@ import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { getPostWithPage } from "@/store/api";
 
-import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 import { CircularProgress } from "@mui/material";
 
@@ -35,15 +39,6 @@ export interface Goal {
   body: string;
 }
 
-export interface Comment {
-  createdAt: string;
-  id: number;
-  body: string;
-  updatedAt: string;
-  publishedAt: string;
-  user: User;
-}
-
 export interface Like {
   id: number;
   nickname: string;
@@ -59,7 +54,7 @@ export interface Post {
   commentSettings: "PUBLIC" | "FRIENDS" | "OFF";
   user: User;
   goal: Goal;
-  comments: Comment[];
+  comments: number;
   likes: Like[];
   // nextPage?: number;
   // isLast?: boolean;
@@ -73,10 +68,6 @@ export default function Social() {
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);
   };
-
-  // api
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
   const queryClient = useQueryClient();
   const [ref, inView] = useInView();

@@ -39,15 +39,6 @@ export interface Goal {
   body: string;
 }
 
-export interface Comment {
-  createdAt: string;
-  id: number;
-  body: string;
-  updatedAt: string;
-  publishedAt: string;
-  user: User;
-}
-
 export interface Like {
   id: number;
   nickname: string;
@@ -63,7 +54,7 @@ export interface Post {
   commentSettings: "PUBLIC" | "FRIENDS" | "OFF";
   user: User;
   goal: Goal;
-  comments: Comment[];
+  comments: number;
   likes: Like[];
   // nextPage?: number;
   // isLast?: boolean;

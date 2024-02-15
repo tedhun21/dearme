@@ -319,7 +319,7 @@ export default function Home() {
                 slotProps={{ day: { highlightedDays } as any }}
               />
             </LocalizationProvider>
-            <MeGoal route="home" />
+            <MeGoal />
           </section>
           {!isDiary ? (
             <section className="mt-4">

@@ -21,14 +21,20 @@ import Remembered from "@/public/diary/Remembered";
 
 import WeatherCloudy from "@/public/diary/WeatherCloudy";
 
-export default function ReadDiary() {
-  // 임시 사진 (지우기)
-  const images = [
-    "https://i.pinimg.com/564x/e1/4d/a4/e14da4a1e8bacd710080d446d87c4613.jpg",
-    "https://i.pinimg.com/736x/bf/a4/f4/bfa4f449997e7d70d693c748a81daf62.jpg",
-    "https://i.pinimg.com/564x/18/7e/66/187e66dd64de9f323ed7b7261fd29fc8.jpg",
-  ];
+interface DiaryData {
+  date: string;
+  title: string;
+  body: string;
+  photos: { url: string }[];
+  tags: string[];
+  feelings: string;
+}
 
+interface ReadDiaryProps {
+  diaryData: DiaryData[];
+}
+
+export default function ReadDiary({ diaryData }: ReadDiaryProps) {
   // 임시 태그 (지우기)
   const tags = ["#신나는", "#설레는", "#행복한", "#기대되는", "#의욕적인"];
 
@@ -60,6 +66,10 @@ export default function ReadDiary() {
     setShowAllTags(true);
   };
 
+  // feelings 문자열을 배열로 변환
+  const feelingsTags =
+    diaryData.length > 0 ? diaryData[0].feelings.split(" ") : [];
+
   return (
     <article className="relative">
       <section className="mb-5 mt-5 flex w-full min-w-[360px] max-w-[600px] flex-col rounded ">
@@ -72,40 +82,46 @@ export default function ReadDiary() {
           /> */}
 
         {/* 이미지 있을 경우에만 (images &&)*/}
-        <div>
-          <Swiper
-            effect={"cards"}
-            cardsEffect={{
-              perSlideOffset: 3,
-              perSlideRotate: 3,
-              rotate: true,
-              slideShadows: false,
-            }}
-            grabCursor={true}
-            modules={[EffectCards]}
-            scrollbar={{ draggable: true }}
-            mousewheel={true}
-            className=" h-96 w-11/12 "
-          >
-            {images.map((image, index) => (
-              <SwiperSlide
-                key={index}
-                className="flex items-center justify-center rounded-lg"
+        {diaryData &&
+          diaryData.length > 0 &&
+          diaryData[0].photos &&
+          diaryData[0].photos.length > 0 && (
+            <div>
+              <Swiper
+                effect={"cards"}
+                cardsEffect={{
+                  perSlideOffset: 3,
+                  perSlideRotate: 3,
+                  rotate: true,
+                  slideShadows: false,
+                }}
+                grabCursor={true}
+                modules={[EffectCards]}
+                scrollbar={{ draggable: true }}
+                mousewheel={true}
+                className=" h-96 w-11/12 "
               >
-                <img
-                  src={image}
-                  alt={`Diary Image ${index}`}
-                  className="h-full w-full object-cover"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          {/* 이미지 개수 -> text */}
-          <Yellow
-            className="top-70 absolute right-10 z-30 h-10 w-10 -translate-y-1/2 transform fill-current text-default-900"
-            text="+3"
-          />
-        </div>
+                {diaryData &&
+                  diaryData[0].photos.map((photo, index) => (
+                    <SwiperSlide
+                      key={index}
+                      className="flex items-center justify-center rounded-lg"
+                    >
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_BUCKET_URL}${photo.url}`}
+                        alt={`Diary Image ${index}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+              {/* 이미지 개수 -> text */}
+              <Yellow
+                className="top-70 absolute right-10 z-30 h-10 w-10 -translate-y-1/2 transform fill-current text-default-900"
+                text={`+${diaryData[0].photos.length}`}
+              />
+            </div>
+          )}
 
         <div className="p-10">
           <div className="mb-3 mt-4 flex items-center">
@@ -120,21 +136,16 @@ export default function ReadDiary() {
                 onClick={handleRemeber}
               />
             )}
+            {/* 일기의 날짜 */}
             <h1 className="text-md  font-semibold">{formatDate(date)}</h1>
           </div>
-
+          {/* 일기의 제목 */}
           <h1 className="mb-3 text-lg font-bold">
-            “새로운 시작, 일기 앱 개발의 설렘”
+            {diaryData.length > 0 ? diaryData[0].title : ""}
           </h1>
+          {/* 일기의 내용 */}
           <div className="mb-5 text-base font-medium text-default-700">
-            오늘은 제 생애 첫 일기 앱 개발을 시작했습니다. 이 앱을 통해
-            사용자들이 자신만의 소중한 추억을 기록하고 공유하는 경험을 제공할 수
-            있기를 기대하며, 새로운 도전에 설레는 마음을 가지고
-            있습니다.아침부터 밤 늦게까지 코드를 작성하며, 제가 만든 앱에 첫
-            번째 일기를 작성하는 그 순간을 상상했습니다. 때로는 알 수 없는
-            오류에 힘들게 하였지만, 그럴 때마다 새로운 해결책을 찾아내는 것에 큰
-            즐거움을 느꼈습니다. 이런 과정들이 모여 제 생애 첫 앱을 완성하는 큰
-            발걸음이 될 것이라고 믿습니다.
+            {diaryData.length > 0 ? diaryData[0].body : ""}
           </div>
 
           <div className="flex w-full items-center justify-end">
@@ -146,7 +157,7 @@ export default function ReadDiary() {
 
       {/* Tag -> map으로 돌리기 */}
       <section className="mb-5 bg-default-100 pb-4 pl-10 pr-10 pt-4 ">
-        {tags.slice(0, showAllTags ? tags.length : 3).map((tagItem, index) => (
+        {/* {tags.slice(0, showAllTags ? tags.length : 3).map((tagItem, index) => (
           <div
             key={index}
             className="mr-3 mt-1 inline-block rounded-full border-2 border-default-400 bg-default-300 px-2 py-0.5 text-base font-semibold text-default-800"
@@ -161,7 +172,15 @@ export default function ReadDiary() {
           >
             +{tags.length - 3}
           </div>
-        )}
+        )} */}
+        {feelingsTags.map((tag, index) => (
+          <div
+            key={index}
+            className="mr-3 mt-1 inline-block rounded-full border-2 border-default-400 bg-default-300 px-2 py-0.5 text-base font-semibold text-default-800"
+          >
+            {tag}
+          </div>
+        ))}
       </section>
     </article>
   );

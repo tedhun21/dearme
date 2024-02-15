@@ -202,7 +202,7 @@ export default function Signup() {
 
       if (
         response.data.status === 201 ||
-        response.data.message === "Successfully created a user."
+        response.data.message === "Successfully create a user."
       ) {
         alert("회원가입이 완료되었습니다");
         router.push("/login");

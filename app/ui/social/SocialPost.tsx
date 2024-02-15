@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-// TODO Comment Settings -> 댓글 설정
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
@@ -22,6 +21,7 @@ import Divider from "@mui/material/Divider";
 import EmptyHeart from "@/public/social/EmptyHeart";
 import FullHeart from "@/public/social/FullHeart";
 import Comments from "@/public/social/Comments";
+import UserWithNoImage from "@/public/social/UserWithNoImage";
 
 interface SocialPostProps {
   post: Post;
@@ -107,7 +107,7 @@ export default function SocialPost({ post }: SocialPostProps) {
                 height={10}
               />
             ) : (
-              <div>hi</div>
+              <UserWithNoImage className="mr-4 h-8 w-8 " />
             )}
           </div>
 
@@ -115,8 +115,11 @@ export default function SocialPost({ post }: SocialPostProps) {
             <div className=" text-base font-bold text-default-700">
               {post.user?.nickname || "Unknown User"}
             </div>
-            <div className="text-xs font-semibold text-default-500">
-              @{post.goal.body}
+            <div
+              className="text-xs font-semibold text-default-500"
+              style={{ marginTop: "-4px" }}
+            >
+              #{post.goal.body}
             </div>
           </div>
 
@@ -174,16 +177,25 @@ export default function SocialPost({ post }: SocialPostProps) {
         {/* TODO default image */}
         <div className="items-centers my-2 flex px-5">
           <div className="flex">
-            {post.likes.slice(0, 2).map((like, index) => (
-              <img
-                key={index}
-                className={`h-8 w-8 rounded-md border-none ${
-                  index > 0 ? "-ml-4" : ""
-                }`}
-                alt="likes"
-                src={`${BUCKET_URL}${like.photo?.url}`}
-              />
-            ))}
+            {post.likes.slice(0, 3).map((like, index) => {
+              return like.photo?.url ? (
+                <img
+                  key={index}
+                  className={` h-7 w-7 rounded-full border-2 border-solid border-default-200 ${
+                    index > 0 ? "-ml-4" : ""
+                  }`}
+                  alt="likes"
+                  src={`${BUCKET_URL}${like.photo?.url}`}
+                  style={{ borderColor: "#F5F3EB" }}
+                />
+              ) : (
+                <UserWithNoImage
+                  className={`m-0 h-7 w-7 rounded-full border-2 border-solid border-default-200 ${
+                    index > 0 ? "-ml-4" : ""
+                  }`}
+                />
+              );
+            })}
             {/* {post.likes.length > 4 && (
                  <div className="-ml-2 flex h-8 w-8 items-center  justify-center rounded-md bg-default-900 text-xs">
                    +{post.likes.length - 2}
@@ -205,7 +217,8 @@ export default function SocialPost({ post }: SocialPostProps) {
         <LikeModal
           open={isLikeModalOpen}
           handleClose={closeLikeModal}
-          likes={post.likes}
+          postId={post.id}
+          // likes={post.likes}
         />
         {/* 게시물 body */}
         <div className="flex w-full items-start gap-2 px-5 py-4 text-sm font-medium text-default-700">
@@ -247,15 +260,16 @@ export default function SocialPost({ post }: SocialPostProps) {
           onClick={toggleComments}
         >
           {!showComments &&
-            (post.comments.length === 0
+            (post.comments === 0
               ? ""
-              : post.comments.length === 1
+              : post.comments === 1
                 ? "View 1 comment"
-                : `View all ${post.comments.length} comments`)}
+                : `View all ${post.comments} comments`)}
         </div>
         {/* 댓글 보기 */}
         {showComments && (
-          <CommentsSection postId={post.id} comments={post.comments} />
+          // <CommentsSection postId={post.id} comments={post.comments} />
+          <CommentsSection postId={post.id} />
         )}
         <Divider className="mt-5" sx={{ border: "1px solid #EBE3D5" }} />
       </div>

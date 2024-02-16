@@ -187,7 +187,32 @@ export const getDiariesForMonth = async ({ date }: any) => {
         headers: { Authorization: `Bearer ${access_token}` },
       },
     );
-    
+
+    return data;
+  }
+};
+
+export const getDiaryForDay = async ({ date }: any) => {
+  if (access_token) {
+    const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    return data;
+  }
+};
+
+export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({}));
+
+    const { data } = await axios.put(
+      `${API_URL}/diaries/${diaryId}?remember=${remember}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
     return data;
   }
 };
@@ -383,21 +408,13 @@ export const createComment = async ({
 };
 
 // Read _ comment
-export const readCommentsWithPage = async ({
-  postId,
-  pageParam,
-}: {
-  postId: number;
-  pageParam: number;
-}) => {
+export const readCommentsWithPage = async ({ postId, pageParam }: any) => {
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
-      `${API_URL}/comments?page=${pageParam}&size=4&postId=${postId}`,
+      `${API_URL}/comments?page=${pageParam}&size=5&postId=${postId}`,
       { headers },
     );
-    // console.log(response);
-    // console.log(response.data.results);
     return response.data.results;
   } catch (e) {
     console.error(e);

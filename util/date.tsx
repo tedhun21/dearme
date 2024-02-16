@@ -53,3 +53,14 @@ export const getWeeksInMonth = (date: Dayjs) => {
   const lastDayOfWeek = lastDayOfMonth.endOf("week");
   return lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
 };
+
+// month/day, year
+export const formatDate = (dateString: any): any => {
+  if (!dateString) return "";
+  const dateObj = new Date(dateString);
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth() + 1;
+  const day = dateObj.getDate();
+
+  return `${month}/${day}, ${year}`;
+};

@@ -53,11 +53,7 @@ export default function ReadDiary({ date, diaryData }: any) {
     }
   };
 
-  const handleShowMoreTags = () => {
-    setShowAllTags(true);
-  };
-
-  // feelings 문자열을 배열로 변환
+  /* feelings 문자열을 배열로 변환 */
   const feelingsTags = diaryData ? diaryData.feelings.split(" ") : [];
 
   return (
@@ -112,6 +108,7 @@ export default function ReadDiary({ date, diaryData }: any) {
 
         <div className="p-10">
           <div className="mb-3 mt-4 flex items-center">
+            {/* 일기의 Remember */}
             {isRemember ? (
               <Remembered
                 className="mr-2 h-5 w-5 cursor-pointer fill-current"
@@ -134,7 +131,7 @@ export default function ReadDiary({ date, diaryData }: any) {
           <div className="mb-5 text-base font-medium text-default-700">
             {diaryData ? diaryData.body : ""}
           </div>
-
+          {/* 일기의 날씨정보 */}
           <div className="flex w-full items-center justify-end gap-1">
             <WeatherIcons weatherId={diaryData.weatherId} />
             <span className="text-sm font-medium">{diaryData.weather}</span>
@@ -143,7 +140,7 @@ export default function ReadDiary({ date, diaryData }: any) {
       </section>
 
       {/* 태그 섹션 */}
-      <section className="mb-5 bg-default-100 pb-4 pl-10 pr-10 pt-4 ">
+      <section className="mb-5 border-b-2 border-t-2 border-default-300 bg-default-200 pb-4 pl-10 pr-10 pt-4 ">
         <TagSection feelingsTags={feelingsTags} />
       </section>
     </article>

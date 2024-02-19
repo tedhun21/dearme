@@ -44,7 +44,7 @@ export default function Diary() {
                     <span className="text-sm font-semibold">수정하기</span>
                   </div>
                 </button>
-                <button className="h-10  rounded-lg border-2 border-black bg-default-800 pl-2 pr-2 hover:border-default-800">
+                <button className="h-10  rounded-lg border-2 border-black bg-default-800 pl-2 pr-2 hover:bg-default-700">
                   <div className="flex items-center justify-center">
                     <Delete className="mr-1 h-4 w-4 fill-current text-white" />
                     <span className="text-sm font-semibold text-white">

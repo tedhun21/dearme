@@ -13,8 +13,6 @@ import "swiper/css";
 import "swiper/css/scrollbar";
 import "swiper/css/effect-cards";
 
-// import dayjs from "dayjs";
-
 import Background from "@/public/diary/Background";
 import Yellow from "@/public/diary/Yellow";
 import RememberIcon from "@/public/me/RememberIcon";

@@ -1,12 +1,21 @@
 import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
 import axios from "axios";
-import { access } from "fs";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
 
 // 유저
+/// 로그인
+export const signIn = async ({ email, password }: any) => {
+  const { data } = await axios.post(`${API_URL}/auth/local`, {
+    identifier: email,
+    password,
+  });
+
+  return data;
+};
+
 /// 내 정보 가져오기
 export const getMe = async () => {
   if (access_token !== null) {
@@ -187,8 +196,10 @@ export const getDiariesForMonth = async ({ date }: any) => {
         headers: { Authorization: `Bearer ${access_token}` },
       },
     );
-    
+
     return data;
+  } else {
+    return [];
   }
 };
 
@@ -520,7 +531,6 @@ export const updateFriendship = async ({
       null,
       { headers },
     );
-    console.log(response);
   } catch (e) {
     console.error(e);
   }

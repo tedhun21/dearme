@@ -179,7 +179,7 @@ export default function Home() {
     }
     reset();
     setIs100(false);
-  }, [date]);
+  }, [date, isDiary]);
 
   // 월별 todos
   useEffect(() => {
@@ -343,7 +343,7 @@ export default function Home() {
                         size="lg"
                         determinate
                         variant="soft"
-                        value={value as number}
+                        value={parseInt(value as string)}
                         color={is100 ? "success" : "primary"}
                         sx={{
                           "--CircularProgress-size": "200px",

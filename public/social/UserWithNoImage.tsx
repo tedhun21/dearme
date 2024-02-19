@@ -32,7 +32,7 @@ export default function UserWithNoImage({ className }: IconProps) {
         x="2"
         y="2"
         stroke="#D6D2C4"
-        stroke-width="4"
+        strokeWidth="4"
         rx="18"
       />
       <defs>

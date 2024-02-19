@@ -1,5 +1,17 @@
 import { atom } from "recoil";
 import dayjs, { Dayjs } from "dayjs";
+// import { recoilPersist } from "recoil-persist";
+
+// const { persistAtom } = recoilPersist({
+//   key: "sessionStorage",
+//   storage: sessionStorage,
+// });
+
+// export const IState = atom({
+//   key: "IState",
+//   default: null,
+//   effects_UNSTABLE: [persistAtom],
+// });
 
 enum EPublic {
   ALL,

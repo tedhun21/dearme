@@ -20,7 +20,7 @@ import Yellow from "@/public/diary/Yellow";
 import RememberIcon from "@/public/me/RememberIcon";
 import Remembered from "@/public/diary/Remembered";
 
-import { formatDate } from "@/util/date";
+import { getDiaryDate } from "@/util/date";
 import WeatherIcons from "./WeatherIcons";
 import { updateDiaryRemember } from "@/store/api";
 import TagSection from "./TagSection";
@@ -114,7 +114,7 @@ export default function ReadDiary({ date, diaryData }: any) {
               />
             )}
             {/* 일기의 날짜 */}
-            <h1 className="text-md font-semibold">{formatDate(date)}</h1>
+            <h1 className="text-md font-semibold">{getDiaryDate(date)}</h1>
           </div>
           {/* 일기의 제목 */}
           <h1 className="mb-3 text-lg font-bold">

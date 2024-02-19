@@ -19,22 +19,15 @@ import Background from "@/public/diary/Background";
 import Yellow from "@/public/diary/Yellow";
 import RememberIcon from "@/public/me/RememberIcon";
 import Remembered from "@/public/diary/Remembered";
-import TagIcon from "@/public/diary/TagIcon";
 
 import { formatDate } from "@/util/date";
 import WeatherIcons from "./WeatherIcons";
 import { updateDiaryRemember } from "@/store/api";
 import TagSection from "./TagSection";
 
-// 임시 태그 (지우기)
-const tags = ["#신나는", "#설레는", "#행복한", "#기대되는", "#의욕적인"];
-
 export default function ReadDiary({ date, diaryData }: any) {
   // remembered
   const [isRemember, setIsRemember] = useState(diaryData.remember);
-
-  // tags
-  const [showAllTags, setShowAllTags] = useState(false);
 
   const { mutate: diaryRememberMutate } = useMutation({
     mutationKey: ["updateDiaryRemember"],

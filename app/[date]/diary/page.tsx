@@ -25,6 +25,8 @@ export default function Diary() {
     queryFn: () => getDiaryForDay({ date }),
   });
 
+  console.log("diaryData", diaryData);
+
   return (
     <main className="relative flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -33,7 +35,7 @@ export default function Diary() {
             <Header />
             {/* 일기 데이터가 있을 경우 렌더링 */}
             <ReadDiary date={date} diaryData={diaryData} />
-            <TodayPick />
+            <TodayPick diaryData={diaryData} />
             <section className="p-5">
               <div className="mb-3 flex justify-end">
                 <button className="mr-4 h-10  rounded-lg border-2 border-default-400 bg-default-300 pl-2 pr-2 hover:bg-default-400 ">

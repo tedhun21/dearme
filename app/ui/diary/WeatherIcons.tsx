@@ -21,7 +21,7 @@ export default function WeatherIcons({
   className,
 }: {
   weatherId: any;
-  className: string;
+  className?: string;
 }) {
   // 날씨 ID 범위에 따른 아이콘 반환 함수
   const getWeatherIcon = (weatherId: any) => {

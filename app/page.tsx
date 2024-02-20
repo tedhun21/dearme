@@ -22,9 +22,18 @@ import MeGoal from "./ui/me/MeGoal";
 import Footer from "./ui/footer";
 import { getToday, getWeeksInMonth } from "@/util/date";
 import { getDiariesForMonth, getMe, getMyTodosWithDate } from "@/store/api";
-import { IDiary, diaryListState, meState, todoListState } from "@/store/atoms";
+import {
+  IDiary,
+  diaryListState,
+  meState,
+  settingState,
+  todoListState,
+} from "@/store/atoms";
 import Link from "next/link";
 import { CircularProgress } from "@mui/joy";
+import WeatherIcons from "./ui/diary/WeatherIcons";
+import RememberIcon from "@/public/me/RememberIcon";
+import ImageIcon from "@/public/home/ImageIcon";
 
 function ServerDay(
   props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
@@ -51,7 +60,7 @@ function ServerDay(
 }
 
 export default function Home() {
-  const [isDiary, setIsDiary] = useState<boolean>(false);
+  const [{ isDiary }, setSetting] = useRecoilState(settingState);
   const [date, setDate] = useState<Dayjs | null>(dayjs(getToday()));
   const [month, setMonth] = useState(dayjs(getToday()).format("YYYY-MM"));
   const [weekOfMonth, setWeekOfMonth] = useState<number | null>(
@@ -70,7 +79,7 @@ export default function Home() {
     (diary: IDiary) => diary.date === dayjs(date).format("YYYY-MM-DD"),
   );
 
-  const dayOfDiary = (
+  const diaryOfDay = (
     filteredDiaries.length > 0 ? filteredDiaries[0] : null
   ) as IDiary | null;
 
@@ -136,7 +145,7 @@ export default function Home() {
 
   // Todo or Diary
   const handleTodoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsDiary(e.target.checked);
+    setSetting((prev) => ({ ...prev, isDiary: e.target.checked }));
   };
 
   // 캘린더 버튼 누를때 마다
@@ -170,7 +179,7 @@ export default function Home() {
     }
     reset();
     setIs100(false);
-  }, [date]);
+  }, [date, isDiary]);
 
   // 월별 todos
   useEffect(() => {
@@ -324,8 +333,8 @@ export default function Home() {
           {!isDiary ? (
             <section className="mt-4">
               <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todogoal`}>
-                <div className="flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-200">
-                  <span className="text-3xl font-semibold text-default-800">
+                <div className="group flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl text-default-800 shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-800">
+                  <span className="text-3xl font-semibold group-hover:text-default-100">
                     Todo & Goal
                   </span>
                   <div className="flex justify-center p-6">
@@ -334,7 +343,7 @@ export default function Home() {
                         size="lg"
                         determinate
                         variant="soft"
-                        value={value as number}
+                        value={parseInt(value as string)}
                         color={is100 ? "success" : "primary"}
                         sx={{
                           "--CircularProgress-size": "200px",
@@ -345,7 +354,7 @@ export default function Home() {
                         <div>{value}%</div>
                       </CircularProgress>
                     ) : (
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center text-default-800 group-hover:text-default-100">
                         <span>No Registerd Todo.</span>
                         <span>Click to register Todo.</span>
                       </div>
@@ -359,24 +368,60 @@ export default function Home() {
               <section className="mt-4">
                 <Link
                   href={
-                    dayOfDiary
+                    diaryOfDay
                       ? `/${dayjs(date).format("YYYY-MM-DD")}/diary`
                       : `/${dayjs(date).format("YYYY-MM-DD")}/diary/create`
                   }
                 >
-                  <div className="flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-200">
-                    {dayOfDiary ? (
+                  <div className="group flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-900">
+                    {diaryOfDay ? (
                       <div className="flex flex-col">
-                        <span className="text-3xl font-semibold text-default-800">
-                          Diary for {dayjs(date).format("YYYY-MM-DD")}
-                        </span>
-                        <span>Title: {dayOfDiary.title}</span>
+                        <div className="flex justify-between">
+                          <span className="text-3xl font-semibold text-default-900 group-hover:text-default-100">
+                            Diary
+                          </span>
+                          <div className="flex gap-1">
+                            {diaryOfDay.remember && (
+                              <RememberIcon className="h-5 w-5 fill-current" />
+                            )}
+                            {diaryOfDay.photos?.length > 0 && (
+                              <ImageIcon className="h-5 w-5" />
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex w-full flex-col justify-center p-5">
+                          <div className="flex items-center justify-between gap-5 font-semibold">
+                            <div className="flex items-center gap-3">
+                              <div className="flex gap-1 text-2xl">
+                                <span>{dayjs(date).format("MMMM")}</span>
+                                <span>{dayjs(date).format("DD")},</span>
+                              </div>
+                              <span>{dayjs(date).format("YYYY")}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm">
+                              <WeatherIcons weatherId={diaryOfDay.weatherId} />
+                              <span>{diaryOfDay.weather}</span>
+                            </div>
+                          </div>
+                          <div className="flex">
+                            <span className="flex justify-center">
+                              {diaryOfDay.title}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     ) : (
-                      <div>
-                        <span className="text-3xl font-semibold text-default-800">
-                          Diary
-                        </span>
+                      <div className="group flex flex-col">
+                        <div>
+                          <span className="text-3xl font-semibold text-default-900 group-hover:text-default-100">
+                            Diary
+                          </span>
+                          <div className="flex justify-center">
+                            <span className="text-xl">
+                              Click to write Diary
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

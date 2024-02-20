@@ -1,5 +1,17 @@
 import { atom } from "recoil";
 import dayjs, { Dayjs } from "dayjs";
+// import { recoilPersist } from "recoil-persist";
+
+// const { persistAtom } = recoilPersist({
+//   key: "sessionStorage",
+//   storage: sessionStorage,
+// });
+
+// export const IState = atom({
+//   key: "IState",
+//   default: null,
+//   effects_UNSTABLE: [persistAtom],
+// });
 
 enum EPublic {
   ALL,
@@ -86,13 +98,14 @@ export const goalListState = atom<IGoal[]>({
 });
 
 export interface ISetting {
+  isDiary: boolean;
   todogoalTitle: string;
   todogoalDate: Dayjs;
 }
 
 export const settingState = atom<ISetting>({
   key: "Settings",
-  default: { todogoalTitle: "Todo", todogoalDate: dayjs() },
+  default: { isDiary: false, todogoalTitle: "Todo", todogoalDate: dayjs() },
 });
 
 enum ECompanion {
@@ -119,6 +132,7 @@ export interface IDiary {
   endSleep: string;
   feelings: string;
   companions: ECompanion;
+  photos: IImage[];
   mood: EMood;
   remember: boolean;
   weatherId: string;

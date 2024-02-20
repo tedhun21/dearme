@@ -1,4 +1,6 @@
-export const setCookie = () => {};
+export const setCookie = (access_token: any) => {
+  document.cookie = `access_token=${access_token}; Max-age-3600; path=/;`;
+};
 
 export const getCookie = (cookieName: string) => {
   if (typeof document !== "undefined") {

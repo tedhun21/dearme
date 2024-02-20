@@ -31,8 +31,7 @@ import {
   settingState,
   todoListState,
 } from "@/store/atoms";
-import Link from "next/link";
-import { CircularProgress } from "@mui/joy";
+
 import WeatherIcons from "./ui/diary/WeatherIcons";
 import RememberIcon from "@/public/me/RememberIcon";
 import ImageIcon from "@/public/home/ImageIcon";
@@ -167,15 +166,6 @@ export default function Home() {
     }
   }, [date, isSuccessForMonthTodos]);
 
-  // month & isDiary가 변할때마다 월별 todos &refetch
-  useEffect(() => {
-    if (!isDiary) {
-      refetchTodosForMonth();
-    }
-    reset();
-    setIs100(false);
-  }, [date, isDiary]);
-
   // 월별 todos
   useEffect(() => {
     if (isSuccessForMonthTodos && !isTodosForMonthRefetching && !isDiary) {
@@ -187,7 +177,7 @@ export default function Home() {
     } else if (!isDiary) {
       setHighlightedDays([]);
     }
-  }, [isDiary, isTodosForMonthRefetching]);
+  }, [isDiary, isSuccessForMonthTodos, isTodosForMonthRefetching]);
 
   // 월별 diaries
   useEffect(() => {
@@ -200,7 +190,7 @@ export default function Home() {
     } else if (isDiary) {
       setHighlightedDays([]);
     }
-  }, [isDiary, isDiariesForMonthRefetching]);
+  }, [isDiary, isSuccessForMonthDiaries, isDiariesForMonthRefetching]);
 
   return (
     <main className="flex min-h-screen justify-center">

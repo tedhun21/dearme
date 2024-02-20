@@ -203,6 +203,32 @@ export const getDiariesForMonth = async ({ date }: any) => {
   }
 };
 
+// Redad _ Diary(특정 날짜)
+export const getDiaryForDay = async (date: any) => {
+  if (access_token) {
+    const response = await axios.get(`${API_URL}/diaries?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    console.log(response.data);
+    return response.data;
+  }
+};
+
+// Read _ Remember
+export const getRemembersForMonth = async (month: any) => {
+  try {
+    const headers = { Authorization: `Bearer ${access_token}` };
+    const response = await axios.get(
+      `${API_URL}/diaries?date=2024-${month}&remember=true`,
+      { headers },
+    );
+
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const deleteMyGoal = async ({ deleteId }: any) => {
   if (access_token) {
     const { data } = await axios.delete(`${API_URL}/goals/${deleteId}`, {

@@ -2,12 +2,15 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+// TODO Footer
 // TODO: 요일 넣기
 // TODO: select 태그 위치 수정
 // TODO: 이미지 코너
 
 import "../../globals.css";
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getRemembersForMonth } from "@/store/api";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -20,144 +23,59 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import MenuItem from "@mui/material/MenuItem";
 
 export interface RememberItem {
-  imageUrl: string[];
+  id: number;
   date: string;
   mood: string;
-  remember: boolean;
   title: string;
-  contents: string;
-  tags: string[];
+  photos: string;
 }
 
 export default function Remeber() {
-  // 임시 Remember 데이터 (지우기)
-  const remembers: RememberItem[] = [
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/67/1d/98/671d983412a9986a516c0a4fa6ce9a3a.jpg",
-        "https://i.pinimg.com/564x/19/88/38/198838c26f50c35a234076135ecb5530.jpg",
-      ],
-      date: "2023.12.01",
-      mood: "happy",
-      remember: true,
-      title: "새로운 시작, 일기 앱 개발의 설렘",
-      contents:
-        "오늘은 제 생애 첫 일기 앱 개발을 시작했습니다. 이 앱을 통해 사용자들이 자신만의 소중한 추억을 기록하고 공유하는 경험을 제공할 수 있기를 기대하며, 새로운 도전에 설레는 마음을 가지고 있습니다.아침부터 밤 늦게까지 코드를 작성하며, 제가 만든 앱에 첫 번째 일기를 작성하는 그 순간을 상상했습니다. 때로는 알 수 없는 오류에 힘들게 하였지만, 그럴 때마다 새로운 해결책을 찾아내는 것에 큰 즐거움을 느꼈습니다. 이런 과정들이 모여 제 생애 첫 앱을 완성하는 큰 발걸음이 될 것이라고 믿습니다.",
-      tags: ["#신나는", "#설레는", "#행복한", "#기대되는", "#의욕적인"],
-    },
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/05/60/92/056092da8e725ebaccbe27e82d97c90c.jpg",
-        "https://i.pinimg.com/564x/16/0b/da/160bdacfa3ee778f336fe4eedc064be2.jpg",
-      ],
-      date: "2023.12.02",
-      mood: "happy",
-      remember: true,
-      title: "솜방망이",
-      contents: "꺄악",
-      tags: ["#행복한"],
-    },
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/50/e0/59/50e05954098ec3407e43465a77c624ba.jpg",
-        "https://i.pinimg.com/564x/ef/a2/80/efa280f49c69113127d0feb0fc64ce21.jpg",
-      ],
-      date: "2023.12.03",
-      mood: "happy",
-      remember: true,
-      title: "☃️",
-      contents: "손 시려",
-      tags: ["#신나는", "#설레는", "#행복한"],
-    },
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/4f/cf/d2/4fcfd26c7f5369bf4cc3859a70575ae9.jpg",
-      ],
-      date: "2023.12.04",
-      mood: "sad",
-      remember: true,
-      title: "오늘 헤어졌다.. 어디로 가야하나요 아저씨",
-      contents: "우는 손님이 처음인가요?",
-      tags: ["#슬픈", "#우울한", "#불안한"],
-    },
-    {
-      imageUrl: [
-        "https://i.pinimg.com/474x/92/84/73/928473e227a5ba121abedf76067ebf06.jpg",
-        "https://i.pinimg.com/736x/86/e1/db/86e1db7b95c91ae12343eab37de07231.jpg",
-      ],
-      date: "2023.12.05",
-      mood: "sad",
-      remember: true,
-      title: "무슨 생각하세요?",
-      contents: "play a melancholy song",
-      tags: ["#우울한"],
-    },
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/fa/b8/4f/fab84f31b440c5cb13b41275ed246c61.jpg",
-      ],
-      date: "2023.12.06",
-      mood: "sad",
-      remember: true,
-      title: "Another aeroplane Another sunny place",
-      contents: "But I wanna go home",
-      tags: ["#우울한"],
-    },
-
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/80/7f/b6/807fb6032b16449d1169c8e7fe1cc1a8.jpg",
-      ],
-      date: "2023.12.08",
-      mood: "joyful",
-      remember: true,
-      title: "여행을 떠나요",
-      contents: "일어나",
-      tags: ["#신나는"],
-    },
-    {
-      imageUrl: [],
-      date: "2023. 12. 09",
-      mood: "joyful",
-      remember: true,
-      title: "멍",
-      contents: "청이",
-      tags: ["#신나는"],
-    },
-    {
-      imageUrl: [
-        "https://i.pinimg.com/564x/a3/f4/a8/a3f4a8e0e3a59843a60dfa1e94753eec.jpg",
-      ],
-      date: "2023. 12. 10",
-      mood: "joyful",
-      remember: true,
-      title: "출발!",
-      contents: "쏘리질러!",
-      tags: ["#신나는"],
-    },
+  // Month
+  const months = [
+    { month: "Jan", value: "01" },
+    { month: "Feb", value: "02" },
+    { month: "Mar", value: "03" },
+    { month: "Apr", value: "04" },
+    { month: "May", value: "05" },
+    { month: "Jun", value: "06" },
+    { month: "Jul", value: "07" },
+    { month: "Aug", value: "08" },
+    { month: "Sep", value: "09" },
+    { month: "Oct", value: "10" },
+    { month: "Nov", value: "11" },
+    { month: "Dec", value: "12" },
   ];
 
   //   Select
-  const [selectedMonth, setSelectedMonth] = useState("ALL");
+  const [selectedMonth, setSelectedMonth] = useState("01");
   const handleMonthChange = (e: any) => {
     setSelectedMonth(e.target.value);
+    // console.log(selectedMonth);
   };
 
+  // get _ remembers
+  const { data: remembers } = useQuery({
+    queryKey: [selectedMonth],
+    queryFn: () => getRemembersForMonth(selectedMonth),
+  });
+
   // modal
-  const [selectedItem, setSelectedItem] = useState<RememberItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const [open, setOpen] = useState(false);
 
-  const handleOpen = (item: RememberItem): void => {
+  const handleOpen = (item: string): void => {
     setSelectedItem(item);
-    console.log(selectedItem);
     setOpen(true);
   };
+
   const handleClose = () => setOpen(false);
 
   return (
     <main className="relative flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-black shadow-lg">
+        {/* 헤더 */}
         <header className="flex w-full flex-row justify-between p-5">
           <Link href="/">
             <Image
@@ -169,11 +87,13 @@ export default function Remeber() {
               priority
             />
           </Link>
-          <div className="flex flex-row  gap-2 p-1">
+
+          {/* Year & Month */}
+          <div className="flex flex-row  p-1 ">
             <Select
               sx={{
                 "&.MuiOutlinedInput-root": {
-                  width: "160px",
+                  width: "100px",
                   height: "20px",
                   fontSize: "14px",
                   color: "white",
@@ -202,19 +122,17 @@ export default function Remeber() {
               onChange={handleMonthChange}
             >
               {/* map */}
-              <MenuItem sx={{ fontSize: "14px" }} value="ALL">
-                ALL
-              </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="January">
-                January 2023
-              </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="February">
-                February 2023
-              </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="March">
-                March 2023
-              </MenuItem>
+              {months.map((month) => (
+                <MenuItem
+                  key={month.value}
+                  sx={{ fontSize: "14px" }}
+                  value={month.value}
+                >
+                  {month.month}
+                </MenuItem>
+              ))}
             </Select>
+            <span className="pr-5 text-sm font-semibold text-white">2024</span>
           </div>
         </header>
 
@@ -226,16 +144,18 @@ export default function Remeber() {
         </div>
 
         {/* Moods 카드 */}
-        <section className="ml-5 mr-5">
+        <section className="mx-5 h-[calc(100vh-172px)] overflow-scroll scrollbar-hide">
           <MoodCards remembers={remembers} handleOpen={handleOpen} />
         </section>
 
-        {/* 모달*/}
-        <RememberModal
-          selectedItem={selectedItem}
-          open={open}
-          handleClose={handleClose}
-        />
+        {/* 모달 */}
+        {selectedItem && (
+          <RememberModal
+            selectedItem={selectedItem}
+            open={open}
+            handleClose={handleClose}
+          />
+        )}
       </div>
     </main>
   );

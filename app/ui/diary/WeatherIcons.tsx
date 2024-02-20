@@ -1,45 +1,51 @@
 import Image from "next/image";
 
-import ClearWeather from "../../../public/diary/ClearWeather.svg";
-import CloudsWeather from "../../../public/diary/CloudsWeather.svg";
-import RainWeather from "../../../public/diary/RainWeather.svg";
-import DrizzleWeather from "../../../public/diary/DrizzleWeather.svg";
-import SnowWeather from "../../../public/diary/SnowWeather.svg";
-import ThunderstormWeather from "../../../public/diary/ThunderstormWeather.svg";
-import FogWeather from "../../../public/diary/FogWeather.svg";
+import ClearWeather from "@/public/diary/ClearWeather";
+import CloudsWeather from "@/public/diary/CloudsWeather";
+import RainWeather from "@/public/diary/RainWeather";
+import DrizzleWeather from "@/public/diary/DrizzleWeather";
+import SnowWeather from "@/public/diary/SnowWeather";
+import ThunderstormWeather from "@/public/diary/ThunderstormWeather";
+import FogWeather from "@/public/diary/FogWeather";
 
-export default function WeatherIcons({ weatherId }) {
+{
+  /* 사용
+   <WeatherIcons
+  weatherId={diary.weatherId}
+  className="h-4 w-4 fill-current text-white"
+/>; */
+}
+
+export default function WeatherIcons({
+  weatherId,
+  className,
+}: {
+  weatherId: any;
+  className: string;
+}) {
   // 날씨 ID 범위에 따른 아이콘 반환 함수
   const getWeatherIcon = (weatherId: any) => {
     if (weatherId >= 200 && weatherId < 300) {
-      return ThunderstormWeather;
+      return <ThunderstormWeather className={className} />;
     } else if (weatherId >= 300 && weatherId < 400) {
-      return DrizzleWeather;
+      return <DrizzleWeather className={className} />;
     } else if (weatherId >= 500 && weatherId < 600) {
-      return RainWeather;
+      return <RainWeather className={className} />;
     } else if (weatherId >= 600 && weatherId < 700) {
-      return SnowWeather;
+      return <SnowWeather className={className} />;
     } else if (weatherId >= 700 && weatherId < 800) {
-      return FogWeather;
+      return <FogWeather className={className} />;
     } else if (weatherId === 800) {
-      return ClearWeather;
+      return <ClearWeather />;
     } else if (weatherId > 800 && weatherId <= 804) {
-      return CloudsWeather;
+      return <CloudsWeather className={className} />;
     } else {
       // 대체 아이콘 또는 기본값
-      return CloudsWeather;
+      return <CloudsWeather className={className} />;
     }
   };
 
   const Icon = getWeatherIcon(weatherId) || CloudsWeather;
 
-  return (
-    <div>
-      {Icon ? (
-        <Image src={Icon} alt="Weather Icon" />
-      ) : (
-        <div>Weather icon not available</div>
-      )}
-    </div>
-  );
+  return <div>{Icon || <div>Weather icon not available</div>}</div>;
 }

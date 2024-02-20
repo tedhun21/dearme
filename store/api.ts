@@ -217,6 +217,44 @@ export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
   }
 };
 
+export const updateDiary = async (
+  diaryId: string,
+  diaryData: any,
+  remember?: boolean,
+) => {
+  try {
+    const headers = { Authorization: `Bearer ${access_token}` };
+
+    // Prepare the request body
+    const body = {
+      ...diaryData,
+      ...(remember !== undefined && { remember }),
+    };
+
+    // Send the PUT request
+    const { data } = await axios.put(`${API_URL}/diaries/${diaryId}`, body, {
+      headers,
+    });
+
+    console.log("Updated diary:", data);
+    return data;
+  } catch (error) {
+    console.error("Error updating the diary:", error);
+    throw error;
+  }
+};
+
+export const deleteDiary = async (diaryId: string) => {
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/diaries/${diaryId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    console.log(data);
+
+    return data;
+  }
+};
+
 export const deleteMyGoal = async ({ deleteId }: any) => {
   if (access_token) {
     const { data } = await axios.delete(`${API_URL}/goals/${deleteId}`, {

@@ -32,19 +32,34 @@ export default function Test() {
   console.log(filtered);
   return (
     <div>
-      {currentStep === 1 && <div>안녕하세요1</div>}
-      {currentStep === 2 && <div>안녕하세요2</div>}
-      {currentStep === 3 && <div>안녕하세요3</div>}
-      {currentStep === 4 && <div>안녕하세요4</div>}
+      <Component1 />
+      <Component2 />
+      <Suspense fallback={<div>hi</div>}>
+        <Component3 />
+      </Suspense>
+    </div>
+  );
+}
 
-      <div>
-        <button className="bg-red h-5 w-5" onClick={() => setFilter("done")}>
-          1
-        </button>
-        <button onClick={() => setCurrentStep(2)}>2</button>
-        <button onClick={() => setCurrentStep(3)}>3</button>
-        <button onClick={() => setCurrentStep(4)}>4</button>
-      </div>
+async function Component2() {
+  const res = await fetch(`http://localhost:1337/api/users/1`);
+  const data = await res.json();
+
+  return (
+    <div>
+      <span>2 {data.username}</span>
+    </div>
+  );
+}
+
+async function Component3() {
+  await new Promise((resolve) => setTimeout(resolve, 10000));
+  const res = await fetch(`http://localhost:1337/api/users/1`);
+  const data = await res.json();
+
+  return (
+    <div>
+      <span>3 {data.username}</span>
     </div>
   );
 }

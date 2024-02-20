@@ -11,7 +11,7 @@ export default function BackIcon() {
       <path
         d="M10 11L19 2M10 11L19 20M10 11H38.125"
         stroke="black"
-        stroke-width="3"
+        strokeWidth="3"
       />
     </svg>
   );

@@ -1,26 +1,62 @@
 "use client";
 
-import * as yup from "yup";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import axios, { AxiosError } from "axios";
 
-import BackIcon from "@/public/login/BackIcon";
-import DearmeLogo from "@/public/login/DearmeLogo";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
+
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import { FormControl, FormHelperText } from "@mui/joy";
 
+import { signIn } from "@/store/api";
+import { setCookie } from "@/util/tokenCookie";
+
+import BackIcon from "@/public/login/BackIcon";
+import DearmeLogo from "@/public/login/DearmeLogo";
 import GoogleLogo from "@/public/login/GoogleLogo";
 import EyeOffIcon from "@/public/login/EyeOffIcon";
 import EyeIcon from "@/public/login/EyeIcon";
+
+// yup을 이용한 유효성검사
+const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("이메일 주소 양식이 아닙니다.")
+    .required("이메일 주소를 입력해주세요."),
+  password: yup
+    .string()
+    .min(8, "비밀번호는 최소 8자 이상이어야 합니다.")
+    .required("비밀번호를 입력해주세요."),
+});
+type IFormLoginInputs = yup.InferType<typeof loginSchema>;
 
 export default function Login() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
+
+  const { mutate: signInMutate } = useMutation({
+    mutationKey: ["signIn"],
+    mutationFn: signIn,
+    onSuccess: ({ jwt }) => {
+      setCookie(jwt);
+      router.push("/");
+    },
+    onError: () => alert("Please check your password"),
+  });
 
   const handleGoogleLogin = () => {
     const googleLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/connect/google`;
@@ -32,51 +68,10 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
-  // yup을 이용한 유효성검사
-  const loginSchema = yup.object().shape({
-    email: yup
-      .string()
-      .email("이메일 주소 양식이 아닙니다.")
-      .required("이메일 주소를 입력해주세요."),
-    password: yup
-      .string()
-      .min(8, "비밀번호는 최소 8자 이상이어야 합니다.")
-      .required("비밀번호를 입력해주세요."),
-  });
-  type IFormLoginInputs = yup.InferType<typeof loginSchema>;
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(loginSchema),
-  });
-
   // 로그인 처리하는 로직
-  const onSubmit = async (data: IFormLoginInputs) => {
-    const { email, password } = data;
-    try {
-      const { data, status } = await axios.post(
-        `${process.env.NEXT_PUBLIC_BUCKET_URL}/api/auth/local`,
-        { identifier: email, password: password },
-      );
-
-      console.log(data);
-
-      if (status === 200) {
-        document.cookie = `access_token=${data.jwt}; Max-age-3600; path=/;`;
-        router.push("/");
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-
-        if (axiosError.response && axiosError.response.status === 400) {
-          alert("Please check your password");
-        }
-      }
-      console.error("로그인에 실패했습니다", error);
+  const onSubmit = async ({ email, password }: IFormLoginInputs) => {
+    if (email && password) {
+      signInMutate({ email, password });
     }
   };
 
@@ -84,9 +79,9 @@ export default function Login() {
     <main className="flex min-h-screen justify-center">
       <article className="bg-flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 bg-BGImg bg-cover bg-top-custom bg-no-repeat">
         <header className="pl-8 pt-8">
-          <a href="/">
+          <Link href="/">
             <BackIcon />
-          </a>
+          </Link>
         </header>
         <div className="flex justify-center pb-[24px] pt-[52px]">
           <DearmeLogo />
@@ -142,7 +137,7 @@ export default function Login() {
               <FormControl error={!!errors.password}>
                 <div className="password-container relative mr-20 w-full items-center">
                   <label
-                    htmlFor="Password"
+                    htmlFor="password"
                     className="font-small block text-sm leading-4 text-gray-500"
                   >
                     Password
@@ -216,23 +211,23 @@ export default function Login() {
             </section>
           </form>
           <section className="flex w-full justify-center pt-12">
-            <a
+            <Link
               href="/forgotpassword"
               className="text-sm font-medium text-default-900"
             >
               Forgot Password?
-            </a>
+            </Link>
           </section>
           <article className="mt-2 flex w-full min-w-[220px] max-w-[280px] justify-center px-2 text-sm">
             <h1 className="flex w-full min-w-[220px] max-w-[280px] pl-8 font-medium text-default-100">
               {"Don't have an account?"}
             </h1>
-            <a
+            <Link
               href="/signup"
               className="flex w-full justify-center whitespace-nowrap pr-12 font-medium text-default-800 underline"
             >
               Sign up
-            </a>
+            </Link>
           </article>
         </article>
       </article>

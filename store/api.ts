@@ -6,6 +6,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
 
 // 유저
+/// 로그인
+export const signIn = async ({ email, password }: any) => {
+  const { data } = await axios.post(`${API_URL}/auth/local`, {
+    identifier: email,
+    password,
+  });
+
+  return data;
+};
+
 /// 내 정보 가져오기
 export const getMe = async () => {
   if (access_token !== null) {
@@ -180,16 +190,14 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
 
 export const getDiariesForMonth = async ({ date }: any) => {
   if (access_token) {
-    const response = await axios.get(
+    const { data } = await axios.get(
       `${API_URL}/diaries?date=${date.slice(0, 7)}`,
       {
         headers: { Authorization: `Bearer ${access_token}` },
       },
     );
 
-    console.log(response);
-
-    return response.data;
+    return data;
   } else {
     return [];
   }
@@ -523,7 +531,6 @@ export const updateFriendship = async ({
       null,
       { headers },
     );
-    console.log(response);
   } catch (e) {
     console.error(e);
   }

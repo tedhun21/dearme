@@ -6,11 +6,10 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRecoilValue } from "recoil";
+
 import clsx from "clsx";
 
-import { updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
-import { IMe, meState } from "@/store/atoms";
+import { getMe, updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
 
 import { IconButton, Menu } from "@mui/material";
 
@@ -25,7 +24,7 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function MeProfile({ route }: { route?: string }) {
   const pathname = usePathname();
-  const me = useRecoilValue<IMe>(meState);
+  const { data: me } = useQuery({ queryKey: ["getMe"], queryFn: getMe });
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);

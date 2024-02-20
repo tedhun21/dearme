@@ -39,6 +39,11 @@ export const todoListState = atom<ITodo[]>({
   default: [],
 });
 
+export const filter = atom<string>({
+  key: "filter",
+  default: "",
+});
+
 interface IImage {
   id: number;
   url: string;
@@ -78,6 +83,7 @@ interface IGoal {
   startDate: string;
   endDate: string;
   createdAt: Dayjs;
+  isPublic: boolean;
 }
 
 export const goalListState = atom<IGoal[]>({

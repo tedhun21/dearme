@@ -7,8 +7,8 @@ import { useRecoilValue } from "recoil";
 export default function TodogoalPropgress() {
   const todos = useRecoilValue(todoListState);
 
-  // ABOUT: TODO와 관련된 계산
   const checkedTodos = todos?.filter((todo: any) => todo.done === true);
+
   const percent =
     todos && todos.length !== 0
       ? Math.round((checkedTodos?.length / todos.length) * 100)

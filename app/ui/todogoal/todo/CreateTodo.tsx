@@ -4,7 +4,7 @@ import XIcon from "@/public/todo/XIcon";
 import SendIcon from "@/public/todogoal/SendIcon";
 import { todoListState } from "@/store/atoms";
 import { useForm } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 export default function TodogoalCreateTodo({
   date,
@@ -12,7 +12,7 @@ export default function TodogoalCreateTodo({
   setCreateInput,
   createTodoMutate,
 }: any) {
-  const setTodos = useSetRecoilState(todoListState);
+  const [todos, setTodos] = useRecoilState(todoListState);
 
   const {
     register: todoRegister,

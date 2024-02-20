@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -22,6 +22,7 @@ import CalendarIcon from "@/public/todogoal/CalendarIcon";
 import Footer from "@/app/ui/footer";
 import { createMyTodo, getMyGoals, getMyTodosWithDate } from "@/store/api";
 
+import { getToday } from "@/util/date";
 import TodogoalHeader from "@/app/ui/todogoal/TodogoalHeader";
 import TodogoalDragTodo from "@/app/ui/todogoal/todo/TodogoalDragTodo";
 import TodogoalGoalList from "@/app/ui/todogoal/goal/TodogoalGoalList";
@@ -29,8 +30,6 @@ import TodogoalCreateTodo from "@/app/ui/todogoal/todo/CreateTodo";
 import TodogoalPropgress from "@/app/ui/todogoal/todo/TodoProgress";
 import GoalProgress from "@/app/ui/todogoal/goal/GoalProgress";
 import GoalModal from "@/app/ui/todogoal/goal/GoalModal";
-import Link from "next/link";
-import { getToday } from "@/util/date";
 
 export default function DailyTodoGoal() {
   const router = useRouter();

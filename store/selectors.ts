@@ -2,6 +2,7 @@ import { selector } from "recoil";
 
 import {
   diaryListState,
+  filter,
   goalListState,
   meState,
   postListState,
@@ -13,6 +14,21 @@ export const todoListSelector = selector({
   key: "todoListSelector",
   get: ({ get }) => get(todoListState),
   set: ({ set }, newValue) => set(todoListState, newValue),
+});
+
+export const filteredTodoListSelector = selector({
+  key: "FilteredTodoListSelector",
+  get: ({ get }) => {
+    const done = get(filter);
+    const list = get(todoListState);
+
+    switch (done) {
+      case "done":
+        return list.filter((todo) => todo.done === true);
+      default:
+        return list;
+    }
+  },
 });
 
 export const goalListSelector = selector({

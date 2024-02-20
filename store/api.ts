@@ -1,7 +1,6 @@
+import axios from "axios";
 import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
-import axios from "axios";
-import { access } from "fs";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");
@@ -181,14 +180,18 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
 
 export const getDiariesForMonth = async ({ date }: any) => {
   if (access_token) {
-    const { data } = await axios.get(
+    const response = await axios.get(
       `${API_URL}/diaries?date=${date.slice(0, 7)}`,
       {
         headers: { Authorization: `Bearer ${access_token}` },
       },
     );
-    
-    return data;
+
+    console.log(response);
+
+    return response.data;
+  } else {
+    return [];
   }
 };
 

@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useRecoilState } from "recoil";
-import { useCountUp } from "use-count-up";
 
 import dayjs, { Dayjs } from "dayjs";
+import { useCountUp } from "use-count-up";
 
 import {
   LocalizationProvider,
@@ -17,6 +18,7 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 import { Badge, Switch } from "@mui/material";
 
+import { CircularProgress } from "@mui/joy";
 import Header from "./ui/header";
 import MeGoal from "./ui/me/MeGoal";
 import Footer from "./ui/footer";
@@ -105,18 +107,6 @@ export default function Home() {
     queryFn: () => getMe(),
   });
 
-  // 일별 todo 불러오기
-  const {
-    isSuccess: isSuccessForDayTodos,
-    data: todosForDay,
-    refetch: refetchTodosForToday,
-    isRefetching: isTodosForDayRefetching,
-  } = useQuery({
-    queryKey: ["getMyTodosWithDateForToday"],
-    queryFn: () =>
-      getMyTodosWithDate({ date: dayjs(date).format("YYYY-MM-DD") }),
-  });
-
   // 월별 todo 불러오기 (불러와서 달력에 표시)
   const {
     isSuccess: isSuccessForMonthTodos,
@@ -139,7 +129,6 @@ export default function Home() {
     queryFn: () => getDiariesForMonth({ date: getToday() }),
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   // 기록된 데이터가 있는 날짜 표시
   const [highlightedDays, setHighlightedDays] = useState([]);
 
@@ -160,22 +149,28 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (isSuccessForMe && !isTodosForDayRefetching) {
+    if (isSuccessForMe) {
       setMe(meData);
     }
-  }, [isSuccessForMe, isTodosForDayRefetching]);
+  }, [isSuccessForMe]);
 
+  // 데이터가 성공적으로 불러와지면 todos를 업데이트
   useEffect(() => {
-    // 데이터가 성공적으로 불러와지면 todos를 업데이트
-    if (isSuccessForDayTodos && !isTodosForDayRefetching) {
-      setTodos(todosForDay);
+    if (isSuccessForMonthTodos) {
+      setTodos(
+        todosForMonth.filter(
+          (todo: any) => todo.date === dayjs(date).format("YYYY-MM-DD"),
+        ),
+      );
+      reset();
+      setIs100(false);
     }
-  }, [date, isTodosForDayRefetching]);
+  }, [date, isSuccessForMonthTodos]);
 
+  // month & isDiary가 변할때마다 월별 todos &refetch
   useEffect(() => {
-    // 날짜가 바뀌면 일일 todos refetch
-    if (!isTodosForDayRefetching && date && !isDiary) {
-      refetchTodosForToday();
+    if (!isDiary) {
+      refetchTodosForMonth();
     }
     reset();
     setIs100(false);
@@ -187,30 +182,25 @@ export default function Home() {
       const highlighted = todosForMonth.map(
         (todo: any) => +todo.date.slice(8, 10),
       );
-      setHighlightedDays(highlighted);
-    } else if (
-      !isTodosForMonthRefetching &&
-      isSuccessForMonthTodos &&
-      isDiary
-    ) {
-    }
-  }, [isDiary, isSuccessForMonthTodos, isTodosForMonthRefetching]);
 
-  // month가 변할때마다 월별 todos refetch
-  useEffect(() => {
-    refetchTodosForMonth();
-  }, [month]);
+      setHighlightedDays(highlighted);
+    } else if (!isDiary) {
+      setHighlightedDays([]);
+    }
+  }, [isDiary, isTodosForMonthRefetching]);
 
   // 월별 diaries
   useEffect(() => {
-    if (isSuccessForMonthDiaries && !isDiariesForMonthRefetching && isDiary) {
+    if (isSuccessForMonthDiaries && isDiary && diariesForMonth) {
       const highlighted = diariesForMonth.map(
         (diary: any) => +diary.date.slice(8, 10),
       );
       setHighlightedDays(highlighted);
       setDiaries(diariesForMonth);
+    } else if (isDiary) {
+      setHighlightedDays([]);
     }
-  }, [isDiary, isSuccessForMonthDiaries, isDiariesForMonthRefetching]);
+  }, [isDiary, isDiariesForMonthRefetching]);
 
   return (
     <main className="flex min-h-screen justify-center">
@@ -315,7 +305,6 @@ export default function Home() {
                   },
                 }}
                 views={["month", "day"]}
-                loading={isLoading}
                 referenceDate={dayjs(getToday())}
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
@@ -356,7 +345,7 @@ export default function Home() {
                     ) : (
                       <div className="flex flex-col items-center text-default-800 group-hover:text-default-100">
                         <span>No Registerd Todo.</span>
-                        <span>Click to register Todo.</span>
+                        <span>Click to register Todo & Goal.</span>
                       </div>
                     )}
                   </div>

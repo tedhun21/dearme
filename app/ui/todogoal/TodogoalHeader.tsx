@@ -1,16 +1,30 @@
+import { getMe } from "@/store/api";
 import { ISetting, meState, settingState } from "@/store/atoms";
 import { Button } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import Image from "next/image";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useEffect } from "react";
+import { useRecoilState } from "recoil";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function TodogoalHeader() {
-  const me = useRecoilValue(meState);
+  const [me, setMe] = useRecoilState(meState);
 
   const [{ todogoalTitle }, setSetting] =
     useRecoilState<ISetting>(settingState);
+
+  const { isSuccess, data } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => getMe(),
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setMe(data);
+    }
+  }, [isSuccess]);
 
   return (
     <section className="flex w-full items-center justify-between">

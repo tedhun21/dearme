@@ -30,7 +30,9 @@ export default function MeGoal() {
         )}
       >
         {Array.isArray(goalData) && goalData.length !== 0 ? (
-          goalData.map((goal: any) => <GoalList key={goal.id} goal={goal} />)
+          goalData.map((goal: any) => (
+            <GoalList key={goal.id} route="home" goal={goal} />
+          ))
         ) : (
           <div className="text-center font-bold">No Goal</div>
         )}

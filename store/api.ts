@@ -1,6 +1,6 @@
+import axios from "axios";
 import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
-import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const access_token = getCookie("access_token");

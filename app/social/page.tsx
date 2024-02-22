@@ -1,6 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+// TODO 스크롤바 레이아웃
+
+import "../globals.css";
 import React, { useEffect, useState } from "react";
 
 import { useInView } from "react-intersection-observer";
@@ -30,7 +33,7 @@ export interface User {
 
 export interface Goal {
   id: number;
-  body: string;
+  title: string;
 }
 
 export interface Like {
@@ -45,42 +48,34 @@ export interface Post {
   body: string;
   createdAt: string;
   public: boolean;
-  commentSettings: "PUBLIC" | "FRIENDS" | "OFF";
+  commentSettings: "ALL" | "FRIENDS" | "OFF";
   user: User;
   goal: Goal;
   comments: number;
   likes: Like[];
-  // nextPage?: number;
-  // isLast?: boolean;
 }
 
 export default function Social() {
   const queryClient = useQueryClient();
 
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  // 선택된 탭 -> 쿼리
+  // Tab (query)
   const [selectedTab, setSelectedTab] = useState<string>("all");
-  const handleTabChange = (tab: string) => {
-    setSelectedTab(tab);
-  };
 
   // infinite scroll
   const [ref, inView] = useInView();
 
-  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
-    Post[],
-    Error
-  >({
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<Post[], Error>({
     queryKey: ["getPostsWithPage", { tab: selectedTab }],
     queryFn: ({ pageParam }) =>
       getPostWithPage({ tab: selectedTab, pageParam: pageParam }),
 
     getNextPageParam: (lastPage, allPages: any) => {
-      const maxPage = lastPage.length / 6;
-      const nextPage = allPages.length + 1;
-
-      return maxPage < 1 ? undefined : nextPage;
+      if (lastPage) {
+        const maxPage = lastPage.length / 6;
+        const nextPage = allPages.length + 1;
+        return maxPage < 1 ? undefined : nextPage;
+      }
+      return undefined;
     },
     initialPageParam: 1,
   });
@@ -92,15 +87,12 @@ export default function Social() {
     fetchNextPage();
   }, [inView]);
 
-  console.log(data);
-
   return (
-    <main className="flex min-h-screen justify-center">
-      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 pb-[90px] shadow-lg">
+    <main className="flex min-h-screen w-full justify-center ">
+      <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
-        <Tabs selectedTab={selectedTab} onTabChange={setSelectedTab} />
-
-        <div className="relative w-full">
+        <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+        <div className="relative m-auto w-full">
           {data?.pages &&
             data.pages.map(
               (posts: any) =>
@@ -114,7 +106,7 @@ export default function Social() {
           Array.isArray(data?.pages?.[0]) &&
           data?.pages?.[0].length === 0 ? (
             <div className="flex justify-center px-5 py-2 text-sm text-default-500">
-              No post yet.
+              No posts yet
             </div>
           ) : (
             <div className="flex justify-center px-5 py-2 text-sm text-default-500">
@@ -122,7 +114,6 @@ export default function Social() {
             </div>
           )}
         </div>
-
         {hasNextPage && (
           <div ref={ref}>
             <CircularProgress />
@@ -135,6 +126,7 @@ export default function Social() {
             <CreatePost />
           </div>
         </div>
+
         <Footer />
       </div>
     </main>

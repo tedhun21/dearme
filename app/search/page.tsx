@@ -15,7 +15,6 @@ import { Divider } from "@mui/material";
 import BackIcon from "@/public/signup/BackIcon";
 import SearchTitle from "@/public/search/SearchTitle";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function Search() {
@@ -115,6 +114,7 @@ export default function Search() {
               ))}
           </section> */}
         </div>
+
         <Footer />
       </div>
     </main>

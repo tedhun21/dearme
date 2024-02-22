@@ -121,7 +121,7 @@ export default function SocialPost({ post }: SocialPostProps) {
               className="text-xs font-semibold text-default-500"
               style={{ marginTop: "-4px" }}
             >
-              #{post.goal.body}
+              #{post.goal.title}
             </div>
           </div>
 
@@ -142,7 +142,7 @@ export default function SocialPost({ post }: SocialPostProps) {
               style={{
                 width: "100%",
                 height: "auto",
-                maxHeight: "680px",
+                // maxHeight: "680px",
                 borderRadius: "4px",
               }}
             />

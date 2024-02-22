@@ -157,6 +157,8 @@ export const deleteMyTodo = async ({ todoId }: any) => {
 };
 
 export const getMyGoals = async ({ date }: any) => {
+  const access_token = getCookie("access_token");
+
   if (access_token !== null) {
     const { data } = await axios.get(`${API_URL}/goals?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -203,8 +205,10 @@ export const getDiariesForMonth = async ({ date }: any) => {
   }
 };
 
-// Redad _ Diary(특정 날짜)
+// Read _ Diary(특정 날짜)
 export const getDiaryForDay = async (date: any) => {
+  const access_token = getCookie("access_token");
+
   if (access_token) {
     const response = await axios.get(`${API_URL}/diaries?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -216,6 +220,8 @@ export const getDiaryForDay = async (date: any) => {
 
 // Read _ Remember
 export const getRemembersForMonth = async (month: any) => {
+  const access_token = getCookie("access_token");
+
   try {
     const headers = { Authorization: `Bearer ${access_token}` };
     const response = await axios.get(
@@ -292,14 +298,15 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     let url = `${API_URL}/posts?page=${pageParam}&size=6`;
     if (tab === "all") {
       url += "&public=true";
+      const response = await axios.get(url);
+      return response.data.results;
     } else if (tab === "friends") {
+      const access_token = getCookie("access_token");
+
       const headers = { Authorization: `Bearer ${access_token}` };
-      return await axios
-        .get(url, { headers })
-        .then((response) => response.data.results);
+      const response = await axios.get(url, { headers });
+      return response.data.results;
     }
-    const response = await axios.get(url);
-    return response.data.results;
   } catch (e) {
     console.error(e);
   }
@@ -308,14 +315,15 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
 // Create _ post
 export const getGoals = async ({ queryKey }: any) => {
   const date = getToday();
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
 export const createPost = async (data: any): Promise<any> => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
-
   const formData = new FormData();
 
   formData.append(
@@ -327,11 +335,11 @@ export const createPost = async (data: any): Promise<any> => {
       commentSettings: data.selectedOption,
     }),
   );
-
-  if (data.imageFile) {
-    formData.append("file", data.imageFile);
-  }
   formData.append("file", data.imageFile);
+
+  // for (let value of formData.values()) {
+  //   console.log(value);
+  // }
 
   return await axios.post(`${API_URL}/posts`, formData, { headers });
 };
@@ -350,6 +358,7 @@ export const updatePost = async ({
   postText: string;
   selectedOption: string;
 }): Promise<any> => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   const formData = new FormData();
@@ -376,6 +385,7 @@ export const updatePost = async ({
 
 // Delete _ post
 export const deletePost = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -390,6 +400,7 @@ export const deletePost = async (postId: number) => {
 
 // Put _ like
 export const likePost = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     await axios.put(`${API_URL}/posts/${postId}/like`, {}, { headers });
@@ -406,6 +417,7 @@ export const createComment = async ({
   postId: number;
   comment: string;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -421,6 +433,7 @@ export const createComment = async ({
 
 // Read _ comment
 export const readCommentsWithPage = async ({ postId, pageParam }: any) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
@@ -443,6 +456,7 @@ export const updateComment = async ({
   commentId: number | null;
   comment: string;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   console.log(postId, commentId, comment);
   try {
@@ -464,6 +478,7 @@ export const deleteComment = async ({
   postId: number;
   commentId: number;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     await axios.delete(`${API_URL}/comments/${commentId}?postId=${postId}`, {
@@ -476,6 +491,7 @@ export const deleteComment = async ({
 
 // Search _ users
 export const getSearchUsers = async (name: string) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
@@ -493,6 +509,7 @@ export const getSearchGoals = async (
   goal: string | string[],
   posts: boolean,
 ) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   if (posts === true) {
@@ -520,6 +537,7 @@ export const getSearchGoals = async (
 
 // Search > Read _ post
 export const getPost = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(`${API_URL}/posts/${postId}`, { headers });
@@ -531,6 +549,7 @@ export const getPost = async (postId: number) => {
 
 // Read _ likeship
 export const getLikeship = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(`${API_URL}/posts/${postId}/likeship`, {
@@ -550,6 +569,7 @@ export const updateFriendship = async ({
   friendId: number;
   status: null | string;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.put(

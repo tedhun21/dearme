@@ -10,6 +10,7 @@ import InputBase from "@mui/material/InputBase";
 import Find from "@/public/search/Find";
 import Delete from "@/public/search/Delete";
 import GoalTag from "@/public/search/GoalTag";
+import UserWithNoImage from "@/public/social/UserWithNoImage";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
@@ -49,7 +50,7 @@ export default function SearchBar() {
 
   // # 목표 검색
   const { data: getGoalSearchResult } = useQuery({
-    queryKey: ["geGoalSearchResult", debouncedSearch],
+    queryKey: ["getGoalSearchResult", debouncedSearch],
     queryFn: () => getSearchGoals(debouncedSearch.substring(1), false),
     enabled: Boolean(search) && search.startsWith("#"),
     staleTime: 0,
@@ -155,16 +156,16 @@ export default function SearchBar() {
                 searchedGoals.map((goal: any) => (
                   <a
                     key={goal.id}
-                    href={`/search/${goal.body}`}
+                    href={`/search/${goal.title}`}
                     onClick={() => {
-                      handleAddRecent(`#${goal.body}`, "");
+                      handleAddRecent(`#${goal.title}`, "");
                     }}
                   >
                     <div className="mb-3 flex items-center">
                       <GoalTag className="h-10 w-10 rounded-full" />
                       <div className="flex items-center">
                         <div className="ml-3 text-sm font-medium">
-                          {goal.body}
+                          {goal.title}
                         </div>
                         <div className="ml-3 text-xs font-medium">
                           {goal.postsCount.toLocaleString() +
@@ -196,11 +197,16 @@ export default function SearchBar() {
                     }}
                   >
                     <div className="mb-3 flex items-center">
-                      <img
-                        src={`${BUCKET_URL}${user.photo}`}
-                        alt="User image"
-                        className="h-10 w-10 rounded-full"
-                      />
+                      {user.photo ? (
+                        <img
+                          src={`${BUCKET_URL}${user.photo}`}
+                          alt="User image"
+                          className="h-10 w-10 rounded-full"
+                        />
+                      ) : (
+                        <UserWithNoImage />
+                      )}
+
                       <div className="ml-3 text-sm font-medium">
                         {user.nickname}
                       </div>

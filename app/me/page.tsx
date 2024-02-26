@@ -39,7 +39,7 @@ export default function Me() {
           href={`/${getToday()}/todogoal`}
           className="rounded-xl bg-default-800 px-4 py-2 font-semibold text-white hover:bg-default-900"
         >
-          Click to create Todo & Goal
+          Click to manage Todo & Goal
         </Link>
       </div>
     </section>

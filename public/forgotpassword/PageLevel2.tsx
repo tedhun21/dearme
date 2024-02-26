@@ -7,10 +7,10 @@ export default function PageLevel2() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle cx="18" cy="18" r="17" stroke="#EBE3D5" stroke-width="2" />
-      <circle cx="70" cy="18" r="17" stroke="black" stroke-width="2" />
-      <circle cx="122" cy="18" r="17" stroke="#EBE3D5" stroke-width="2" />
-      <circle cx="174" cy="18" r="17" stroke="#EBE3D5" stroke-width="2" />
+      <circle cx="18" cy="18" r="17" stroke="#EBE3D5" strokeWidth="2" />
+      <circle cx="70" cy="18" r="17" stroke="black" strokeWidth="2" />
+      <circle cx="122" cy="18" r="17" stroke="#EBE3D5" strokeWidth="2" />
+      <circle cx="174" cy="18" r="17" stroke="#EBE3D5" strokeWidth="2" />
       <path
         d="M17.4825 22.445V13.985L15.7575 14.33V13.25L18.3675 12.08H19.3425V22.445H17.4825Z"
         fill="#EBE3D5"

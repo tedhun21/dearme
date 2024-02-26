@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -19,12 +19,18 @@ import PencilIcon from "@/public/me/PencilIcon";
 import ShareIcon from "@/public/me/ShareIcon";
 import EditIcon from "@/public/me/EditIcon";
 import BackGroundIcon from "@/public/me/BackGroundIcon";
+import { useSetRecoilState } from "recoil";
+import { meState } from "@/store/atoms";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function MeProfile({ route }: { route?: string }) {
   const pathname = usePathname();
-  const { data: me } = useQuery({ queryKey: ["getMe"], queryFn: getMe });
+  const setMe = useSetRecoilState(meState);
+  const { isSuccess, data: me } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: getMe,
+  });
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
@@ -42,6 +48,12 @@ export default function MeProfile({ route }: { route?: string }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setMe(me);
+    }
+  }, [isSuccess]);
 
   // 유저 프로필 사진 바꾸기
   const { mutate: updateUserPhotoMutate, data: updateUserPhotoData } =
@@ -215,6 +227,7 @@ export default function MeProfile({ route }: { route?: string }) {
                     src={userPhoto && URL.createObjectURL(userPhoto)}
                     alt="profile default image"
                     fill
+                    sizes="80px"
                     quality={80}
                     priority
                     className="z-0 object-cover object-center"
@@ -224,6 +237,7 @@ export default function MeProfile({ route }: { route?: string }) {
                     src={`${BUCKET_URL}${(me as any).photo.url}`}
                     alt="userPhoto"
                     fill
+                    sizes="80px"
                     className="object-cover"
                   />
                 ) : null}

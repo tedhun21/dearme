@@ -76,7 +76,7 @@ export default function TodogoalHeader() {
       <div className="relative h-12 w-12 overflow-hidden rounded-full">
         {me && (
           <Image
-            src={`${BUCKET_URL}${me?.photo.url}`}
+            src={`/${BUCKET_URL}${me?.photo?.url}`}
             alt="user profile"
             fill
             className="object-cover object-center"

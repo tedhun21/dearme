@@ -106,7 +106,7 @@ export default function Home() {
     queryFn: () => getMe(),
   });
 
-  // 월별 todo 불러오기 (불러와서 달력에 표시)
+  // 월별 todo 불러오기
   const {
     isSuccess: isSuccessForMonthTodos,
     data: todosForMonth,
@@ -121,11 +121,11 @@ export default function Home() {
   const {
     isSuccess: isSuccessForMonthDiaries,
     data: diariesForMonth,
-    refetch: refectchDiariesForMonth,
+    refetch: refetchDiariesForMonth,
     isRefetching: isDiariesForMonthRefetching,
   } = useQuery({
     queryKey: ["getDiariesForMonth"],
-    queryFn: () => getDiariesForMonth({ date: getToday() }),
+    queryFn: () => getDiariesForMonth({ date: month }),
   });
 
   // 기록된 데이터가 있는 날짜 표시
@@ -181,7 +181,7 @@ export default function Home() {
 
   // 월별 diaries
   useEffect(() => {
-    if (isSuccessForMonthDiaries && isDiary && diariesForMonth) {
+    if (isSuccessForMonthDiaries && !isDiariesForMonthRefetching && isDiary) {
       const highlighted = diariesForMonth.map(
         (diary: any) => +diary.date.slice(8, 10),
       );
@@ -191,6 +191,15 @@ export default function Home() {
       setHighlightedDays([]);
     }
   }, [isDiary, isSuccessForMonthDiaries, isDiariesForMonthRefetching]);
+
+  useEffect(() => {
+    if (!isDiary) {
+      refetchTodosForMonth();
+    }
+    if (isDiary) {
+      refetchDiariesForMonth();
+    }
+  }, [isDiary, month]);
 
   return (
     <main className="flex min-h-screen justify-center">

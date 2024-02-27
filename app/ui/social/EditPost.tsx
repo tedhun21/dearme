@@ -47,12 +47,15 @@ export default function EditPost({
 }: EditPostProps) {
   const queryClient = useQueryClient();
 
+  console.log(postData);
+
   // goals
   const { data: goalsData } = useQuery({
     queryKey: ["getGoals"],
     queryFn: getGoals,
   });
-  const goals = goalsData?.data?.data.results;
+  console.log(goalsData);
+  const goals = goalsData?.data;
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState(
@@ -68,7 +71,6 @@ export default function EditPost({
   );
   const handlePrivacyToggle = () => {
     setIsPrivate((isPrivate) => !isPrivate);
-    console.log(isPrivate);
   };
 
   // 게시물 사진
@@ -92,7 +94,7 @@ export default function EditPost({
 
   // Select 댓글 옵션 선택
   const [selectedOption, setSelectedOption] = useState(
-    postData ? postData.commentSettings : "PUBLIC",
+    postData ? postData.commentSettings : "",
   );
   const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
@@ -168,6 +170,7 @@ export default function EditPost({
           </div>
 
           <div className="mb-4 flex items-center justify-between">
+            {/* 목표 선택 */}
             <div className="flex items-center">
               <div className="text-base font-semibold text-default-500">In</div>
               <Select
@@ -208,7 +211,7 @@ export default function EditPost({
                       sx={{ fontSize: "14px" }}
                       value={goal.id}
                     >
-                      {`# ${goal.body}`}
+                      {`# ${goal.title}`}
                     </MenuItem>
                   ))}
               </Select>
@@ -336,17 +339,13 @@ export default function EditPost({
               value={selectedOption}
               onChange={handleOptionChange}
             >
-              {!isPrivate && (
-                <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
-                  All
-                </MenuItem>
-              )}
+              <MenuItem
+                sx={{ fontSize: "14px" }}
+                value={isPrivate ? "FRIENDS" : "ALL"}
+              >
+                {isPrivate ? "Friends" : "All"}
+              </MenuItem>
 
-              {isPrivate && (
-                <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
-                  Friends
-                </MenuItem>
-              )}
               <MenuItem sx={{ fontSize: "14px" }} value="OFF">
                 Off
               </MenuItem>

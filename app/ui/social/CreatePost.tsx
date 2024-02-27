@@ -1,6 +1,6 @@
 "use client";
 // TODO In 목표 디자인 수정
-
+// TODO strapi builder : commentSettings (ALL, FRIENDS, OFF)
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -35,18 +35,20 @@ type PostDataType = {
 export default function CreatePost() {
   const queryClient = useQueryClient();
 
-  // modal
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   // goals
   const { data: goalsData } = useQuery({
-    queryKey: ["getGoals"],
+    queryKey: ["getGoals", { context: "CreatePost" }],
     queryFn: getGoals,
+    // enabled: open,
+    staleTime: Infinity,
   });
 
-  const goals = goalsData?.data?.data.results;
+  // console.log(goalsData?.data);
+  const goals = goalsData?.data;
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState<string>("");
@@ -58,7 +60,6 @@ export default function CreatePost() {
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const handlePrivacyToggle = () => {
     setIsPrivate((isPrivate) => !isPrivate);
-    console.log(isPrivate);
   };
 
   // 게시물 사진
@@ -82,11 +83,20 @@ export default function CreatePost() {
     setPostText(e.target.value);
   };
 
-  // Select 댓글 옵션 선택
-  const [selectedOption, setSelectedOption] = useState("PUBLIC");
+  // 댓글 설정
+  const [selectedOption, setSelectedOption] = useState("ALL");
+
   const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
   };
+
+  useEffect(() => {
+    if (isPrivate) {
+      setSelectedOption("FRIENDS");
+    } else {
+      setSelectedOption("ALL");
+    }
+  }, [isPrivate]);
 
   // Post Request
   const { mutateAsync: addPostMutation } = useMutation({
@@ -101,7 +111,7 @@ export default function CreatePost() {
       window.alert("Please select your goal.");
       return;
     } else if (!imageFile) {
-      window.alert("Please select the photo.");
+      window.alert("Please select a photo.");
       return;
     }
     try {
@@ -121,8 +131,6 @@ export default function CreatePost() {
       setIsPrivate(false);
       setImageFile(null);
       setPostText("");
-      setSelectedOption("PUBLIC");
-
       handleClose();
     } catch (error) {
       console.error(error);
@@ -130,7 +138,7 @@ export default function CreatePost() {
   };
 
   return (
-    <div>
+    <>
       <button
         className="flex h-10 w-10 items-center justify-center rounded-full bg-default-800 hover:bg-opacity-75"
         onClick={handleOpen}
@@ -138,7 +146,6 @@ export default function CreatePost() {
         <AddIcon sx={{ color: "white" }} />
       </button>
 
-      {/* 게시물 생성 modal */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -182,7 +189,7 @@ export default function CreatePost() {
                   "&.MuiOutlinedInput-root": {
                     borderRadius: "20px",
                     width: "160px",
-                    height: "25px",
+                    height: "24px",
                     fontSize: "14px",
                     color: "black",
                     "& fieldset": {
@@ -213,7 +220,7 @@ export default function CreatePost() {
                       sx={{ fontSize: "14px" }}
                       value={goal.id}
                     >
-                      {`# ${goal.body}`}
+                      {`# ${goal.title}`}
                     </MenuItem>
                   ))}
               </Select>
@@ -225,6 +232,8 @@ export default function CreatePost() {
                 Private
               </span>
               <Switch
+                value={isPrivate}
+                onChange={handlePrivacyToggle}
                 sx={{
                   /// switch 기본 박스 크기
                   marginLeft: 1,
@@ -260,7 +269,6 @@ export default function CreatePost() {
                     opacity: 1,
                   },
                 }}
-                onChange={handlePrivacyToggle}
               />
             </div>
           </div>
@@ -273,7 +281,6 @@ export default function CreatePost() {
             <span className="text-sm font-medium text-default-700">
               {formattedDate}
             </span>
-
             <ArrowDropDownRoundedIcon sx={{ color: "#EDA323" }} />
           </div>
 
@@ -308,8 +315,8 @@ export default function CreatePost() {
           />
 
           {/* Comments Settings */}
-          {/* 친구 공개 게시물: Friends / Off */}
-          {/* 전체 공개 게시물: All / Off */}
+          {/* 친구 공개 게시물: FRIENDS / OFF */}
+          {/* 전체 공개 게시물: ALL / OFF */}
           <div className="mb-4 flex items-center">
             <span className="mr-2 text-sm font-medium text-default-700">
               Comments
@@ -337,17 +344,12 @@ export default function CreatePost() {
               value={selectedOption}
               onChange={handleOptionChange}
             >
-              {!isPrivate && (
-                <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
-                  All
-                </MenuItem>
-              )}
-
-              {isPrivate && (
-                <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
-                  Friends
-                </MenuItem>
-              )}
+              <MenuItem
+                sx={{ fontSize: "14px" }}
+                value={isPrivate ? "FRIENDS" : "ALL"}
+              >
+                {isPrivate ? "Friends" : "All"}
+              </MenuItem>
 
               <MenuItem sx={{ fontSize: "14px" }} value="OFF">
                 Off
@@ -364,6 +366,6 @@ export default function CreatePost() {
           </div>
         </Box>
       </Modal>
-    </div>
+    </>
   );
 }

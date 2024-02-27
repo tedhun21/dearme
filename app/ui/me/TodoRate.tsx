@@ -6,20 +6,20 @@ import { getToday } from "@/util/date";
 import { LinearProgress } from "@mui/material";
 
 import React, { useEffect } from "react";
+import { useRecoilValue } from "recoil";
 
 interface TodoRateProps {
-  todos: ITodo[];
   isLoading?: boolean;
   isDrop?: boolean;
   setIsDrop?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TodoRate({
-  todos,
   isLoading,
   isDrop,
   setIsDrop,
 }: TodoRateProps) {
+  const todos = useRecoilValue(todoListState);
   const checkedTodos = todos?.filter((todo: any) => todo.done === true);
 
   return (

@@ -26,14 +26,14 @@ export default function Sad({ className }: IconProps) {
       <path
         stroke="#000"
         // stroke-linejoin="round"
-        stroke-width="2"
+        strokeWidth="2"
         d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"
       />
       <path
         stroke="#000"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.4"
         d="M12.8 14.401s-.8-1.6-2.8-1.6c-2 0-2.8 1.6-2.8 1.6m7.2-6.8-2.8-.4m2 .4v3.6m-5.2-4-2.8.4m.8 0v3.6"
       />
     </svg>

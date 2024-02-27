@@ -18,7 +18,8 @@ export const signIn = async ({ email, password }: any) => {
 
 /// 내 정보 가져오기
 export const getMe = async () => {
-  if (access_token !== null) {
+  const access_token = getCookie("access_token");
+  if (access_token) {
     const { data } = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
@@ -88,7 +89,8 @@ export const updateBackGroundPhoto = async ({
 
 // todo
 export const getMyTodosWithDate = async ({ date }: any) => {
-  if (access_token !== null) {
+  const access_token = getCookie("access_token");
+  if (access_token) {
     const { data } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -159,7 +161,7 @@ export const deleteMyTodo = async ({ todoId }: any) => {
 export const getMyGoals = async ({ date }: any) => {
   const access_token = getCookie("access_token");
 
-  if (access_token !== null) {
+  if (access_token) {
     const { data } = await axios.get(`${API_URL}/goals?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
@@ -191,6 +193,7 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
 };
 
 export const getDiariesForMonth = async ({ date }: any) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -242,21 +245,20 @@ export const deleteMyGoal = async ({ deleteId }: any) => {
   }
 };
 
-export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {
+export const getMyPostsWithPage = async ({ pageParam }: any) => {
+  const access_token = getCookie("access_token");
   const {
-    data: { results, pagination },
+    data: { results },
   } = await axios.get(
-    `${API_URL}/posts?friend=false&page=${pageParam}&size=12`,
+    `${API_URL}/posts?friend=false&page=${pageParam}&size=20`,
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
 
-  return { results, pagination };
+  return { results };
 };
 
-export const getMyRequestsWithPage = async ({
-  pageParam,
-  access_token,
-}: any) => {
+export const getMyRequestsWithPage = async ({ pageParam }: any) => {
+  const access_token = getCookie("access_token");
   const {
     data: { users, pagination },
   } = await axios.get(
@@ -267,26 +269,83 @@ export const getMyRequestsWithPage = async ({
   return users;
 };
 
-export const getMyFriendsWithPageAndSearch = async ({
-  pageParam,
-  searchParam,
-  size,
-  access_token,
-}: any) => {
-  let q = "";
-  if (pageParam && size && searchParam) {
-    q = `&q=${searchParam}`;
-  } else if (!pageParam && !size && searchParam) {
-    q = `?q=${searchParam}`;
-  }
+export const getMyFriendsWithPage = async ({ pageParam, size }: any) => {
+  const access_token = getCookie("access_token");
+
   const {
-    data: { users, pagination },
+    data: { results, pagination },
   } = await axios.get(
-    `${API_URL}/friendships/friend?page=${pageParam}&size=${size}${q}`,
+    `${API_URL}/friendships/friend?page=${pageParam}&size=${size}`,
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
 
-  return { users, pagination };
+  return results;
+};
+
+export const getMyFriendsAndBlock = async ({
+  pageParam,
+  searchParam,
+  size,
+}: any) => {
+  const access_token = getCookie("access_token");
+
+  let q = "";
+  if (searchParam) {
+    q = `&q=${searchParam}`;
+  }
+
+  const {
+    data: { results },
+  } = await axios.get(
+    `${API_URL}/friendships/friendandblock?page=${pageParam}&size=${size}${q}`,
+    { headers: { Authorization: `Bearer ${access_token}` } },
+  );
+
+  return results;
+};
+
+// 팔로우 요청 수락 (pending -> accept)
+export const updateFriendshipToFriend = async (friendId: number) => {
+  const access_token = getCookie("access_token");
+
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${friendId}&status=friend`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+// 친구 블락
+export const blockFriend = async (friendId: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${friendId}&status=block`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+// 블락 풀기
+export const unblockFriend = async (friendId: number) => {
+  const access_token = getCookie("access_token");
+
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${friendId}&status=unblock`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
 };
 
 // Read _ post

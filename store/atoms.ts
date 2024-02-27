@@ -69,6 +69,7 @@ export interface IMe {
   photo: IImage;
   background: IImage;
   private: boolean;
+  friendCount: number;
 }
 
 export const meState = atom<IMe>({
@@ -156,3 +157,10 @@ export const diaryListState = atom({
   key: "Diaries",
   default: [],
 });
+
+export interface IFriend {
+  id: number;
+  username: string;
+  nickname: string;
+  photo?: IImage;
+}

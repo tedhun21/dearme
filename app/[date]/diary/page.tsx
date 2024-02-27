@@ -24,11 +24,7 @@ export default function Diary() {
     queryFn: () => getDiaryForDay({ date }),
   });
 
-  console.log("diaryData", diaryData);
-
   const diaryId = diaryData?.id;
-
-  console.log("dairyId", diaryId);
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -42,10 +38,12 @@ export default function Diary() {
             <section className="p-5">
               <div className="mb-3 flex justify-end gap-2">
                 <DiaryActionButton
+                  date={date}
                   diaryId={diaryId as string}
                   actionType="Edit"
                 />
                 <DiaryActionButton
+                  date={date}
                   diaryId={diaryId as string}
                   actionType="Delete"
                 />

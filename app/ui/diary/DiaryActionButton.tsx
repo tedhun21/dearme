@@ -7,9 +7,11 @@ import EditPost from "@/public/social/EditPost";
 import Delete from "@/public/social/Delete";
 
 export default function DiaryActionButton({
+  date,
   diaryId,
   actionType,
 }: {
+  date: any;
   diaryId: string;
   actionType: "Edit" | "Delete";
 }) {
@@ -36,7 +38,7 @@ export default function DiaryActionButton({
     ) {
       mutate();
     } else if (actionType === "Edit") {
-      router.push(`/diary/${diaryId}/edit`);
+      router.push(`/${date}/diary/edit`);
     }
   };
 

@@ -192,12 +192,9 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
 
 export const getDiariesForMonth = async ({ date }: any) => {
   if (access_token) {
-    const { data } = await axios.get(
-      `${API_URL}/diaries?date=${date.slice(0, 7)}`,
-      {
-        headers: { Authorization: `Bearer ${access_token}` },
-      },
-    );
+    const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
     return data;
   } else {

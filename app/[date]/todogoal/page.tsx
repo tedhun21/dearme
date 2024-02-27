@@ -47,7 +47,8 @@ export default function DailyTodoGoal() {
   const [todos, setTodos] = useRecoilState(todoListState);
   const [goals, setGoals] = useRecoilState(goalListState);
 
-  const DdayGoal = goals?.filter((goal) => goal.endDate === date);
+  const DdayGoal =
+    goals.length > 1 ? goals?.filter((goal) => goal.endDate === date) : [];
 
   // get todos
   const {
@@ -220,7 +221,6 @@ export default function DailyTodoGoal() {
                     )}
                   </button>
                 </div>
-
                 {/* Create Goal */}
                 <GoalModal
                   type="create"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -14,7 +14,7 @@ import Button from "@mui/joy/Button";
 import { FormControl, FormHelperText } from "@mui/joy";
 
 import { signIn } from "@/store/api";
-import { setCookie } from "@/util/tokenCookie";
+import { getCookie, setCookie } from "@/util/tokenCookie";
 
 import BackIcon from "@/public/login/BackIcon";
 import DearmeLogo from "@/public/login/DearmeLogo";
@@ -48,11 +48,11 @@ export default function Login() {
     resolver: yupResolver(loginSchema),
   });
 
-  const { mutate: signInMutate } = useMutation({
+  const { isSuccess, mutate: signInMutate } = useMutation({
     mutationKey: ["signIn"],
     mutationFn: signIn,
-    onSuccess: ({ jwt }) => {
-      setCookie(jwt);
+    onSuccess: async ({ jwt }) => {
+      await setCookie(jwt);
       router.push("/");
     },
     onError: () => alert("Please check your password"),

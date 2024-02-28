@@ -242,6 +242,7 @@ export default function Edit() {
             오늘의 사진
           </h2>
           <UploadPhoto
+            updatedPhotos={diaryData.photo as any}
             onPhotosChange={(photos: any) =>
               setDiaryData({ ...diaryData, photo: photos })
             }

@@ -71,28 +71,31 @@ export default function DiaryCreateModal({
   // 날씨 정보 가져오기
   useEffect(() => {
     if (
-      !open ||
-      !updatedDiaryData ||
-      updatedDiaryData.weather ||
-      updatedDiaryData.weatherId
+      !(
+        updatedDiaryData &&
+        updatedDiaryData.weather &&
+        updatedDiaryData.weatherId
+      )
     ) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+      if (open) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const { latitude, longitude } = position.coords;
+          const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+          const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
 
-        try {
-          const response = await axios.get(url);
-          const { name, main } = response.data;
-          const temp = main.temp.toFixed(1); // 소수점 첫째 자리에서 반올림
-          setWeather(`${name}, ${temp}°C`);
-          setWeatherId(response.data.weather[0].id);
-        } catch (error) {
-          console.error("날씨 정보를 가져오는 데 실패했습니다.", error);
-        }
-      });
+          try {
+            const response = await axios.get(url);
+            const { name, main } = response.data;
+            const temp = main.temp.toFixed(1); // 소수점 첫째 자리에서 반올림
+            setWeather(`${name}, ${temp}°C`);
+            setWeatherId(response.data.weather[0].id);
+          } catch (error) {
+            console.error("날씨 정보를 가져오는 데 실패했습니다.", error);
+          }
+        });
+      }
     }
-  }, [open]);
+  }, [open, updatedDiaryData]);
 
   return (
     // 모달창을 띄우는 버튼

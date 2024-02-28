@@ -4,11 +4,37 @@ import PhotoIcon from "@/public/diary/PhotoIcon";
 
 interface UploadPhotoProps {
   onPhotosChange: (photos: File[]) => void;
+  updatedPhotos: any;
 }
 
-export default function UploadPhoto({ onPhotosChange }: UploadPhotoProps) {
+export default function UploadPhoto({
+  onPhotosChange,
+  updatedPhotos,
+}: UploadPhotoProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (
+      updatedPhotos &&
+      updatedPhotos.every((photo) => typeof photo === "string")
+    ) {
+      // updatedPhotos가 모두 URL 형식의 문자열인 경우, previewUrls에 직접 할당
+      setPreviewUrls(updatedPhotos);
+    } else if (
+      updatedPhotos &&
+      updatedPhotos.every((photo) => photo instanceof File)
+    ) {
+      // updatedPhotos가 모두 File 객체인 경우, createObjectURL을 사용하여 URL 생성
+      const newPreviewUrls = updatedPhotos.map((file) =>
+        URL.createObjectURL(file),
+      );
+      setPreviewUrls(newPreviewUrls);
+
+      // 컴포넌트 언마운트 시 생성된 URL 해제
+      return () => newPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+    }
+  }, [updatedPhotos]);
 
   useEffect(() => {
     // 선택된 파일이 변경될 때 미리보기 URL 생성

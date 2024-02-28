@@ -205,6 +205,7 @@ export default function Edit() {
             감정태그
           </h2>
           <ChooseEmotionTags
+            updatedEmotionTags={diaryData.emotionTags as any}
             onTagSelect={(tags: any) =>
               setDiaryData({ ...diaryData, emotionTags: tags })
             }

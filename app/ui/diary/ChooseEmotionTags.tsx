@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Tags from "@/public/diary/Tags";
 
 export default function ChooseEmotionTags({
   onTagSelect,
+  updatedEmotionTags,
 }: {
   onTagSelect: (tags: string) => void;
+  updatedEmotionTags: string;
 }) {
   const [selectedTags, setSelectedTags] = useState([] as string[]);
 
@@ -28,34 +30,29 @@ export default function ChooseEmotionTags({
     "#부담되는",
   ];
 
-  // 각 태그를 클릭했을 때의 핸들러
-  // const handleTagClick = (tag: string) => {
-  //   setSelectedTags((prevTags) => {
-  //     // 이미 선택된 태그라면 제거, 아니라면 추가
-  //     const newTags = prevTags.includes(tag)
-  //       ? prevTags.filter((prevTag) => prevTag !== tag)
-  //       : [...prevTags, tag];
-  //     onTagSelect(newTags);
-  //     return newTags;
-  //   });
-  // };
+  useEffect(() => {
+    if (
+      typeof updatedEmotionTags === "string" &&
+      updatedEmotionTags.trim().length > 0
+    ) {
+      setSelectedTags(updatedEmotionTags.split(" "));
+    } else {
+      setSelectedTags([]);
+    }
+  }, [updatedEmotionTags]);
 
   const handleTagClick = (tag: string) => {
     setSelectedTags((prevTags) => {
-      // Determine if the tag is already selected
       const isTagSelected = prevTags.includes(tag);
       let newTags;
 
       if (isTagSelected) {
-        // If the tag is selected, remove it from the array
         newTags = prevTags.filter((prevTag) => prevTag !== tag);
       } else {
-        // If the tag is not selected, add it to the array
         newTags = [...prevTags, tag];
       }
 
-      // Join the array into a string and pass it to the parent component
-      onTagSelect(newTags.join(" ")); // This will create a string like "#fresh #happy"
+      onTagSelect(newTags.join(" "));
       return newTags;
     });
   };

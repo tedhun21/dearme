@@ -9,6 +9,7 @@ import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 export default function ChooseMood({ onMoodSelect, updatedMood }: any) {
   const [selectedMood, setSelectedMood] = useState<any>(null);
 
+  // 수정된 기분이 있을 경우 선택된 기분을 업데이트
   useEffect(() => {
     if (updatedMood) {
       setSelectedMood(updatedMood);

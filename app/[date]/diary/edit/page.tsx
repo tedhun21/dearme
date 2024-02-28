@@ -92,6 +92,7 @@ export default function Edit() {
         companions: comapionsStr,
         weather: fetchedDiaryData.weather,
         weatherId: fetchedDiaryData.weatherId.toString(),
+        photo: fetchedDiaryData.photos,
         todayPick: {
           title: fetchedDiaryData.todayPickTitle,
           contributors: fetchedDiaryData.todayPickContributors,

@@ -15,24 +15,13 @@ export default function UploadPhoto({
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
-    if (
-      updatedPhotos &&
-      updatedPhotos.every((photo) => typeof photo === "string")
-    ) {
-      // updatedPhotos가 모두 URL 형식의 문자열인 경우, previewUrls에 직접 할당
-      setPreviewUrls(updatedPhotos);
-    } else if (
-      updatedPhotos &&
-      updatedPhotos.every((photo) => photo instanceof File)
-    ) {
-      // updatedPhotos가 모두 File 객체인 경우, createObjectURL을 사용하여 URL 생성
-      const newPreviewUrls = updatedPhotos.map((file) =>
-        URL.createObjectURL(file),
+    // updatedPhotos가 객체 배열로 주어졌을 때 처리
+    if (updatedPhotos && updatedPhotos.length > 0) {
+      // 객체 배열에서 url만 추출하여 setPreviewUrls에 할당
+      const urls = updatedPhotos.map(
+        (photo: any) => `${process.env.NEXT_PUBLIC_BUCKET_URL}${photo.url}`,
       );
-      setPreviewUrls(newPreviewUrls);
-
-      // 컴포넌트 언마운트 시 생성된 URL 해제
-      return () => newPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+      setPreviewUrls(urls);
     }
   }, [updatedPhotos]);
 
@@ -57,11 +46,37 @@ export default function UploadPhoto({
     }
   };
 
+  // const handleDeleteImage = (index: number) => {
+  //   // 특정 인덱스의 이미지 삭제
+  //   const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+  //   setSelectedFiles(updatedFiles);
+  //   onPhotosChange(updatedFiles);
+  // };
+
   const handleDeleteImage = (index: number) => {
-    // 특정 인덱스의 이미지 삭제
-    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
-    setSelectedFiles(updatedFiles);
-    onPhotosChange(updatedFiles);
+    // updatedPhotos가 정의되어 있는지 확인
+    const updatedPhotosLength = updatedPhotos ? updatedPhotos.length : 0;
+
+    if (index < updatedPhotosLength) {
+      // 서버로부터 받은 이미지 URL 삭제
+      const newPreviewUrls = [...previewUrls];
+      newPreviewUrls.splice(index, 1);
+      setPreviewUrls(newPreviewUrls);
+      // 서버로부터 받은 이미지를 삭제하는 경우, selectedFiles는 업데이트할 필요가 없음
+    } else {
+      // 사용자가 추가한 이미지 파일 삭제
+      const fileIndex = index - updatedPhotosLength;
+      const newSelectedFiles = [...selectedFiles];
+      newSelectedFiles.splice(fileIndex, 1);
+      setSelectedFiles(newSelectedFiles);
+      // 이 경우, previewUrls도 업데이트 필요
+      const newPreviewUrls = [...previewUrls];
+      newPreviewUrls.splice(index, 1);
+      setPreviewUrls(newPreviewUrls);
+    }
+
+    // 상위 컴포넌트에 업데이트된 파일 목록 전달
+    onPhotosChange(selectedFiles);
   };
 
   return (

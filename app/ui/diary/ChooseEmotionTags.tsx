@@ -30,6 +30,7 @@ export default function ChooseEmotionTags({
     "#부담되는",
   ];
 
+  // 업데이트된(수정) 태그가 있을 때
   useEffect(() => {
     if (
       typeof updatedEmotionTags === "string" &&

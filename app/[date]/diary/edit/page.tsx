@@ -216,6 +216,7 @@ export default function Edit() {
             함께한 사람
           </h2>
           <ChooseCompanions
+            updatedCompanions={diaryData.companions as any}
             onSelectCompanion={(companions: any) =>
               setDiaryData({ ...diaryData, companions })
             }

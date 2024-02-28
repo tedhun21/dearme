@@ -190,15 +190,23 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
   return data;
 };
 
-export const getDiariesForMonth = async ({ date }: any) => {
+// preview: /diary/:month 쿼리
+export const getDiariesForMonth = async ({
+  date,
+  preview,
+}: {
+  date: any;
+  preview?: boolean;
+}) => {
   if (access_token) {
     const { data } = await axios.get(
-      `${API_URL}/diaries?date=${date.slice(0, 7)}`,
+      preview
+        ? `${API_URL}/diaries?date=${date.slice(0, 7)}&preview=true`
+        : `${API_URL}/diaries?date=${date.slice(0, 7)}`,
       {
         headers: { Authorization: `Bearer ${access_token}` },
       },
     );
-
     return data;
   } else {
     return [];
@@ -542,6 +550,27 @@ export const getPost = async (postId: number) => {
   try {
     const response = await axios.get(`${API_URL}/posts/${postId}`, { headers });
     return response.data.results;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// Search _ diaries
+export const getSearchDiaries = async ({
+  search,
+  date,
+}: {
+  search: string;
+  date: any;
+}) => {
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
+  try {
+    const response = await axios.get(
+      `${API_URL}/search-diaries?searchTerm=${search}&date=${date}`,
+      { headers },
+    );
+    return response.data;
   } catch (e) {
     console.error(e);
   }

@@ -101,9 +101,10 @@ export default function Edit() {
         },
       };
       setDiaryData(updatedDiaryData);
-      console.log("수정하기 위해 업데이트된 데이터:", updatedDiaryData);
     }
   }, [fetchedDiaryData]);
+
+  console.log("수정하기 위한 데이터:", diaryData);
 
   // 일기 데이터 Submit
   const handleSubmitDiary = async (
@@ -224,6 +225,12 @@ export default function Edit() {
         </section>
         <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
           <DiaryCreateModal
+            updatedDiaryData={{
+              title: diaryData.title as any,
+              content: diaryData.content as any,
+              weather: diaryData.weather as any,
+              weatherId: diaryData.weatherId as any,
+            }}
             onSubmit={(modalData: any) => {
               console.log("onSubmit called with data:", modalData);
               setDiaryData({ ...diaryData, ...modalData });

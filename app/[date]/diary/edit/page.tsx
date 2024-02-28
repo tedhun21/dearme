@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 import Button from "@mui/joy/Button";
@@ -14,10 +15,11 @@ import ChooseCompanions from "@/app/ui/diary/ChooseCompanions";
 import UploadPhoto from "@/app/ui/diary/UploadPhoto";
 import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
 import { getCookie } from "@/util/tokenCookie";
+import { getDiaryDate } from "@/util/date";
+import { getDiaryForDay } from "@/store/api";
 
 export default function Edit() {
-  const params = useParams();
-  const [formattedDate, setFormattedDate] = useState("");
+  const params = useParams<any>();
   const [diaryData, setDiaryData] = useState({
     mood: "",
     emotionTags: [],
@@ -37,27 +39,71 @@ export default function Edit() {
   });
 
   // 최상단 날짜 표시
+  const [formattedDate, setFormattedDate] = useState("");
+
   useEffect(() => {
     if (params.date) {
-      // URL에서 받은 날짜 파싱
-      const [year, month, day] = params.date
-        .split("-")
-        .map((num: any) => parseInt(num, 10));
-
-      // Date 객체 생성
-      const date = new Date(year, month - 1, day);
-
-      // 요일 배열
-      const days = ["일", "월", "화", "수", "목", "금", "토"];
-
-      // 날짜 형식 재구성
-      const newFormat = `${date.getFullYear()}. ${
-        date.getMonth() + 1
-      }. ${date.getDate()}. (${days[date.getDay()]})`;
-
+      const newFormat = getDiaryDate(params.date);
       setFormattedDate(newFormat);
     }
-  }, [params]);
+  }, [params.date]);
+
+  // FormData 객체 생성
+  const formData = new FormData();
+
+  const mapCompanionToServerValue = (companion: string) => {
+    const mapping: { [key: string]: string } = {
+      가족: "FAMILY",
+      친구: "FRIEND",
+      연인: "LOVER",
+      지인: "ACQUAINTANCE",
+      안만남: "ALONE",
+      FAMILY: "가족",
+      FRIEND: "친구",
+      LOVER: "연인",
+      ACQUAINTANCE: "지인",
+      ALONE: "안만남",
+    };
+    return mapping[companion] || companion;
+  };
+
+  const { data: fetchedDiaryData } = useQuery({
+    queryKey: ["getDiaryForDay"],
+    queryFn: () => getDiaryForDay({ date: params.date }),
+  });
+
+  useEffect(() => {
+    if (fetchedDiaryData) {
+      const companionsArray =
+        typeof fetchedDiaryData.companions === "string"
+          ? [fetchedDiaryData.companions]
+          : fetchedDiaryData.companions;
+
+      const comapionsStr = companionsArray
+        .map(mapCompanionToServerValue)
+        .join(",");
+
+      const updatedDiaryData = {
+        ...fetchedDiaryData,
+        title: fetchedDiaryData.title,
+        content: fetchedDiaryData.body,
+        mood: fetchedDiaryData.mood,
+        emotionTags: fetchedDiaryData.feelings,
+        companions: comapionsStr,
+        weather: fetchedDiaryData.weather,
+        weatherId: fetchedDiaryData.weatherId.toString(),
+        todayPick: {
+          title: fetchedDiaryData.todayPickTitle,
+          contributors: fetchedDiaryData.todayPickContributors,
+          date: fetchedDiaryData.todayPickDate,
+          id: fetchedDiaryData.todayPickId,
+          imageFile: fetchedDiaryData.todayPickImage,
+        },
+      };
+      setDiaryData(updatedDiaryData);
+      console.log("수정하기 위해 업데이트된 데이터:", updatedDiaryData);
+    }
+  }, [fetchedDiaryData]);
 
   // 일기 데이터 Submit
   const handleSubmitDiary = async (
@@ -71,20 +117,6 @@ export default function Edit() {
       window.location.href = "/login";
       return;
     }
-
-    // FormData 객체 생성
-    const formData = new FormData();
-
-    const mapCompanionToServerValue = (companion: string) => {
-      const mapping: { [key: string]: string } = {
-        가족: "FAMILY",
-        친구: "FRIEND",
-        연인: "LOVER",
-        지인: "ACQUAINTANCE",
-        안만남: "ALONE",
-      };
-      return mapping[companion] || companion; // 매핑되는 값이 없으면 원본 값을 반환
-    };
 
     console.log("UploadTodayPick에서 todayPickData:", diaryData.todayPick);
 
@@ -161,6 +193,7 @@ export default function Edit() {
             기분
           </h2>
           <ChooseMood
+            updatedMood={diaryData.mood}
             onMoodSelect={(mood: any) => setDiaryData({ ...diaryData, mood })}
           />
           <h3 className="flex justify-center text-sm font-medium text-gray-400">
@@ -222,7 +255,7 @@ export default function Edit() {
             onClick={handleSubmitDiary}
             className="rounded-[20px] border-2 border-solid border-default-800 px-32 py-2 text-default-800 hover:bg-default-300"
           >
-            Create Diary
+            Update Diary
           </Button>
         </section>
       </article>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import HappyEmoji from "@/public/diary/HappyEmoji";
 import JoyfulEmoji from "@/public/diary/JoyfulEmoji";
@@ -6,8 +6,14 @@ import NeutralEmoji from "@/public/diary/NeutralEmoji";
 import SadEmoji from "@/public/diary/SadEmoji";
 import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 
-export default function ChooseMood({ onMoodSelect }) {
-  const [selectedMood, setSelectedMood] = useState(null);
+export default function ChooseMood({ onMoodSelect, updatedMood }: any) {
+  const [selectedMood, setSelectedMood] = useState<any>(null);
+
+  useEffect(() => {
+    if (updatedMood) {
+      setSelectedMood(updatedMood);
+    }
+  }, [updatedMood]);
 
   const handleMoodClick = (mood: string) => {
     // 이미 선택된 기분을 다시 클릭했는지 확인

@@ -1,28 +1,17 @@
 "use client";
 
 import { ChangeEvent, useEffect, useState } from "react";
-import axios from "axios";
+
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { useRecoilValueLoadable } from "recoil";
+import { useMutation } from "@tanstack/react-query";
 
-import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 import { FormControl, Input } from "@mui/joy";
-
 import PillSwitch from "@/app/ui/me/Switch";
-import { IMe, meState } from "@/store/atoms";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+
 import { updateMe } from "@/store/api";
-import { useRouter } from "next/navigation";
-
-type UpdateDataProps = {
-  id: number;
-  updateData: IUpdateData;
-};
-
-type IUpdateData = {
-  name: string;
-  nickname: string;
-};
+import { meState } from "@/store/atoms";
 
 export default function MeEdit() {
   // 초기값이 undefined여서 업데이트되면 초기값으로 설정
@@ -33,8 +22,6 @@ export default function MeEdit() {
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     setError,
     formState: { errors },
   } = useForm();

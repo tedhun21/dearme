@@ -6,17 +6,11 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { CircularProgress } from "@mui/material";
 
-import MePostCard from "@/app/ui/me/MePostCard";
-import { getCookie } from "@/util/tokenCookie";
 import { getMyPostsWithPage } from "@/store/api";
-import { useRecoilState } from "recoil";
-import { postListState } from "@/store/atoms";
-
-const access_token = getCookie("access_token");
+import MePostCard from "@/app/ui/me/MePostCard";
 
 export default function MePost() {
   const [ref, inView] = useInView();
-  const [posts, setPosts] = useRecoilState(postListState);
 
   const {
     data: postData,
@@ -25,9 +19,9 @@ export default function MePost() {
   } = useInfiniteQuery({
     queryKey: ["getMyPostsWithPage"],
     queryFn: ({ pageParam }: { pageParam: number }) =>
-      getMyPostsWithPage({ pageParam, access_token }),
+      getMyPostsWithPage({ pageParam }),
     getNextPageParam: (lastPage: any, allPages: any) => {
-      const maxPage = lastPage.results?.length / 12;
+      const maxPage = lastPage.results.length / 20;
       const nextPage = allPages.length + 1;
 
       return maxPage < 1 ? undefined : nextPage;
@@ -36,21 +30,11 @@ export default function MePost() {
   });
 
   useEffect(() => {
-    if (inView) {
+    if (!inView) {
       return;
     }
-
     fetchNextPage();
   }, [inView]);
-
-  useEffect(() => {
-    if (postData) {
-      setPosts({
-        results: postData.pages,
-        pagination: postData.pages[0].pagination,
-      });
-    }
-  }, []);
 
   return (
     <section className="mb-20 mt-4">

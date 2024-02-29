@@ -254,6 +254,7 @@ export default function Edit() {
             오늘의 PICK
           </h2>
           <UploadTodayPick
+            updatedTodayPick={diaryData.todayPick as any}
             onSubmit={(todayPickData: any) => {
               setDiaryData({ ...diaryData, todayPick: todayPickData });
             }}

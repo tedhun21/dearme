@@ -217,30 +217,19 @@ export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
   }
 };
 
-export const updateDiary = async (
-  diaryId: string,
-  diaryData: any,
-  remember?: boolean,
-) => {
-  try {
-    const headers = { Authorization: `Bearer ${access_token}` };
+export const updateDiary = async (diaryId: string, diaryData: any) => {
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(diaryData));
 
-    // Prepare the request body
-    const body = {
-      ...diaryData,
-      ...(remember !== undefined && { remember }),
-    };
+    const { data } = await axios.put(
+      `${API_URL}/diaries/${diaryId}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
 
-    // Send the PUT request
-    const { data } = await axios.put(`${API_URL}/diaries/${diaryId}`, body, {
-      headers,
-    });
-
-    console.log("Updated diary:", data);
+    console.log(data);
     return data;
-  } catch (error) {
-    console.error("Error updating the diary:", error);
-    throw error;
   }
 };
 

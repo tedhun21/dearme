@@ -6,7 +6,8 @@ export default function ChooseCompanions({
   updatedCompanions,
   onSelectCompanion,
 }: {
-  onSelectCompanion: (companion: string[]) => void;
+  // onSelectCompanion: (companion: string[]) => void;
+  onSelectCompanion: (companion: string | null) => void;
   updatedCompanions: string;
 }) {
   const [selectedCompanions, setSelectedCompanions] = useState<string | null>(
@@ -16,22 +17,17 @@ export default function ChooseCompanions({
 
   // 업데이트된(수정) 동반자가 있을 때
   useEffect(() => {
-    if (
-      typeof updatedCompanions === "string" &&
-      updatedCompanions.trim().length > 0
-    ) {
-      setSelectedCompanions(updatedCompanions);
-    } else {
-      setSelectedCompanions(null);
-    }
+    setSelectedCompanions(updatedCompanions);
   }, [updatedCompanions]);
 
+  console.log("선택된 동반자", selectedCompanions);
+
   const handleCompanionClick = (companion: string) => {
-    // 이미 선택된 동반자를 클릭한 경우 선택 해제, 아니면 선택
+    // 이미 선택된 동반자를 클릭한 경우 선택 해제, 그렇지 않으면 선택
     const newSelectedCompanion =
       selectedCompanions === companion ? null : companion;
     setSelectedCompanions(newSelectedCompanion);
-    onSelectCompanion(newSelectedCompanion ? [newSelectedCompanion] : []);
+    onSelectCompanion(newSelectedCompanion);
   };
 
   return (

@@ -16,7 +16,7 @@ import UploadPhoto from "@/app/ui/diary/UploadPhoto";
 import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
 import { getCookie } from "@/util/tokenCookie";
 import { getDiaryDate } from "@/util/date";
-import { getDiaryForDay } from "@/store/api";
+import { getDiaryForDay, updateDiary } from "@/store/api";
 
 export default function Edit() {
   const params = useParams<any>();
@@ -67,24 +67,39 @@ export default function Edit() {
     return mapping[companion] || companion;
   };
 
+  const parseCompanions = (companions: any) => {
+    // companions가 문자열인 경우 콤마로 구분하여 배열로 변환
+    if (typeof companions === "string") {
+      return companions.split(",");
+    }
+    // 이미 배열인 경우 그대로 반환
+    else if (Array.isArray(companions)) {
+      return companions;
+    }
+    // 그 외의 경우 빈 배열 반환
+    return [];
+  };
+
   const { data: fetchedDiaryData } = useQuery({
     queryKey: ["getDiaryForDay"],
     queryFn: () => getDiaryForDay({ date: params.date }),
   });
 
+  // 서버에서 저장된 일기 데이터를 가져와서 상태에 저장
   useEffect(() => {
     if (fetchedDiaryData) {
       const companionsArray =
         typeof fetchedDiaryData.companions === "string"
           ? [fetchedDiaryData.companions]
-          : fetchedDiaryData.companions;
+          : // ? fetchedDiaryData.companions.split(",")
+            fetchedDiaryData.companions;
 
       const comapionsStr = companionsArray
         .map(mapCompanionToServerValue)
         .join(",");
 
       const updatedDiaryData = {
-        ...fetchedDiaryData,
+        // ...fetchedDiaryData,
         title: fetchedDiaryData.title,
         content: fetchedDiaryData.body,
         mood: fetchedDiaryData.mood,
@@ -113,6 +128,7 @@ export default function Edit() {
   ) => {
     event.preventDefault(); // 폼 제출의 기본 동작 방지
 
+    const diaryId = fetchedDiaryData.id;
     const jwtToken = getCookie("access_token");
     if (!jwtToken) {
       alert("로그인이 필요합니다.");
@@ -120,11 +136,9 @@ export default function Edit() {
       return;
     }
 
-    console.log("UploadTodayPick에서 todayPickData:", diaryData.todayPick);
-
     // feelings와 companions 배열을 콤마로 구분된 문자열로 변환
     const todaypickIdStr = diaryData.todayPick.id.toString();
-    const companionsStr = diaryData.companions
+    const companionsStr = parseCompanions(diaryData.companions)
       .map(mapCompanionToServerValue)
       .join(",");
 
@@ -164,18 +178,9 @@ export default function Edit() {
     console.log("제출될 일기 데이터:", diaryData);
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/diaries?date=${params.date}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        },
-      );
-      console.log("일기 생성 성공", response.data);
-      window.location.href = `/${params.date}/diary`;
+      const updatedDiary = await updateDiary(diaryId, diaryData);
+      console.log("일기 수정 성공", updatedDiary.data);
+      // window.location.href = `/${params.date}/diary`;
     } catch (error) {
       console.error("일기 생성 실패", error);
     }

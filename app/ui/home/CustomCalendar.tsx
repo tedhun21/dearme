@@ -95,7 +95,7 @@ export default function CustomCalendar() {
     isRefetching: isDiariesForMonthRefetching,
   } = useQuery({
     queryKey: ["getDiariesForMonth"],
-    queryFn: () => getDiariesForMonth(month),
+    queryFn: () => getDiariesForMonth({ date: month }),
   });
 
   // 기록된 데이터가 있는 날짜 표시

@@ -211,13 +211,6 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
   return data;
 };
 
-export const getDiariesForMonth = async (date: any) => {
-  const access_token = getCookie("access_token");
-  if (access_token) {
-    const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-
 // preview: /diary/:month 쿼리
 export const getDiariesForMonth = async ({
   date,
@@ -226,7 +219,7 @@ export const getDiariesForMonth = async ({
   date: any;
   preview?: boolean;
 }) => {
-    const access_token = getCookie("access_token");
+  const access_token = getCookie("access_token");
 
   if (access_token) {
     const { data } = await axios.get(

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 import MeNavList from "./MeNavList";
 
 const navList = [
@@ -10,11 +12,20 @@ const navList = [
 ];
 
 export default function MeNav() {
+  const pathname = usePathname();
+
+  {
+    /* {pathname !== "/me/friends" && pathname !== "/me/edit" && <MeNav />} */
+  }
   return (
-    <section className="flex justify-between bg-default-300">
-      {navList.map((nav) => (
-        <MeNavList key={nav.id} nav={nav} />
-      ))}
-    </section>
+    <>
+      {pathname !== "/me/friends" && pathname !== "/me/edit" && (
+        <section className="flex justify-between bg-default-300">
+          {navList.map((nav) => (
+            <MeNavList key={nav.id} nav={nav} />
+          ))}
+        </section>
+      )}
+    </>
   );
 }

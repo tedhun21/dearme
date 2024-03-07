@@ -4,9 +4,7 @@ import { todoListState } from "@/store/atoms";
 import { LinearProgress } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
-export default function TodogoalPropgress() {
-  const todos = useRecoilValue(todoListState);
-
+export default function TodogoalPropgress({ todos }: any) {
   const checkedTodos = todos?.filter((todo: any) => todo.done === true);
 
   const percent =
@@ -22,7 +20,7 @@ export default function TodogoalPropgress() {
         </div>
         <span className="text-xl font-semibold">Your Progress</span>
       </div>
-      <div className="flex items-end justify-between">
+      <div className="flex justify-between">
         <div className="flex w-3/4 flex-col gap-3 pb-0.5">
           <div className="flex gap-4">
             <span className="text-xl">
@@ -38,7 +36,7 @@ export default function TodogoalPropgress() {
             </span>
             <div>^^</div>
           </div>
-          <div className="flex items-end gap-3">
+          <div className="flex items-end gap-2">
             <LinearProgress
               sx={{
                 height: "16px",
@@ -57,7 +55,7 @@ export default function TodogoalPropgress() {
           </div>
         </div>
         <div className="flex w-1/4 items-end justify-around">
-          <span className="text-5xl">{percent}%</span>
+          <span className="text-3xl xxs:text-4xl xs:text-5xl">{percent}%</span>
         </div>
       </div>
     </div>

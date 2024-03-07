@@ -1,57 +1,154 @@
 "use client";
 
-import { todoListState } from "@/store/atoms";
-import { filteredTodoListSelector } from "@/store/selectors";
-import { getCookie } from "@/util/tokenCookie";
+import { useEffect, useState } from "react";
+import {} from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import clsx from "clsx";
 
-import axios from "axios";
-import { useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import Component1 from "./test/comOne";
-import Component2 from "./test/comTwo";
+import { getDiaryForDay } from "@/store/api";
+import { getToday } from "@/util/date";
 
-const access_token = getCookie("access_token");
+import EditDiaryModal from "../ui/test/editDModal";
+
+const tags = [
+  "#상쾌한",
+  "#피곤한",
+  "#행복한",
+  "#의욕적인",
+  "#짜증나는",
+  "#외로운",
+  "#신나는",
+  "#뿌듯한",
+  "#불안한",
+  "#우울한",
+  "#설레는",
+  "#편안한",
+  "#화남",
+  "#슬픈",
+  "#기대되는",
+  "#부담되는",
+];
+
 export default function Test() {
-  const setTodos = useSetRecoilState(todoListState);
+  // const params = useParams<any>();
 
-  const filtered = useRecoilValue(filteredTodoListSelector);
+  const { register, watch, handleSubmit, getValues, setValue } = useForm();
 
-  const fetchTodos = async () => {
-    const { data } = await axios.get(
-      "http://localhost:1337/api/todos?date=2024-02-14",
-      { headers: { Authorization: `Bearer ${access_token}` } },
-    );
+  const [emotionTags, setEmotionTags] = useState<string[]>([]);
+  const [todayPick, setTodayPick] = useState<any>({});
 
-    setTodos(data);
-  };
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const { isSuccess, data: fetchedDiaryData } = useQuery({
+    queryKey: ["getDiaryForDay"],
+    queryFn: () => getDiaryForDay({ date: getToday() }),
+  });
 
+  // 통신된 데이터 기본값 정의
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    if (isSuccess) {
+      setValue("title", fetchedDiaryData.title);
+      setValue("content", fetchedDiaryData.body);
+      setValue("mood", fetchedDiaryData.mood);
+      setEmotionTags((prev: any) => [...fetchedDiaryData.feelings.split(" ")]);
+      setValue("companions", fetchedDiaryData.companions);
+      setValue("weather", fetchedDiaryData.weather);
+      setValue("weatherId", fetchedDiaryData.weatherId);
+      setValue("photo", fetchedDiaryData.photos);
+      setTodayPick({
+        title: fetchedDiaryData.todayPickTitle,
+        contributors: fetchedDiaryData.todayPickContributors,
+        date: fetchedDiaryData.todayPickDate,
+        id: fetchedDiaryData.todayPickId,
+        imageFile: fetchedDiaryData.todayPickImage,
+      });
+    }
+  }, [isSuccess]);
 
-  console.log(filtered);
+  // update submit
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
+  console.log(watch());
+
   return (
-    <div>
-      <Component1 />
-      {/* <Component2 /> */}
-      {/* <Suspense fallback={<div>hi</div>}>
-        <Component3 />
-      </Suspense> */}
-    </div>
+    <main className="flex min-h-screen justify-center">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <label>Title: </label>
+          <span>{getValues().title}</span>
+        </div>
+        <div>
+          <label>Content: </label>
+          <span>{getValues().content}</span>
+        </div>
+        <div>
+          <label></label>
+          <span {...register("mood")}></span>
+        </div>
+        <div>
+          <label>feelings</label>
+          {tags?.map((tag: any, index: any) => (
+            <Tag
+              key={index}
+              tag={tag}
+              emotionTags={emotionTags}
+              setEmotionTags={setEmotionTags}
+            />
+          ))}
+        </div>
+
+        <div>
+          <button onClick={() => setEditModalOpen(true)}>Open Modal</button>
+          <EditDiaryModal
+            register={register}
+            editModalOpen={editModalOpen}
+            setEditModalOpen={setEditModalOpen}
+          />
+        </div>
+        {Object.keys(todayPick).length > 0 && (
+          <div className="bg-default-500">
+            <span>{todayPick?.title}</span>
+            <span>{todayPick?.contributors}</span>
+            <span>{todayPick?.date}</span>
+          </div>
+        )}
+
+        <button type="submit">update diary</button>
+      </form>
+    </main>
   );
 }
 
-// async function Component3() {
-//   await new Promise((resolve) => setTimeout(resolve, 10000));
-//   const res = await fetch(`http://localhost:1337/api/users/1`);
-//   const data = await res.json();
+function Tag({ tag, emotionTags, setEmotionTags }: any) {
+  const [checked, setChecked] = useState(false);
 
-//   return (
-//     <div>
-//       <span>3 {data.username}</span>
-//     </div>
-//   );
-// }
+  const handleTagClick = (tag: any) => {
+    if (Array.isArray(emotionTags)) {
+      if (emotionTags.includes(tag)) {
+        setEmotionTags(emotionTags.filter((t) => t !== tag));
+      } else {
+        setEmotionTags([...emotionTags, tag]);
+      }
+    } else {
+      // emotionTags가 배열이 아닐 경우 초기화
+      setEmotionTags([tag]);
+    }
+    setChecked(!checked);
+  };
 
-/// client component 하위로 서버 컴포넌트는 안 만들어짐(무한 루프)
-/// recocil atom은 무결, selector로 조합하여 return하는 새로운 데이터 형태를 보여줄 수도 있음
+  useEffect(() => {
+    if (emotionTags?.includes(tag)) {
+      setChecked(true);
+    }
+  }, [emotionTags, tag]);
+
+  return (
+    <div
+      className={clsx("", checked ? " bg-default-800" : "")}
+      onClick={() => handleTagClick(tag)}
+    >
+      {tag}
+    </div>
+  );
+}

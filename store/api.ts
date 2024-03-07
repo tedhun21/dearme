@@ -26,19 +26,22 @@ export const getMe = async () => {
 
     return data;
   } else {
-    return {};
+    return null;
   }
 };
 
 // 내 정보 수정하기 (사진 제외)
 export const updateMe = async ({ userId, updateData }: any) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify(updateData));
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(updateData));
 
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-  return data;
+    const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return data;
+  }
 };
 
 /// 유저 정보 가져오기
@@ -56,17 +59,19 @@ export const updateUserPhoto = async ({
   userId: number;
   selectedFile: File;
 }) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("photo", selectedFile);
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({}));
+    formData.append("photo", selectedFile);
+    const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
 
-  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-
-  return data;
+    return data;
+  }
 };
 
 /// 유저 백그라운드 사진만 수정
@@ -77,14 +82,28 @@ export const updateBackGroundPhoto = async ({
   userId: number;
   selectedFile: File;
 }) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("background", selectedFile);
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({}));
+    formData.append("background", selectedFile);
 
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-  return data;
+    const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return data;
+  }
+};
+
+/// 유저 삭제하기
+export const deleteMe = async (userId: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const data = await axios.delete(`${API_URL}/users/${userId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return data;
+  }
 };
 
 // todo
@@ -192,6 +211,12 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
   return data;
 };
 
+export const getDiariesForMonth = async (date: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
 // preview: /diary/:month 쿼리
 export const getDiariesForMonth = async ({
@@ -219,14 +244,15 @@ export const getDiariesForMonth = async ({
 };
 
 // Read _ Diary(특정 날짜)
-export const getDiaryForDay = async (date: any) => {
+export const getDiaryForDay = async ({ date }: any) => {
   const access_token = getCookie("access_token");
 
   if (access_token) {
+    console.log(date);
     const response = await axios.get(`${API_URL}/diaries?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
-    console.log(response.data);
+
     return response.data;
   }
 };

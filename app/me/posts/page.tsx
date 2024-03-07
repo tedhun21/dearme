@@ -7,7 +7,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
 
 import { getMyPostsWithPage } from "@/store/api";
-import MePostCard from "@/app/ui/me/MePostCard";
+import MePostCard from "@/app/ui/me/posts/MePostCard";
 
 export default function MePost() {
   const [ref, inView] = useInView();
@@ -40,18 +40,24 @@ export default function MePost() {
     <section className="mb-20 mt-4">
       <h1 className="mx-5 mb-3 text-base font-semibold">포스트</h1>
       <section>
-        <div className="grid grid-cols-3 xs:grid-cols-4">
-          {postData?.pages.map((page: any) =>
-            page.results.map((post: any) => (
-              <MePostCard key={post.id} post={post} />
-            )),
-          )}
-          {hasNextPage ? (
-            <div ref={ref}>
-              <CircularProgress />
-            </div>
-          ) : null}
-        </div>
+        {postData && postData.pages[0].results.length > 0 ? (
+          <div className="grid grid-cols-3 xs:grid-cols-4">
+            {postData?.pages.map((page: any) =>
+              page.results.map((post: any) => (
+                <MePostCard key={post.id} post={post} />
+              )),
+            )}
+            {hasNextPage ? (
+              <div ref={ref}>
+                <CircularProgress />
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <span>No Post</span>
+          </div>
+        )}
       </section>
     </section>
   );

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-import MeGoal from "@/app/ui/me/MeGoal";
+import MeGoal from "@/app/ui/me/plans/MeGoal";
 
-import TodoRate from "@/app/ui/me/TodoRate";
+import TodoRate from "@/app/ui/me/plans/TodoRate";
 
 import UserProfile from "@/app/ui/me/UserProfile";
 import { useParams } from "next/navigation";

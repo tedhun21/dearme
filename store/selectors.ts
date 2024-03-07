@@ -48,10 +48,10 @@ export const postListSelector = selector({
   set: ({ set }, newValue) => set(postListState, newValue),
 });
 
-export const settingSelector = selector({
-  key: "settingSelector",
-  get: ({ get }) => get(settingState),
-});
+// export const settingSelector = selector({
+//   key: "settingSelector",
+//   get: ({ get }) => get(settingState),
+// });
 
 export const diaryListSelector = selector({
   key: "diaryListSelector",

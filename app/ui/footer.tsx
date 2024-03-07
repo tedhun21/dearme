@@ -1,14 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import clsx from "clsx";
+
 import SocialIcon from "@/public/footer/SocialIcon";
 import Search from "@/public/footer/Search";
 import Home from "@/public/footer/Home";
 import AnalysisIcon from "@/public/footer/AnalysisIcon";
 import MypageIcon from "@/public/footer/MypageIcon";
-import { usePathname } from "next/navigation";
-import clsx from "clsx";
-import { useState } from "react";
 
-export default function Footer() {
+export default function Footer({ me }: any) {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -125,33 +129,63 @@ export default function Footer() {
               ANALYSIS
             </span>
           </Link>
-          <Link // 마이페이지 버튼
-            href="/me"
-            className="group flex flex-col items-center gap-2 text-default-500 group-hover:text-default-800"
-          >
-            <MypageIcon
-              className={clsx(
-                "h-7 w-9 fill-current",
-                pathname.includes("/todogoal")
-                  ? "text-default-100 group-hover:text-default-400"
-                  : pathname === "/me"
-                    ? "text-default-900"
-                    : "group-hover:text-default-800",
-              )}
-            />
-            <span
-              className={clsx(
-                "text-xs font-bold",
-                pathname.includes("/todogoal")
-                  ? "text-default-100 group-hover:text-default-400"
-                  : pathname === "/me"
-                    ? "text-default-900"
-                    : "group-hover:text-default-800",
-              )}
+          {me ? (
+            <Link // 마이페이지 버튼
+              href="/me"
+              className="group flex flex-col items-center gap-2 text-default-500 group-hover:text-default-800"
             >
-              MYPAGE
-            </span>
-          </Link>
+              <MypageIcon
+                className={clsx(
+                  "h-7 w-9 fill-current",
+                  pathname.includes("/todogoal")
+                    ? "text-default-100 group-hover:text-default-400"
+                    : pathname.includes("/me")
+                      ? "text-default-900"
+                      : "group-hover:text-default-800",
+                )}
+              />
+              <span
+                className={clsx(
+                  "text-xs font-bold",
+                  pathname.includes("/todogoal")
+                    ? "text-default-100 group-hover:text-default-400"
+                    : pathname.includes("/me")
+                      ? "text-default-900"
+                      : "group-hover:text-default-800",
+                )}
+              >
+                MYPAGE
+              </span>
+            </Link>
+          ) : (
+            <Link // 로그인 페이지 버튼
+              href="/login"
+              className="group flex flex-col items-center gap-2 text-default-500 group-hover:text-default-800"
+            >
+              <MypageIcon
+                className={clsx(
+                  "h-7 w-9 fill-current",
+                  pathname.includes("/todogoal")
+                    ? "text-default-100 group-hover:text-default-400"
+                    : pathname.includes("/me")
+                      ? "text-default-900"
+                      : "group-hover:text-default-800",
+                )}
+              />
+              <span
+                className={clsx(
+                  "text-xs font-bold",
+                  pathname.includes("/todogoal")
+                    ? "text-default-100 group-hover:text-default-400"
+                    : pathname.includes("/me")
+                      ? "text-default-900"
+                      : "group-hover:text-default-800",
+                )}
+              >
+                LOGIN
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </footer>

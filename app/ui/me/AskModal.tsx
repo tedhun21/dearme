@@ -1,6 +1,30 @@
 import XIcon from "@/public/todo/XIcon";
 import { Modal } from "@mui/material";
 
+const variables = [
+  {
+    type: "request",
+    ok: "Accept",
+    message: "Would you like to accept the friend request?",
+  },
+  {
+    type: "friend",
+    ok: "Block",
+    message: "Would you like to block this friend?",
+  },
+  {
+    type: "block",
+    ok: "Unblock",
+    message: "Would you like to unblock the friend?",
+  },
+  { type: "signout", ok: "Sign out", message: "Would you like to sign out?" },
+  {
+    type: "withdraw",
+    ok: "Withdraw",
+    message: "Would you really like to withdraw?",
+  },
+];
+
 export default function AskModal({
   type,
   openModal,
@@ -26,11 +50,7 @@ export default function AskModal({
           </button>
         </div>
         <span className="flex justify-center text-lg">
-          {type === "request"
-            ? "Would you like to accept the friend request"
-            : type === "friend"
-              ? "Would you like to block this friend?"
-              : type === "block" && "Would you like to unblock this user?"}
+          {variables.find((variable: any) => variable.type === type)?.message}
         </span>
         <div className="flex justify-between p-4">
           <button
@@ -43,7 +63,7 @@ export default function AskModal({
             onClick={() => clickAction()}
             className="rounded-lg bg-default-800 px-3 py-2 font-semibold text-white hover:bg-default-900"
           >
-            Accept
+            {variables.find((variable: any) => variable.type === type)?.ok}
           </button>
         </div>
       </div>

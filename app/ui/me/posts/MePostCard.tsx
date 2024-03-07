@@ -14,7 +14,9 @@ export default function MePostCard({ post }: any) {
           // sizes="(max-width:400px) 33vw (max-width:500px) 25vw (max-width:600px) 20vw"
         />
       ) : (
-        <div className="h-full w-full bg-default-800">hi</div>
+        <div className="flex h-full w-full items-center justify-center bg-default-800 text-white">
+          No Image
+        </div>
       )}
     </div>
   );

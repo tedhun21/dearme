@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
+
+import { useSetRecoilState } from "recoil";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
 import TodoCheckTrueIcon from "@/public/me/TodoCheckTrueIcon";
 import TodoMenu from "./TodoMenu";
 import { todoListState } from "@/store/atoms";
-import { useMutation } from "@tanstack/react-query";
 import { updateMyTodo, updateMyTodoDone } from "@/store/api";
-import { useSetRecoilState } from "recoil";
 import XIcon from "@/public/todo/XIcon";
 import SendIcon from "@/public/todogoal/SendIcon";
-import { useForm } from "react-hook-form";
-import { usePathname } from "next/navigation";
 
 export default function Todo({ date, todo }: any) {
-  const pathname = usePathname();
-
   const [done, setDone] = useState<boolean>();
   const setTodos = useSetRecoilState(todoListState);
 

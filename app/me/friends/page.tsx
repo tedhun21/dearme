@@ -8,8 +8,9 @@ import { CircularProgress, Divider } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 import BackButton from "@/app/ui/backbutton";
-import FollowList from "@/app/ui/me/FollowList";
+
 import { getMyFriendsAndBlock } from "@/store/api";
+import FollowList from "@/app/ui/me/followers/FollowList";
 
 export default function Friends() {
   const [ref, inView] = useInView();

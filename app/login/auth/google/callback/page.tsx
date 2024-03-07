@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 import { CircularProgress } from "@mui/material"; // 로딩 중 표시
+import { setCookie } from "@/util/tokenCookie";
 
 export default function GoogleRedirect() {
   const router = useRouter();
@@ -27,8 +28,10 @@ export default function GoogleRedirect() {
             },
           },
         );
-        localStorage.removeItem("token");
-        window.location.replace("/"); // replace는 뒤로가기를 눌렀을 때, 이전 페이지로 돌아가지 않는다.
+
+        setCookie(data.jwt);
+
+        router.replace("/"); // replace는 뒤로가기를 눌렀을 때, 이전 페이지로 돌아가지 않는다.
       } catch (error) {
         console.error("Google 계정 정보를 가져오는 데 실패했습니다", error);
       }

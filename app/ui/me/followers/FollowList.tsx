@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {
   blockFriend,
@@ -10,17 +11,12 @@ import {
   updateFriendshipToFriend,
 } from "@/store/api";
 
-import AskModal from "./AskModal";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { meState } from "@/store/atoms";
+import AskModal from "../AskModal";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
-
 export default function FollowList({ user, isRequest }: any) {
   const queryClient = useQueryClient();
 
-  // const setMe = useSetRecoilState(meState);
   const [openAskModal, setOpenAskModal] = useState(false);
 
   // Accept (요청 수락)
@@ -37,13 +33,15 @@ export default function FollowList({ user, isRequest }: any) {
 
       const prevRequests = queryClient.getQueryData(["getMyRequestsWithPage"]);
       const prevFriends = queryClient.getQueryData(["getMyFriendsWithPage"]);
-      const prevMe = queryClient.getQueryData(["getMe"]);
+      // const prevMe = queryClient.getQueryData(["getMe"]);
 
       const newFriend = {
         id: user?.id,
         username: user?.username,
         nickname: user?.nickname,
-        photo: { id: user?.photo?.id, url: user?.photo?.url },
+        photo: user.photo
+          ? { id: user?.photo?.id, url: user?.photo?.url }
+          : null,
         status: "FRIEND",
       };
 
@@ -60,12 +58,12 @@ export default function FollowList({ user, isRequest }: any) {
         pages: [[newFriend], ...old.pages],
       }));
 
-      queryClient.setQueryData(["getMe"], (old: any) => ({
-        ...old,
-        friendCount: old.friendCount + 1,
-      }));
+      // queryClient.setQueryData(["getMe"], (old: any) => ({
+      //   ...old,
+      //   friendCount: old.friendCount + 1,
+      // }));
 
-      return { prevFriends, prevRequests, prevMe };
+      return { prevFriends, prevRequests };
     },
     onSuccess: () => {
       setOpenAskModal(false);
@@ -77,7 +75,7 @@ export default function FollowList({ user, isRequest }: any) {
         ["getMyRequestsWithPage"],
         context?.prevRequests,
       );
-      queryClient.setQueryData(["getMe"], context?.prevMe);
+      // queryClient.setQueryData(["getMe"], context?.prevMe);
 
       setOpenAskModal(false);
       window.alert(err);
@@ -85,20 +83,25 @@ export default function FollowList({ user, isRequest }: any) {
   });
 
   // 친구 block
-  // 이 부분은 refetch
   const { mutate: blockFriendMutate } = useMutation({
     mutationKey: ["blockFriend"],
     mutationFn: blockFriend,
-    onSettled: async () => {
-      await queryClient.cancelQueries({ queryKey: ["getMe"] });
+    onMutate: async () => {
+      // await queryClient.cancelQueries({ queryKey: ["getMe"] });
+      await queryClient.cancelQueries({ queryKey: ["getMyFriendsWithPage"] });
+      await queryClient.cancelQueries({ queryKey: ["getMyFriendsAndBlock"] });
 
-      const prevMe = queryClient.getQueryData(["getMe"]);
-      const prevFriends = queryClient.getQueryData(["getMyFriendAndBlock"]);
+      // const prevMe = queryClient.getQueryData(["getMe"]);
 
-      queryClient.setQueryData(["getMe"], (old: any) => ({
-        ...old,
-        friendCount: old.friendCount - 1,
-      }));
+      const prevFriends = queryClient.getQueryData(["getMyFriendsWithPage"]);
+      const prevFriendsAndBlock = queryClient.getQueryData([
+        "getMyFriendsAndBlock",
+      ]);
+
+      // queryClient.setQueryData(["getMe"], (old: any) => ({
+      //   ...old,
+      //   friendCount: old.friendCount - 1,
+      // }));
 
       queryClient.setQueryData(["getMyFriendsWithPage"], (old: any) => {
         const filteredPages = old.pages.map((page: any) =>
@@ -107,31 +110,41 @@ export default function FollowList({ user, isRequest }: any) {
         return { ...old, pages: filteredPages };
       });
 
-      queryClient.setQueryData(["getMyFriendsAndBlock"], (old: any) => {
-        const updatedPages = old.pages.map((page: any) =>
-          page.map((friendAndBlock: any) => {
-            if (
-              friendAndBlock.id === user.id &&
-              friendAndBlock.status === "FRIEND"
-            ) {
-              friendAndBlock.status = "BLOCK";
-            }
-            return friendAndBlock;
-          }),
-        );
-        return { ...old, pages: updatedPages };
-      });
+      if (prevFriendsAndBlock) {
+        queryClient.setQueryData(["getMyFriendsAndBlock"], (old: any) => {
+          const updatedPages = old.pages.map((page: any) =>
+            page.map((friendAndBlock: any) => {
+              if (
+                friendAndBlock.id === user.id &&
+                friendAndBlock.status === "FRIEND"
+              ) {
+                friendAndBlock.status = "BLOCK";
+              }
+              return friendAndBlock;
+            }),
+          );
+          return { ...old, pages: updatedPages };
+        });
+        return { prevFriends, prevFriendsAndBlock };
+      }
 
+      return { prevFriends };
+    },
+
+    onSuccess: () => {
       setOpenAskModal(false);
-
-      return { prevFriends, prevMe };
     },
 
     onError: (err, _, context: any) => {
-      queryClient.setQueryData(["getMe"], context?.prevMe);
-      queryClient.setQueryData(["getmyFriendWithPage"], context.prevFriends);
+      // queryClient.setQueryData(["getMe"], context?.prevMe);
+      queryClient.setQueryData(["getMyFriendsWithPage"], context.prevFriends);
+      queryClient.setQueryData(
+        ["getMyFriendsAndBlock"],
+        context.prevFriendsAndBlock,
+      );
 
       window.alert(err);
+      setOpenAskModal(false);
     },
   });
 
@@ -177,7 +190,7 @@ export default function FollowList({ user, isRequest }: any) {
   };
 
   // 친구 블락 핸들러
-  const handleblockFriend = () => {
+  const handleBlockFriend = () => {
     blockFriendMutate(user.id);
   };
 
@@ -227,8 +240,8 @@ export default function FollowList({ user, isRequest }: any) {
           />
         </div>
       ) : user.status === "BLOCK" ||
-        user.state === "BLOCK_ONE" ||
-        user.state === "BLOCK_BOTH" ? (
+        user.status === "BLOCK_ONE" ||
+        user.status === "BLOCK_BOTH" ? (
         <>
           <button
             onClick={() => setOpenAskModal(true)}
@@ -244,20 +257,22 @@ export default function FollowList({ user, isRequest }: any) {
           />
         </>
       ) : (
-        <>
-          <button
-            onClick={() => setOpenAskModal(true)}
-            className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700"
-          >
-            Block
-          </button>
-          <AskModal
-            type="friend"
-            openModal={openAskModal}
-            setOpenModal={setOpenAskModal}
-            clickAction={handleblockFriend}
-          />
-        </>
+        user.status === "FRIEND" && (
+          <>
+            <button
+              onClick={() => setOpenAskModal(true)}
+              className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700"
+            >
+              Block
+            </button>
+            <AskModal
+              type="friend"
+              openModal={openAskModal}
+              setOpenModal={setOpenAskModal}
+              clickAction={handleBlockFriend}
+            />
+          </>
+        )
       )}
     </div>
   );

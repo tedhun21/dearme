@@ -1,15 +1,31 @@
-"use client";
+import { getToday } from "@/util/date";
 import axios from "axios";
+import { cookies } from "next/headers";
 
-export default function Component1() {
-  const handleClick = async () => {
-    const { data } = await axios.get(`http://localhost:1337/api/users/1`);
-    console.log(data);
-  };
+export default async function Component1() {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get("access_token");
+
+  if (!cookie) {
+    return null;
+  }
+
+  const { value: access_token } = cookie || {};
+
+  const { data } = await axios.get(
+    `http://localhost:1337/api/todos?date=${getToday()}`,
+    {
+      headers: { Authorization: `Bearer ${access_token}` },
+    },
+  );
 
   return (
     <div>
-      <span onClick={handleClick}>1 </span>
+      <span>Server Side</span>
+      {data.length === 0 && <div>No Data</div>}
+      {data.map((data: any) => (
+        <div key={data.id}>{data.body}</div>
+      ))}
     </div>
   );
 }

@@ -112,7 +112,6 @@ export default function GoalModal({
 
   // create & edit submit
   const onSubmit = (data: any) => {
-    // console.log(data);
     if (type !== "edit") {
       if (goals.length > 5) {
         return window.alert("You can have only 5 objectives");
@@ -272,7 +271,7 @@ export default function GoalModal({
                 render={({ field }) => (
                   <Switch
                     {...field}
-                    defaultChecked={goal.isPublic}
+                    checked={field.value}
                     onChange={field.onChange}
                     sx={{
                       /// switch 기본 박스 크기

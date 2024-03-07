@@ -1,32 +1,29 @@
 "use client";
-
-import { useQuery } from "@tanstack/react-query";
-
 import clsx from "clsx";
 
-import GoalList from "./GoalList";
+import GoalList from "../GoalList";
 
-import { getMyGoals } from "@/store/api";
 import { getToday } from "@/util/date";
-import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getMyGoals } from "@/store/api";
 
-export default function MeGoal() {
-  const pathname = usePathname();
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export default function MeGoal({ route }: any) {
   const { data: goalData } = useQuery({
     queryKey: ["getMyGoals"],
     queryFn: () => getMyGoals({ date: getToday() }),
   });
 
   return (
-    <section className={clsx(pathname === "/" ? "" : "px-4")}>
-      {pathname !== "/" ? (
+    <section className={clsx(route === "/" ? "" : "px-4")}>
+      {route !== "/" ? (
         <div className="font-semibold text-default-700">Goal</div>
       ) : null}
       <div
         className={clsx(
           "flex flex-col gap-3 bg-default-100 px-4 py-3",
-          pathname === "/" ? "rounded-none" : "rounded-xl",
+          route === "/" ? "rounded-b-xl" : "rounded-xl",
         )}
       >
         {Array.isArray(goalData) && goalData.length !== 0 ? (

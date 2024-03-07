@@ -1,39 +1,15 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
-import TodoRate from "../ui/me/TodoRate";
-import MeGoal from "../ui/me/MeGoal";
-import DragTodo from "../ui/todo/DragTodo";
-import { getToday } from "@/util/date";
-import { useQuery } from "@tanstack/react-query";
-import { getMyTodosWithDate } from "@/store/api";
-import { useSetRecoilState } from "recoil";
-import { todoListState } from "@/store/atoms";
 import Link from "next/link";
 
-export default function Me() {
-  const [isDrop, setIsDrop] = useState(false);
-  const setTodos = useSetRecoilState(todoListState);
+import { getToday } from "@/util/date";
 
-  const { isSuccess, data: todos } = useQuery({
-    queryKey: ["getMyTodosWithDate"],
-    queryFn: () => getMyTodosWithDate({ date: getToday() }),
-  });
+import MeTodo from "../ui/me/MeTodo";
+import MeGoal from "../ui/me/plans/MeGoal";
 
-  useEffect(() => {
-    setTodos(todos);
-  }, [isSuccess]);
-
+export default async function Me() {
   return (
     <section className="mb-20 mt-4 flex flex-col">
-      <TodoRate isDrop={isDrop} setIsDrop={setIsDrop} />
-      {isDrop && todos?.length !== 0 ? (
-        <section>
-          <DragTodo date={getToday()} />
-        </section>
-      ) : null}
-      <MeGoal />
+      <MeTodo />
+      <MeGoal route="/me" />
       <div className="flex justify-center p-5">
         <Link
           href={`/${getToday()}/todogoal`}

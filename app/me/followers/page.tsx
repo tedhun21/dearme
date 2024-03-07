@@ -4,13 +4,13 @@ import Link from "next/link";
 
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 
-import FollowList from "@/app/ui/me/FollowList";
 import { getMyFriendsWithPage, getMyRequestsWithPage } from "@/store/api";
+import FollowList from "@/app/ui/me/followers/FollowList";
 
 export default function MeFriend() {
   const queryClient = useQueryClient();
 
-  const me = queryClient.getQueryData(["getMe"]);
+  // const me = queryClient.getQueryData(["getMe"]);
 
   const {
     hasNextPage: hasNextRequestPage,
@@ -64,8 +64,6 @@ export default function MeFriend() {
                   key={requestUser.id}
                   user={requestUser}
                   isRequest={true}
-                  queryClient={queryClient}
-                  refetchFriend={refetchFriend}
                 />
               )),
             )
@@ -84,9 +82,9 @@ export default function MeFriend() {
           <div className="mb-3 flex items-center justify-between gap-2 border-b-2 border-default-400">
             <div className="flex gap-1">
               <h1 className="text-lg font-semibold">Followers</h1>
-              <span className="text-lg font-semibold text-default-900">
+              {/* <span className="text-lg font-semibold text-default-900">
                 {(me as any)?.friendCount}
-              </span>
+              </span> */}
             </div>
             <Link
               href="/me/friends"
@@ -95,25 +93,19 @@ export default function MeFriend() {
               View More
             </Link>
           </div>
-          {friendData?.pages[0].length !== 0 ? (
-            friendData?.pages.map(
-              (page: any) =>
-                Array.isArray(page) &&
-                page.map((user: any) => (
-                  <FollowList
-                    key={user.id}
-                    user={user}
-                    isRequest={false}
-                    refetchRequest={refetchRequest}
-                    refetchFriend={refetchFriend}
-                  />
-                )),
-            )
-          ) : (
-            <div className="w-full py-5 text-center">
-              <span>No Friend</span>
-            </div>
-          )}
+          {friendData?.pages.map(
+            (page: any) =>
+              Array.isArray(page) &&
+              page.map((friend: any) => (
+                <FollowList key={friend.id} user={friend} isRequest={false} />
+              )),
+          )
+          //  : (
+          //   <div className="w-full py-5 text-center">
+          //     <span>No Friend</span>
+          //   </div>
+          // )
+          }
 
           {hasNextFriendPage && friendData?.pages[0].length !== 0 ? (
             <button onClick={() => fetchNextFriendPage()}>View More</button>

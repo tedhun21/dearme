@@ -1,11 +1,10 @@
 import DownDropdownIcon from "@/public/me/DownDropdownIcon";
 import UpDropdownIcon from "@/public/me/UpDropdownIcon";
-import { getUserTodosWithDate } from "@/store/api";
-import { ITodo, todoListState } from "@/store/atoms";
-import { getToday } from "@/util/date";
+
+import { todoListState } from "@/store/atoms";
+
 import { LinearProgress } from "@mui/material";
 
-import React, { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 
 interface TodoRateProps {

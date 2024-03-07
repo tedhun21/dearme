@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import axios from "axios";
+
 import "./globals.css";
 
 import RecoilRootProvider from "./recoilRootProvider";

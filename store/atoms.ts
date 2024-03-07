@@ -1,16 +1,16 @@
-import { atom } from "recoil";
+import { atom, RecoilEnv } from "recoil";
 import dayjs, { Dayjs } from "dayjs";
 // import { recoilPersist } from "recoil-persist";
 
-// const { persistAtom } = recoilPersist({
-//   key: "sessionStorage",
-//   storage: sessionStorage,
-// });
+// RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
-// export const IState = atom({
-//   key: "IState",
-//   default: null,
-//   effects_UNSTABLE: [persistAtom],
+// const localStorage =
+//   typeof window !== "undefined" ? window.localStorage : undefined;
+
+// const { persistAtom } = recoilPersist({
+//   key: "recoil-persist",
+//   storage: localStorage,
+//   converter: JSON,
 // });
 
 enum EPublic {
@@ -40,11 +40,6 @@ interface IPagination {
   pageCount?: number;
   total?: number;
 }
-
-// export interface ITodos {
-//   results: ITodo[];
-//   pagination: IPagination;
-// }
 
 export const todoListState = atom<ITodo[]>({
   key: "Todos",
@@ -105,14 +100,32 @@ export const goalListState = atom<IGoal[]>({
 });
 
 export interface ISetting {
+  isLogin: false;
   isDiary: boolean;
+  date: Dayjs;
   todogoalTitle: string;
   todogoalDate: Dayjs;
 }
 
 export const settingState = atom<ISetting>({
   key: "Settings",
-  default: { isDiary: false, todogoalTitle: "Todo", todogoalDate: dayjs() },
+  default: {
+    isLogin: false,
+    isDiary: false,
+    date: dayjs(),
+    todogoalTitle: "Todo",
+    todogoalDate: dayjs(),
+  },
+});
+
+export interface IProcess {
+  is100: boolean;
+  doReset: boolean;
+}
+
+export const processState = atom<IProcess>({
+  key: "Process",
+  default: { is100: false, doReset: false },
 });
 
 enum ECompanion {

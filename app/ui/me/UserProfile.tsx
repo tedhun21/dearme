@@ -7,10 +7,8 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import { getUser } from "@/store/api";
-import { getCookie } from "@/util/tokenCookie";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
-const access_token = getCookie("access_token");
 
 export default function UserProfile() {
   const { id: profileId } = useParams();

@@ -65,6 +65,7 @@ export default function Edit() {
 
   /* 기분(Mood) Part */
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const watchedMood = watch("mood");
 
   useEffect(() => {
     register("mood");
@@ -72,12 +73,16 @@ export default function Edit() {
   }, [selectedMood, register, setValue]);
 
   const handleMoodClick = (mood: string) => {
-    setSelectedMood(mood === selectedMood ? null : mood);
+    const newMood = mood === watchedMood ? null : mood;
+    setValue("mood", newMood);
+    setSelectedMood(newMood);
   };
+
+  console.log("selectedMood:", selectedMood);
+  console.log("기분 상태:", methods.getValues("mood"));
 
   /* 감정태그(Emotion Tags) Part */
   const [selectedTags, setSelectedTags] = useState([] as string[]);
-
   const watchedFeelings = watch("feelings", []);
 
   const tags = [
@@ -106,7 +111,7 @@ export default function Edit() {
         typeof fetchedDiaryData.feelings === "string"
           ? fetchedDiaryData.feelings
               .split(" ")
-              .filter((tag) => tag.trim().startsWith("#"))
+              .filter((tag: any) => tag.trim().startsWith("#"))
           : [];
 
       setValue("feelings", initialTags.join(" "));
@@ -145,23 +150,23 @@ export default function Edit() {
           <div className="transition duration-300 ease-in-out group-hover:bg-blue-500">
             <span className="flex items-center justify-between px-20">
               <JoyfulEmoji
-                selected={selectedMood === "JOYFUL"}
+                selected={watchedMood === "JOYFUL"}
                 onClick={() => handleMoodClick("JOYFUL")}
               />
               <HappyEmoji
-                selected={selectedMood === "HAPPY"}
+                selected={watchedMood === "HAPPY"}
                 onClick={() => handleMoodClick("HAPPY")}
               />
               <NeutralEmoji
-                selected={selectedMood === "NEUTRAL"}
+                selected={watchedMood === "NEUTRAL"}
                 onClick={() => handleMoodClick("NEUTRAL")}
               />
               <UnhappyEmoji
-                selected={selectedMood === "UNHAPPY"}
+                selected={watchedMood === "UNHAPPY"}
                 onClick={() => handleMoodClick("UNHAPPY")}
               />
               <SadEmoji
-                selected={selectedMood === "SAD"}
+                selected={watchedMood === "SAD"}
                 onClick={() => handleMoodClick("SAD")}
               />
             </span>

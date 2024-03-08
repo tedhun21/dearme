@@ -14,6 +14,7 @@ import NeutralEmoji from "@/public/diary/NeutralEmoji";
 import SadEmoji from "@/public/diary/SadEmoji";
 import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 import Tags from "@/public/diary/Tags";
+import Companions from "@/public/diary/Companions";
 
 import { getCookie } from "@/util/tokenCookie";
 import { getDiaryDate } from "@/util/date";
@@ -78,9 +79,6 @@ export default function Edit() {
     setSelectedMood(newMood);
   };
 
-  console.log("selectedMood:", selectedMood);
-  console.log("기분 상태:", methods.getValues("mood"));
-
   /* 감정태그(Emotion Tags) Part */
   const [selectedTags, setSelectedTags] = useState([] as string[]);
   const watchedFeelings = watch("feelings", []);
@@ -132,6 +130,51 @@ export default function Edit() {
     setValue("feelings", newTags.join(" "));
   };
 
+  /* 함께한 사람(Companions) Part */
+  const companions = ["가족", "친구", "연인", "지인", "안만남"];
+  const selectedCompanions = watch("companions");
+
+  interface CompanionMappings {
+    [key: string]: string;
+  }
+
+  // 서버에서 받은 값을 클라이언트용으로 변환하는 함수
+  const mapCompanionToClientValue = (companionServerValue: string): string => {
+    const mapping: CompanionMappings = {
+      FAMILY: "가족",
+      FRIEND: "친구",
+      LOVER: "연인",
+      ACQUAINTANCE: "지인",
+      ALONE: "안만남",
+    };
+    return mapping[companionServerValue] || companionServerValue;
+  };
+
+  // 클라이언트에서 선택한 값을 서버용으로 변환하는 함수
+  const mapCompanionToServerValue = (companion: string): string => {
+    const mapping: CompanionMappings = {
+      가족: "FAMILY",
+      친구: "FRIEND",
+      연인: "LOVER",
+      지인: "ACQUAINTANCE",
+      안만남: "ALONE",
+    };
+    return mapping[companion] || companion;
+  };
+
+  const handleCompanionClick = (companion: string) => {
+    const companionServerValue = mapCompanionToServerValue(companion);
+    const newValue =
+      selectedCompanions === companionServerValue ? "" : companionServerValue;
+    setValue("companions", newValue);
+  };
+
+  useEffect(() => {
+    if (isSuccess && fetchedDiaryData) {
+      methods.setValue("companions", fetchedDiaryData.companions ?? []);
+    }
+  }, [isSuccess, fetchedDiaryData, methods]);
+
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -142,7 +185,7 @@ export default function Edit() {
             <Exit />
           </div>
         </section>
-        {/* 기분 선택 */}
+        {/* 기분 항목 */}
         <section className="flex flex-col gap-4 bg-default-200">
           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
             기분
@@ -175,7 +218,7 @@ export default function Edit() {
             오늘 하루는 어땠나요?
           </h3>
         </section>
-        {/* 감정 태그 선택 */}
+        {/* 감정 태그 항목 */}
         <section className="flex flex-col bg-default-200">
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
             감정태그
@@ -187,6 +230,24 @@ export default function Edit() {
                 text={tag}
                 selected={watchedFeelings.includes(tag)}
                 onClick={() => handleTagClick(tag)}
+              />
+            ))}
+          </span>
+        </section>
+        {/* 함께한 사람 항목 */}
+        <section className="flex flex-col bg-default-300">
+          <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
+            함께한 사람
+          </h2>
+          <span className="mb-8 mt-2 flex flex-wrap gap-2 px-6">
+            {companions.map((companion) => (
+              <Companions
+                key={companion}
+                text={companion}
+                selected={
+                  mapCompanionToClientValue(selectedCompanions) === companion
+                }
+                onClick={() => handleCompanionClick(companion)}
               />
             ))}
           </span>

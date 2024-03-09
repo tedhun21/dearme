@@ -3,6 +3,11 @@ import { Modal } from "@mui/material";
 
 const variables = [
   {
+    type: "nothing",
+    ok: "Follow",
+    message: "Would you like to follow this user?",
+  },
+  {
     type: "request",
     ok: "Accept",
     message: "Would you like to accept the friend request?",

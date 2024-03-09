@@ -6,7 +6,12 @@ import { useParams } from "next/navigation";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getUser } from "@/store/api";
+import { findFriendship, getUser } from "@/store/api";
+import FollowButton from "./FollowButton";
+
+import CancelFollowButton from "./CancelFollowButton";
+import BlockFriendButton from "./BlockFriendButton";
+import UnblockButton from "./UnblockButton";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
@@ -16,6 +21,12 @@ export default function UserProfile() {
   const { data: userData } = useQuery({
     queryKey: ["getUser"],
     queryFn: () => getUser({ profileId }),
+  });
+
+  // 유저와 나와의 관계
+  const { data: friendshipData } = useQuery({
+    queryKey: ["getFriendship"],
+    queryFn: () => findFriendship(profileId as string),
   });
 
   return (
@@ -36,7 +47,7 @@ export default function UserProfile() {
           </div>
 
           <div className="px-4">
-            <div className="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-default-300">
+            <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-default-300">
               {(userData as any)?.photo ? (
                 <Image
                   src={`${BUCKET_URL}${(userData as any).photo.url}`}
@@ -54,9 +65,17 @@ export default function UserProfile() {
                 </span>
                 <span className="text-white">{(userData as any)?.body}</span>
               </div>
-              <button className="rounded-3xl bg-default-500 px-4 py-1 font-semibold text-white hover:bg-default-600 active:bg-default-700">
-                Follow
-              </button>
+              {friendshipData?.status === "NOTHING" ? (
+                <FollowButton userId={userData?.id} />
+              ) : friendshipData?.status === "PENDING" &&
+                friendshipData?.follow_receiver?.id === +profileId ? (
+                <CancelFollowButton userId={userData?.id} />
+              ) : friendshipData?.status === "FRIEND" ? (
+                <BlockFriendButton userId={userData?.id} />
+              ) : friendshipData?.status === "BLOCK_ONE" ||
+                friendshipData?.status === "BLOCK_BOTH" ? (
+                <UnblockButton userId={userData?.id} />
+              ) : null}
             </div>
           </div>
         </div>

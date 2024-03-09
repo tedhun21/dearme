@@ -5,82 +5,16 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
-import {
-  blockFriend,
-  unblockFriend,
-  updateFriendshipToFriend,
-} from "@/store/api";
+import { acceptRequest, blockFriend, unblockFriend } from "@/store/api";
 
 import AskModal from "../AskModal";
+import AcceptFollowButton from "./AcceptFollowButton";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 export default function FollowList({ user, isRequest }: any) {
   const queryClient = useQueryClient();
 
   const [openAskModal, setOpenAskModal] = useState(false);
-
-  // Accept (요청 수락)
-  // 이 부분은 react-query: optimistic updates 기술을 이용
-  const { mutate: requestAcceptMutate } = useMutation({
-    mutationKey: ["updateFriendshipToFriend"],
-    mutationFn: updateFriendshipToFriend,
-
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["getMyRequestsWithPage"] });
-      await queryClient.cancelQueries({
-        queryKey: ["getMyFriendsWithPage"],
-      });
-
-      const prevRequests = queryClient.getQueryData(["getMyRequestsWithPage"]);
-      const prevFriends = queryClient.getQueryData(["getMyFriendsWithPage"]);
-      // const prevMe = queryClient.getQueryData(["getMe"]);
-
-      const newFriend = {
-        id: user?.id,
-        username: user?.username,
-        nickname: user?.nickname,
-        photo: user.photo
-          ? { id: user?.photo?.id, url: user?.photo?.url }
-          : null,
-        status: "FRIEND",
-      };
-
-      queryClient.setQueryData(["getMyRequestsWithPage"], (old: any) => {
-        const filteredPages = old.pages.map((page: any) =>
-          page.filter((requestUser: any) => requestUser.id !== user.id),
-        );
-
-        return { ...old, pages: filteredPages };
-      });
-
-      queryClient.setQueryData(["getMyFriendsWithPage"], (old: any) => ({
-        ...old,
-        pages: [[newFriend], ...old.pages],
-      }));
-
-      // queryClient.setQueryData(["getMe"], (old: any) => ({
-      //   ...old,
-      //   friendCount: old.friendCount + 1,
-      // }));
-
-      return { prevFriends, prevRequests };
-    },
-    onSuccess: () => {
-      setOpenAskModal(false);
-    },
-
-    onError: (err, _, context) => {
-      queryClient.setQueryData(["getMyFriendsWithPage"], context?.prevFriends);
-      queryClient.setQueryData(
-        ["getMyRequestsWithPage"],
-        context?.prevRequests,
-      );
-      // queryClient.setQueryData(["getMe"], context?.prevMe);
-
-      setOpenAskModal(false);
-      window.alert(err);
-    },
-  });
 
   // 친구 block
   const { mutate: blockFriendMutate } = useMutation({
@@ -103,12 +37,14 @@ export default function FollowList({ user, isRequest }: any) {
       //   friendCount: old.friendCount - 1,
       // }));
 
-      queryClient.setQueryData(["getMyFriendsWithPage"], (old: any) => {
-        const filteredPages = old.pages.map((page: any) =>
-          page.filter((friendUser: any) => friendUser.id !== user.id),
-        );
-        return { ...old, pages: filteredPages };
-      });
+      if (prevFriends) {
+        queryClient.setQueryData(["getMyFriendsWithPage"], (old: any) => {
+          const filteredPages = old.pages.map((page: any) =>
+            page.filter((friendUser: any) => friendUser.id !== user.id),
+          );
+          return { ...old, pages: filteredPages };
+        });
+      }
 
       if (prevFriendsAndBlock) {
         queryClient.setQueryData(["getMyFriendsAndBlock"], (old: any) => {
@@ -184,11 +120,6 @@ export default function FollowList({ user, isRequest }: any) {
     },
   });
 
-  // 친구 수락 핸들러
-  const handleAcceptRequest = () => {
-    requestAcceptMutate(user.id);
-  };
-
   // 친구 블락 핸들러
   const handleBlockFriend = () => {
     blockFriendMutate(user.id);
@@ -222,23 +153,7 @@ export default function FollowList({ user, isRequest }: any) {
       </div>
 
       {isRequest ? (
-        <div className="flex gap-2">
-          <button
-            onClick={() => setOpenAskModal(true)}
-            className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700"
-          >
-            Accept
-          </button>
-          {/* <button className="rounded-lg bg-default-500 px-4 py-1 font-medium text-white hover:bg-default-600 active:bg-default-700">
-        Delete
-      </button> */}
-          <AskModal
-            type="request"
-            openModal={openAskModal}
-            setOpenModal={setOpenAskModal}
-            clickAction={handleAcceptRequest}
-          />
-        </div>
+        <AcceptFollowButton user={user} />
       ) : user.status === "BLOCK" ||
         user.status === "BLOCK_ONE" ||
         user.status === "BLOCK_BOTH" ? (

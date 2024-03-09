@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import BackButton from "../../backbutton";
+import BackButton from "../../../backbutton";
 import Link from "next/link";
 import Image from "next/image";
 import { IconButton, Menu } from "@mui/material";

@@ -16,8 +16,6 @@ export default function MeFriend() {
     hasNextPage: hasNextRequestPage,
     fetchNextPage: fetchNextRequestPage,
     data: requestData,
-
-    refetch: refetchRequest,
   } = useInfiniteQuery({
     queryKey: ["getMyRequestsWithPage"],
     queryFn: ({ pageParam }: { pageParam: number }) =>
@@ -35,8 +33,6 @@ export default function MeFriend() {
     hasNextPage: hasNextFriendPage,
     fetchNextPage: fetchNextFriendPage,
     data: friendData,
-
-    refetch: refetchFriend,
   } = useInfiniteQuery({
     queryKey: ["getMyFriendsWithPage"],
     queryFn: ({ pageParam }: { pageParam: number }) =>

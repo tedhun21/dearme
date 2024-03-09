@@ -1,6 +1,6 @@
 import Footer from "../ui/footer";
 import MeNav from "../ui/me/MeNav";
-import MeProfile from "../ui/me/profile/MeProfile";
+import MeProfile from "../ui/me/profile/me/MeProfile";
 import { cookies } from "next/headers";
 import { useQuery } from "@tanstack/react-query";
 import { getMe } from "@/store/api";

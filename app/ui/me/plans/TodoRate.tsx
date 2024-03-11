@@ -1,11 +1,12 @@
-import DownDropdownIcon from "@/public/me/DownDropdownIcon";
-import UpDropdownIcon from "@/public/me/UpDropdownIcon";
+"use client";
 
-import { todoListState } from "@/store/atoms";
+import { useRecoilValue } from "recoil";
 
 import { LinearProgress } from "@mui/material";
 
-import { useRecoilValue } from "recoil";
+import { todoListState } from "@/store/atoms";
+import DownDropdownIcon from "@/public/me/DownDropdownIcon";
+import UpDropdownIcon from "@/public/me/UpDropdownIcon";
 
 interface TodoRateProps {
   isLoading?: boolean;

@@ -24,7 +24,7 @@ export default function Withdrawal({ me }: any) {
   });
 
   const handleWithdraw = () => {
-    deleteMeMutate(me.id);
+    deleteMeMutate({ userId: me.id });
   };
   return (
     <>

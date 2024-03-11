@@ -45,7 +45,12 @@ export default function UnblockButton({ userId }: any) {
 
   return (
     <>
-      <button onClick={() => setOpenUnblockModal(true)}>Unblock</button>
+      <button
+        onClick={() => setOpenUnblockModal(true)}
+        className="rounded-3xl bg-default-500 px-4 py-1 font-semibold text-white hover:bg-default-600 active:bg-default-700"
+      >
+        Unblock
+      </button>
       <AskModal
         type="block"
         openModal={openUnblockModal}

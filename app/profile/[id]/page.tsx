@@ -1,34 +1,29 @@
-"use client";
+import Footer from "@/app/ui/footer";
+import UserInfo from "@/app/ui/me/profile/user/UserInfo";
 
-import { useState } from "react";
+import axios from "axios";
+import { cookies } from "next/headers";
 
-import MeGoal from "@/app/ui/me/plans/MeGoal";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-import TodoRate from "@/app/ui/me/plans/TodoRate";
+export default async function Profile() {
+  const cookieStore = cookies();
+  const cookie = cookieStore.get("access_token");
 
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { getUserTodosWithDate } from "@/store/api";
-import { getToday } from "@/util/date";
-import UserProfile from "@/app/ui/me/profile/user/UserProfile";
+  if (!cookie) {
+    return <a href="/">Go to Home</a>;
+  }
 
-export default function Profile() {
-  const { id: profileId } = useParams();
+  const { value: access_token } = cookie || {};
 
-  const { data: todos } = useQuery({
-    queryKey: ["getUserTodosWithDate"],
-    queryFn: () => getUserTodosWithDate({ profileId, date: getToday() }),
+  const { data: meData } = await axios.get(`${API_URL}/users/me`, {
+    headers: { Authorization: `Bearer ${access_token}` },
   });
-
   return (
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
-        <UserProfile />
-        <section className="mb-20 mt-4 flex flex-col">
-          {/* <TodoRate todos={todos?.results} /> */}
-
-          {/* <UserGoal /> */}
-        </section>
+        <UserInfo me={meData} />
+        <Footer me={meData} />
       </div>
     </main>
   );

@@ -44,7 +44,12 @@ export default function BlockFriendButton({ userId }: any) {
   };
   return (
     <>
-      <button onClick={() => setOpenBlockModal(true)}>Block</button>
+      <button
+        onClick={() => setOpenBlockModal(true)}
+        className="rounded-3xl bg-default-500 px-4 py-1 font-semibold text-white hover:bg-default-600 active:bg-default-700"
+      >
+        Block
+      </button>
       <AskModal
         type="friend"
         openModal={openBlockModal}

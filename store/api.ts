@@ -44,10 +44,12 @@ export const updateMe = async ({ userId, updateData }: any) => {
 };
 
 /// 유저 정보 가져오기
-export const getUser = async ({ profileId }: any) => {
-  const { data } = await axios.get(`${API_URL}/users/${profileId}`);
+export const getUser = async ({ userId }: any) => {
+  if (userId) {
+    const { data } = await axios.get(`${API_URL}/users/${userId}`);
 
-  return data;
+    return data;
+  }
 };
 
 /// 유저 사진만 수정
@@ -95,7 +97,7 @@ export const updateBackGroundPhoto = async ({
 };
 
 /// 유저 삭제하기
-export const deleteMe = async (userId: number) => {
+export const deleteMe = async ({ userId }: any) => {
   const access_token = getCookie("access_token");
   if (access_token) {
     const data = await axios.delete(`${API_URL}/users/${userId}`, {
@@ -121,8 +123,10 @@ export const getMyTodosWithDate = async ({ date }: any) => {
   }
 };
 
-export const getUserTodosWithDate = async ({ date }: any) => {
-  const { data } = await axios.get(`${API_URL}/todos?date=${date}`);
+export const getUserTodosWithDate = async ({ userId, date }: any) => {
+  const { data } = await axios.get(
+    `${API_URL}/todos?userId=${userId}&date=${date}`,
+  );
 
   return data;
 };
@@ -202,6 +206,13 @@ export const getMyGoals = async ({ date }: any) => {
   } else {
     return [];
   }
+};
+
+export const getUserGoalsWithDate = async ({ userId, date }: any) => {
+  const { data } = await axios.get(
+    `${API_URL}/goals?userId=${userId}&date=${date}`,
+  );
+  return data;
 };
 
 export const createMyGoal = async (createData: any) => {
@@ -404,12 +415,12 @@ export const followCancelFriedship = async (userId: number) => {
 };
 
 // 팔로우 요청 수락 (pending -> accept)
-export const acceptRequest = async (friendId: number) => {
+export const acceptRequest = async (userId: number) => {
   const access_token = getCookie("access_token");
 
   if (access_token) {
     const { data } = await axios.put(
-      `${API_URL}/friendships?friendId=${friendId}&status=friend`,
+      `${API_URL}/friendships?friendId=${userId}&status=friend`,
       {},
       { headers: { Authorization: `Bearer ${access_token}` } },
     );

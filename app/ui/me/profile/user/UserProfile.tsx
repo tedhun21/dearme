@@ -2,31 +2,24 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useParams } from "next/navigation";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { findFriendship, getUser } from "@/store/api";
+import { findFriendship } from "@/store/api";
 import FollowButton from "./FollowButton";
 
 import CancelFollowButton from "./CancelFollowButton";
 import BlockFriendButton from "./BlockFriendButton";
 import UnblockButton from "./UnblockButton";
+import AcceptButton from "./AcceptFollowButton";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function UserProfile() {
-  const { id: profileId } = useParams();
-
-  const { data: userData } = useQuery({
-    queryKey: ["getUser"],
-    queryFn: () => getUser({ profileId }),
-  });
-
+export default function UserProfile({ user, me }: any) {
   // 유저와 나와의 관계
   const { data: friendshipData } = useQuery({
     queryKey: ["getFriendship"],
-    queryFn: () => findFriendship(profileId as string),
+    queryFn: () => findFriendship(user.id),
   });
 
   return (
@@ -48,9 +41,9 @@ export default function UserProfile() {
 
           <div className="px-4">
             <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-default-300">
-              {(userData as any)?.photo ? (
+              {(user as any)?.photo ? (
                 <Image
-                  src={`${BUCKET_URL}${(userData as any).photo.url}`}
+                  src={`${BUCKET_URL}${(user as any).photo.url}`}
                   alt="userPhoto"
                   fill
                   className="object-cover"
@@ -61,20 +54,23 @@ export default function UserProfile() {
             <div className="mt-4 flex items-center justify-between">
               <div className="flex flex-col gap-1">
                 <span className="text-bg-800 text-xl font-semibold">
-                  {(userData as any)?.nickname}
+                  {(user as any)?.nickname}
                 </span>
-                <span className="text-white">{(userData as any)?.body}</span>
+                <span className="text-white">{(user as any)?.body}</span>
               </div>
               {friendshipData?.status === "NOTHING" ? (
-                <FollowButton userId={userData?.id} />
+                <FollowButton userId={user?.id} />
               ) : friendshipData?.status === "PENDING" &&
-                friendshipData?.follow_receiver?.id === +profileId ? (
-                <CancelFollowButton userId={userData?.id} />
+                friendshipData?.follow_receiver?.id === me.id ? (
+                <AcceptButton userId={user?.id} />
+              ) : friendshipData?.status === "PENDING" &&
+                friendshipData?.follow_receiver?.id === user.id ? (
+                <CancelFollowButton userId={user?.id} />
               ) : friendshipData?.status === "FRIEND" ? (
-                <BlockFriendButton userId={userData?.id} />
+                <BlockFriendButton userId={user?.id} />
               ) : friendshipData?.status === "BLOCK_ONE" ||
                 friendshipData?.status === "BLOCK_BOTH" ? (
-                <UnblockButton userId={userData?.id} />
+                <UnblockButton userId={user?.id} />
               ) : null}
             </div>
           </div>

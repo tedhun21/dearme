@@ -112,7 +112,10 @@ export default function DiaryCreateModal({
           <p className="mb-8">{diaryEntry.content}</p>
           <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
             <span className="mr-2">
-              <WeatherIcons weatherId={weatherId} />
+              <WeatherIcons
+                weatherId={weatherId}
+                className="h-4 w-4 fill-current text-black"
+              />
             </span>
             <h4 className="flex justify-end text-xs font-medium text-default-800">
               {weather || "날씨 정보를 가져오는 중입니다."}
@@ -132,7 +135,10 @@ export default function DiaryCreateModal({
           </Button>
           <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
             <span className="mr-2">
-              <WeatherIcons weatherId={weatherId} />
+              <WeatherIcons
+                weatherId={weatherId}
+                className="h-4 w-4 fill-current text-black"
+              />{" "}
             </span>
             <h4 className="flex justify-end text-xs font-medium text-default-800">
               {weather || "날씨 정보를 가져오는 중입니다."}

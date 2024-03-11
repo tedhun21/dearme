@@ -8,12 +8,9 @@ import { CircularProgress, Divider } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 import BackButton from "@/app/ui/backbutton";
-import FollowList from "@/app/ui/me/FollowList";
-import { getMyFriendsWithPageAndSearch } from "@/store/api";
-import { getCookie } from "@/util/tokenCookie";
-import AutoComplete from "@/app/ui/me/AutoComplete";
 
-const access_token = getCookie("access_token");
+import { getMyFriendsAndBlock } from "@/store/api";
+import FollowList from "@/app/ui/me/followers/FollowList";
 
 export default function Friends() {
   const [ref, inView] = useInView();
@@ -25,17 +22,17 @@ export default function Friends() {
     fetchNextPage,
     data: friendData,
     refetch,
+    isRefetching,
   } = useInfiniteQuery({
-    queryKey: ["getMyFriendsWithPageAndSearch"],
+    queryKey: ["getMyFriendsAndBlock"],
     queryFn: ({ pageParam }) =>
-      getMyFriendsWithPageAndSearch({
+      getMyFriendsAndBlock({
         pageParam,
         searchParam: searchKeyword,
         size: 20,
-        access_token,
       }),
     getNextPageParam: (lastPage, allPages: any) => {
-      const maxPage = lastPage.users.length / 4;
+      const maxPage = lastPage.length / 4;
       const nextPage = allPages.length + 1;
 
       return maxPage < 1 ? undefined : nextPage;
@@ -45,7 +42,7 @@ export default function Friends() {
 
   // 무한 스크롤 설정
   useEffect(() => {
-    if (inView) {
+    if (!inView) {
       return;
     }
 
@@ -57,34 +54,17 @@ export default function Friends() {
     const debounceTimer = setTimeout(() => {
       // 검색 요청을 보낼 함수를 여기에 작성
       refetch();
-    }, 1000); // 1초 지연 후에 검색 요청 보내도록 설정
+    }, 500); // 0.5초 지연 후에 검색 요청 보내도록 설정
 
     return () => {
       clearTimeout(debounceTimer); // 이펙트 정리 시 타이머 제거
     };
   }, [searchKeyword]);
 
-  console.log(friendData);
-
   return (
     <section className="mb-20 px-4 py-3">
       <div className="flex flex-col items-start gap-3">
         <BackButton />
-        {/* <div className="relative w-full">
-          <input
-            className="w-full rounded-3xl border-2 border-default-300 px-4 py-2 focus:border-default-500 focus:outline-none"
-            onFocus={() => setOpenInput(true)}
-            onBlur={() => setOpenInput(false)}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-          />
-          <button className="absolute right-4 top-1.5 rounded-full p-1 hover:bg-default-200 active:bg-default-400">
-            <SearchIcon />
-          </button>
-          {openInput && (
-            <AutoComplete searchKeyword={searchKeyword} friends={friends} />
-          )}
-        </div> */}
-
         <div className="relative w-full">
           <input
             onChange={(e) => setSearchKeyword(e.target.value)}
@@ -95,9 +75,9 @@ export default function Friends() {
       </div>
       <Divider sx={{ my: "20px" }} />
 
-      {!isLoading ? (
+      {!isLoading || !isRefetching ? (
         friendData?.pages.map((page) =>
-          page.users.map((friend: any) => (
+          page.map((friend: any) => (
             <FollowList key={friend.id} user={friend} isRequest={false} />
           )),
         )

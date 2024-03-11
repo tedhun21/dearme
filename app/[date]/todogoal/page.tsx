@@ -20,8 +20,14 @@ import {
 } from "@/store/atoms";
 import CalendarIcon from "@/public/todogoal/CalendarIcon";
 import Footer from "@/app/ui/footer";
-import { createMyTodo, getMyGoals, getMyTodosWithDate } from "@/store/api";
+import {
+  createMyTodo,
+  getMe,
+  getMyGoals,
+  getMyTodosWithDate,
+} from "@/store/api";
 
+import { getToday } from "@/util/date";
 import TodogoalHeader from "@/app/ui/todogoal/TodogoalHeader";
 import TodogoalDragTodo from "@/app/ui/todogoal/todo/TodogoalDragTodo";
 import TodogoalGoalList from "@/app/ui/todogoal/goal/TodogoalGoalList";
@@ -29,11 +35,14 @@ import TodogoalCreateTodo from "@/app/ui/todogoal/todo/CreateTodo";
 import TodogoalPropgress from "@/app/ui/todogoal/todo/TodoProgress";
 import GoalProgress from "@/app/ui/todogoal/goal/GoalProgress";
 import GoalModal from "@/app/ui/todogoal/goal/GoalModal";
-import Link from "next/link";
-import { getToday } from "@/util/date";
 
 export default function DailyTodoGoal() {
   const router = useRouter();
+
+  const { data: meData } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => getMe(),
+  });
 
   // TODO || GOAL
   const [{ todogoalTitle, todogoalDate }, setSetting] =
@@ -48,7 +57,10 @@ export default function DailyTodoGoal() {
   const [todos, setTodos] = useRecoilState(todoListState);
   const [goals, setGoals] = useRecoilState(goalListState);
 
-  const DdayGoal = goals?.filter((goal) => goal.endDate === date);
+  const DdayGoal =
+    goals && goals.length > 1
+      ? goals?.filter((goal) => goal.endDate === date)
+      : [];
 
   // get todos
   const {
@@ -116,7 +128,7 @@ export default function DailyTodoGoal() {
     <main className="flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-black pb-28 text-white shadow-lg">
         <article className="flex flex-col gap-5 p-5">
-          <TodogoalHeader />
+          <TodogoalHeader me={meData} />
           <section className="flex flex-col gap-2">
             <div className="w-full rounded-3xl bg-default-800 p-6">
               <div className="flex items-center justify-between">
@@ -183,7 +195,7 @@ export default function DailyTodoGoal() {
             </div>
             {/* 섹션 2: todo/goal progress */}
             {todogoalTitle === "Todo" ? (
-              <TodogoalPropgress />
+              <TodogoalPropgress todos={todos} />
             ) : (
               DdayGoal?.length > 0 && <GoalProgress />
             )}
@@ -221,7 +233,6 @@ export default function DailyTodoGoal() {
                     )}
                   </button>
                 </div>
-
                 {/* Create Goal */}
                 <GoalModal
                   type="create"
@@ -234,7 +245,7 @@ export default function DailyTodoGoal() {
           </section>
         </article>
 
-        <Footer />
+        <Footer me={meData} />
       </div>
     </main>
   );

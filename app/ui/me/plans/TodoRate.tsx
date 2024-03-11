@@ -1,25 +1,25 @@
-import DownDropdownIcon from "@/public/me/DownDropdownIcon";
-import UpDropdownIcon from "@/public/me/UpDropdownIcon";
-import { getUserTodosWithDate } from "@/store/api";
-import { ITodo, todoListState } from "@/store/atoms";
-import { getToday } from "@/util/date";
+"use client";
+
+import { useRecoilValue } from "recoil";
+
 import { LinearProgress } from "@mui/material";
 
-import React, { useEffect } from "react";
+import { todoListState } from "@/store/atoms";
+import DownDropdownIcon from "@/public/me/DownDropdownIcon";
+import UpDropdownIcon from "@/public/me/UpDropdownIcon";
 
 interface TodoRateProps {
-  todos: ITodo[];
   isLoading?: boolean;
   isDrop?: boolean;
   setIsDrop?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TodoRate({
-  todos,
   isLoading,
   isDrop,
   setIsDrop,
 }: TodoRateProps) {
+  const todos = useRecoilValue(todoListState);
   const checkedTodos = todos?.filter((todo: any) => todo.done === true);
 
   return (

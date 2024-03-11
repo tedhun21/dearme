@@ -1,14 +1,9 @@
 import { Switch } from "@mui/material";
-import { ChangeEvent, useState } from "react";
 
-type SwitchProps = {
-  checked: boolean;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-};
-
-export default function PillSwitch({ checked, onChange }: SwitchProps) {
+export default function PillSwitch({ defaultChecked }: any) {
   return (
     <Switch
+      defaultChecked={defaultChecked}
       sx={{
         /// switch 기본 박스 크기
         padding: 0,
@@ -43,8 +38,6 @@ export default function PillSwitch({ checked, onChange }: SwitchProps) {
           opacity: 1,
         },
       }}
-      checked={checked}
-      onChange={onChange}
     />
   );
 }

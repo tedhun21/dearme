@@ -28,6 +28,7 @@ export default function GoalModal({
     handleSubmit,
     getValues,
     reset,
+    watch,
   } = useForm({
     defaultValues: {
       title: goal && type === "edit" ? goal.title : "",
@@ -94,7 +95,7 @@ export default function GoalModal({
     },
   });
 
-  const { mutate: deleteGoalMutate, data } = useMutation({
+  const { mutate: deleteGoalMutate } = useMutation({
     mutationKey: ["deleteMyGoal"],
     mutationFn: deleteMyGoal,
     onSuccess: (data) => {
@@ -132,6 +133,7 @@ export default function GoalModal({
     }
   };
 
+  // delete Goal
   const handleDeleteGoal = () => {
     deleteGoalMutate({ deleteId: goal.id });
   };
@@ -183,8 +185,8 @@ export default function GoalModal({
                   render={({ field }) => (
                     <DatePicker
                       {...field}
-                      minDate={dayjs(date)}
-                      maxDate={dayjs(date).add(1, "year")}
+                      minDate={dayjs(date).subtract(6, "month")}
+                      maxDate={dayjs(date).add(6, "month")}
                       sx={{
                         ".MuiInputBase-root": {
                           backgroundColor: "#FBFAF2",
@@ -269,8 +271,8 @@ export default function GoalModal({
                 render={({ field }) => (
                   <Switch
                     {...field}
-                    defaultChecked
-                    onChange={(prev) => field.onChange(!prev)}
+                    checked={field.value}
+                    onChange={field.onChange}
                     sx={{
                       /// switch 기본 박스 크기
                       padding: 0,

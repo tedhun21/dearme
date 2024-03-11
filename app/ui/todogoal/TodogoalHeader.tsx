@@ -1,20 +1,25 @@
-import { ISetting, meState, settingState } from "@/store/atoms";
+import { ISetting, settingState } from "@/store/atoms";
 import { Button } from "@mui/material";
+
 import clsx from "clsx";
 import Image from "next/image";
-import { useRecoilState, useRecoilValue } from "recoil";
+import Link from "next/link";
+
+import { useRecoilState } from "recoil";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function TodogoalHeader() {
-  const me = useRecoilValue(meState);
-
+export default function TodogoalHeader({ me }: any) {
   const [{ todogoalTitle }, setSetting] =
     useRecoilState<ISetting>(settingState);
 
   return (
     <section className="flex w-full items-center justify-between">
-      {me && <span className="text-xl font-semibold">Hi! {me?.nickname}</span>}
+      {me && me?.nickname ? (
+        <span className="text-xl font-semibold">Hi! {me?.nickname}</span>
+      ) : (
+        <Link href="/me/edit">Set Nickname</Link>
+      )}
       <div className="flex">
         <div className="relative rounded-3xl bg-default-800">
           <div
@@ -60,13 +65,17 @@ export default function TodogoalHeader() {
         </div>
       </div>
       <div className="relative h-12 w-12 overflow-hidden rounded-full">
-        {me && (
+        {me && me.photo?.url ? (
           <Image
-            src={`${BUCKET_URL}${me?.photo.url}`}
+            src={`${BUCKET_URL}${me?.photo?.url}`}
             alt="user profile"
             fill
             className="object-cover object-center"
           />
+        ) : (
+          <Link href="/me/edit">
+            <div className="h-full w-full bg-default-400"></div>
+          </Link>
         )}
       </div>
     </section>

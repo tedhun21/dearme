@@ -64,14 +64,7 @@ export default function CommentSettings({
 
   return (
     <div>
-      <IconButton
-        aria-label="more"
-        id="long-button"
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-expanded={open ? "true" : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
+      <IconButton onClick={handleClick}>
         <MoreHorizIcon sx={{ color: "#2D2422", fontSize: 16 }} />
       </IconButton>
       <Menu
@@ -79,9 +72,6 @@ export default function CommentSettings({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",

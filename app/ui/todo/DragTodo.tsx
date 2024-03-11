@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 
@@ -10,8 +12,8 @@ import {
 import Todo from "./Todo";
 
 import { ITodo, todoListState } from "@/store/atoms";
-import { useMutation } from "@tanstack/react-query";
-import { updateMyTodoPriority } from "@/store/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getMyTodosWithDate, updateMyTodoPriority } from "@/store/api";
 
 // 배열 순서 바꾸는 함수
 const reorder = (list: ITodo[], startIndex: number, endIndex: number) => {

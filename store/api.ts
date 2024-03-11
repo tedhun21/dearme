@@ -1,41 +1,55 @@
+import axios from "axios";
 import { getToday } from "@/util/date";
 import { getCookie } from "@/util/tokenCookie";
-import axios from "axios";
-import { access } from "fs";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const access_token = getCookie("access_token");
 
 // 유저
+/// 로그인
+export const signIn = async ({ email, password }: any) => {
+  const { data } = await axios.post(`${API_URL}/auth/local`, {
+    identifier: email,
+    password,
+  });
+
+  return data;
+};
+
 /// 내 정보 가져오기
 export const getMe = async () => {
-  if (access_token !== null) {
+  const access_token = getCookie("access_token");
+  if (access_token) {
     const { data } = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
     return data;
   } else {
-    return {};
+    return null;
   }
 };
 
 // 내 정보 수정하기 (사진 제외)
 export const updateMe = async ({ userId, updateData }: any) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify(updateData));
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(updateData));
 
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-  return data;
+    const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return data;
+  }
 };
 
 /// 유저 정보 가져오기
-export const getUser = async ({ profileId }: any) => {
-  const { data } = await axios.get(`${API_URL}/users/${profileId}`);
+export const getUser = async ({ userId }: any) => {
+  if (userId) {
+    const { data } = await axios.get(`${API_URL}/users/${userId}`);
 
-  return data;
+    return data;
+  }
 };
 
 /// 유저 사진만 수정
@@ -46,17 +60,19 @@ export const updateUserPhoto = async ({
   userId: number;
   selectedFile: File;
 }) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("photo", selectedFile);
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({}));
+    formData.append("photo", selectedFile);
+    const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
 
-  const { data } = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-
-  return data;
+    return data;
+  }
 };
 
 /// 유저 백그라운드 사진만 수정
@@ -67,19 +83,34 @@ export const updateBackGroundPhoto = async ({
   userId: number;
   selectedFile: File;
 }) => {
-  const formData = new FormData();
-  formData.append("data", JSON.stringify({}));
-  formData.append("background", selectedFile);
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({}));
+    formData.append("background", selectedFile);
 
-  const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-  return data;
+    const data = await axios.put(`${API_URL}/users/${userId}`, formData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return data;
+  }
+};
+
+/// 유저 삭제하기
+export const deleteMe = async ({ userId }: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const data = await axios.delete(`${API_URL}/users/${userId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    return data;
+  }
 };
 
 // todo
 export const getMyTodosWithDate = async ({ date }: any) => {
-  if (access_token !== null) {
+  const access_token = getCookie("access_token");
+  if (access_token) {
     const { data } = await axios.get(`${API_URL}/todos?date=${date}`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -92,26 +123,34 @@ export const getMyTodosWithDate = async ({ date }: any) => {
   }
 };
 
-export const getUserTodosWithDate = async ({ date }: any) => {
-  const { data } = await axios.get(`${API_URL}/todos/${date}`);
+export const getUserTodosWithDate = async ({ userId, date }: any) => {
+  const { data } = await axios.get(
+    `${API_URL}/todos?userId=${userId}&date=${date}`,
+  );
 
   return data;
 };
 
 export const createMyTodo = async ({ createData }: any) => {
-  const { data } = await axios.post(`${API_URL}/todos`, createData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.post(`${API_URL}/todos`, createData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  return data;
+    return data;
+  }
 };
 
 export const updateMyTodo = async ({ todoId, updateData }: any) => {
-  const { data } = await axios.put(`${API_URL}/todos/${todoId}`, updateData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(`${API_URL}/todos/${todoId}`, updateData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  return data;
+    return data;
+  }
 };
 
 /// todo 우선순위 업데이트
@@ -120,46 +159,64 @@ export const updateMyTodoPriority = async ({
   source,
   destination,
 }: any) => {
-  const { data } = await axios.put(
-    `${API_URL}/todos/${date}/updatePriority`,
-    { data: { source, destination } },
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/todos/${date}/updatePriority`,
+      { data: { source, destination } },
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
 
-  return data;
+    return data;
+  }
 };
 
 export const updateMyTodoDone = async ({ todoId, done }: any) => {
-  const { data } = await axios.put(
-    `${API_URL}/todos/${todoId}`,
-    { done },
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/todos/${todoId}`,
+      { done },
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
 
-  return data;
+    return data;
+  }
 };
 
 export const deleteMyTodo = async ({ todoId }: any) => {
-  const data = await axios.delete(`${API_URL}/todos/${todoId}`, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const data = await axios.delete(`${API_URL}/todos/${todoId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  return data;
+    return data;
+  }
 };
 
 export const getMyGoals = async ({ date }: any) => {
-  if (access_token !== null) {
+  const access_token = getCookie("access_token");
+  if (access_token) {
     const { data } = await axios.get(`${API_URL}/goals?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
     return data;
   } else {
-    return {};
+    return [];
   }
 };
 
+export const getUserGoalsWithDate = async ({ userId, date }: any) => {
+  const { data } = await axios.get(
+    `${API_URL}/goals?userId=${userId}&date=${date}`,
+  );
+  return data;
+};
+
 export const createMyGoal = async (createData: any) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const { data } = await axios.post(`${API_URL}/goals`, createData, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -172,17 +229,31 @@ export const createMyGoal = async (createData: any) => {
 };
 
 export const updateMyGoal = async ({ updateData, goalId }: any) => {
-  const { data } = await axios.put(`${API_URL}/goals/${goalId}`, updateData, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(`${API_URL}/goals/${goalId}`, updateData, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
-  return data;
+    return data;
+  }
 };
 
-export const getDiariesForMonth = async ({ date }: any) => {
+// preview: /diary/:month 쿼리
+export const getDiariesForMonth = async ({
+  date,
+  preview,
+}: {
+  date: any;
+  preview?: boolean;
+}) => {
+  const access_token = getCookie("access_token");
+
   if (access_token) {
     const { data } = await axios.get(
-      `${API_URL}/diaries?date=${date.slice(0, 7)}`,
+      preview
+        ? `${API_URL}/diaries?date=${date.slice(0, 7)}&preview=true`
+        : `${API_URL}/diaries?date=${date.slice(0, 7)}`,
       {
         headers: { Authorization: `Bearer ${access_token}` },
       },
@@ -239,12 +310,45 @@ export const deleteDiary = async (diaryId: string) => {
       headers: { Authorization: `Bearer ${access_token}` },
     });
     console.log(data);
-
     return data;
+  } else {
+    return [];
+  }
+};
+
+// Read _ Diary(특정 날짜)
+export const getDiaryForDay = async ({ date }: any) => {
+  const access_token = getCookie("access_token");
+
+  if (access_token) {
+    console.log(date);
+    const response = await axios.get(`${API_URL}/diaries?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    return response.data;
+  }
+};
+
+// Read _ Remember
+export const getRemembersForMonth = async (month: any) => {
+  const access_token = getCookie("access_token");
+
+  try {
+    const headers = { Authorization: `Bearer ${access_token}` };
+    const response = await axios.get(
+      `${API_URL}/diaries?date=2024-${month}&remember=true`,
+      { headers },
+    );
+
+    return response.data;
+  } catch (e) {
+    console.error(e);
   }
 };
 
 export const deleteMyGoal = async ({ deleteId }: any) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const { data } = await axios.delete(`${API_URL}/goals/${deleteId}`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -254,51 +358,156 @@ export const deleteMyGoal = async ({ deleteId }: any) => {
   }
 };
 
-export const getMyPostsWithPage = async ({ pageParam, access_token }: any) => {
-  const {
-    data: { results, pagination },
-  } = await axios.get(
-    `${API_URL}/posts?friend=false&page=${pageParam}&size=12`,
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
+export const getMyPostsWithPage = async ({ pageParam }: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const {
+      data: { results },
+    } = await axios.get(
+      `${API_URL}/posts?friend=false&page=${pageParam}&size=20`,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
 
-  return { results, pagination };
+    return { results };
+  }
 };
 
-export const getMyRequestsWithPage = async ({
-  pageParam,
-  access_token,
-}: any) => {
-  const {
-    data: { users, pagination },
-  } = await axios.get(
-    `${API_URL}/friendships/request?page=${pageParam}&size=5`,
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
+export const getMyRequestsWithPage = async ({ pageParam }: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const {
+      data: { users, pagination },
+    } = await axios.get(
+      `${API_URL}/friendships/request?page=${pageParam}&size=5`,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
 
-  return users;
+    return users;
+  }
 };
 
-export const getMyFriendsWithPageAndSearch = async ({
+export const getMyFriendsWithPage = async ({ pageParam, size }: any) => {
+  const access_token = getCookie("access_token");
+
+  if (access_token) {
+    const {
+      data: { results, pagination },
+    } = await axios.get(
+      `${API_URL}/friendships/friend?page=${pageParam}&size=${size}`,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return results;
+  }
+};
+
+export const getMyFriendsAndBlock = async ({
   pageParam,
   searchParam,
   size,
-  access_token,
 }: any) => {
-  let q = "";
-  if (pageParam && size && searchParam) {
-    q = `&q=${searchParam}`;
-  } else if (!pageParam && !size && searchParam) {
-    q = `?q=${searchParam}`;
-  }
-  const {
-    data: { users, pagination },
-  } = await axios.get(
-    `${API_URL}/friendships/friend?page=${pageParam}&size=${size}${q}`,
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
+  const access_token = getCookie("access_token");
 
-  return { users, pagination };
+  if (access_token) {
+    let q = "";
+    if (searchParam) {
+      q = `&q=${searchParam}`;
+    }
+
+    const {
+      data: { results },
+    } = await axios.get(
+      `${API_URL}/friendships/friendandblock?page=${pageParam}&size=${size}${q}`,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return results;
+  }
+};
+
+// 유저와 나와의 관계 확인
+export const findFriendship = async (userId: string) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.get(
+      `${API_URL}/friendships?friendId=${userId}`,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+//  팔로우 요청
+export const followUser = async (userId: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.post(
+      `${API_URL}/friendships?friendId=${userId}`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+// 팔로우 취소
+export const followCancelFriedship = async (userId: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${userId}&status=requestCancel`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+// 팔로우 요청 수락 (pending -> accept)
+export const acceptRequest = async (userId: number) => {
+  const access_token = getCookie("access_token");
+
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${userId}&status=friend`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+// 친구 블락
+export const blockFriend = async (friendId: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${friendId}&status=block`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+// 블락 풀기
+export const unblockFriend = async (friendId: number) => {
+  const access_token = getCookie("access_token");
+
+  if (access_token) {
+    const { data } = await axios.put(
+      `${API_URL}/friendships?friendId=${friendId}&status=unblock`,
+      {},
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
 };
 
 // Read _ post
@@ -307,30 +516,31 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
     let url = `${API_URL}/posts?page=${pageParam}&size=6`;
     if (tab === "all") {
       url += "&public=true";
+      const response = await axios.get(url);
+      return response.data.results;
     } else if (tab === "friends") {
+      const access_token = getCookie("access_token");
       const headers = { Authorization: `Bearer ${access_token}` };
-      return await axios
-        .get(url, { headers })
-        .then((response) => response.data.results);
+      const response = await axios.get(url, { headers });
+      return response.data.results;
     }
-    const response = await axios.get(url);
-    return response.data.results;
   } catch (e) {
     console.error(e);
   }
 };
 
 // Create _ post
-export const getGoals = async ({ queryKey }: any) => {
+export const getGoals = async () => {
   const date = getToday();
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
 export const createPost = async (data: any): Promise<any> => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
-
   const formData = new FormData();
 
   formData.append(
@@ -342,11 +552,11 @@ export const createPost = async (data: any): Promise<any> => {
       commentSettings: data.selectedOption,
     }),
   );
-
-  if (data.imageFile) {
-    formData.append("file", data.imageFile);
-  }
   formData.append("file", data.imageFile);
+
+  // for (let value of formData.values()) {
+  //   console.log(value);
+  // }
 
   return await axios.post(`${API_URL}/posts`, formData, { headers });
 };
@@ -365,6 +575,7 @@ export const updatePost = async ({
   postText: string;
   selectedOption: string;
 }): Promise<any> => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   const formData = new FormData();
@@ -391,6 +602,7 @@ export const updatePost = async ({
 
 // Delete _ post
 export const deletePost = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -405,6 +617,7 @@ export const deletePost = async (postId: number) => {
 
 // Put _ like
 export const likePost = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     await axios.put(`${API_URL}/posts/${postId}/like`, {}, { headers });
@@ -421,6 +634,7 @@ export const createComment = async ({
   postId: number;
   comment: string;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   try {
@@ -436,6 +650,7 @@ export const createComment = async ({
 
 // Read _ comment
 export const readCommentsWithPage = async ({ postId, pageParam }: any) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
@@ -458,6 +673,7 @@ export const updateComment = async ({
   commentId: number | null;
   comment: string;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   console.log(postId, commentId, comment);
   try {
@@ -479,6 +695,7 @@ export const deleteComment = async ({
   postId: number;
   commentId: number;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     await axios.delete(`${API_URL}/comments/${commentId}?postId=${postId}`, {
@@ -491,6 +708,7 @@ export const deleteComment = async ({
 
 // Search _ users
 export const getSearchUsers = async (name: string) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
@@ -508,6 +726,7 @@ export const getSearchGoals = async (
   goal: string | string[],
   posts: boolean,
 ) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
 
   if (posts === true) {
@@ -535,6 +754,7 @@ export const getSearchGoals = async (
 
 // Search > Read _ post
 export const getPost = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(`${API_URL}/posts/${postId}`, { headers });
@@ -544,8 +764,30 @@ export const getPost = async (postId: number) => {
   }
 };
 
+// Search _ diaries
+export const getSearchDiaries = async ({
+  search,
+  date,
+}: {
+  search: string;
+  date: any;
+}) => {
+  const access_token = getCookie("access_token");
+  const headers = { Authorization: `Bearer ${access_token}` };
+  try {
+    const response = await axios.get(
+      `${API_URL}/search-diaries?searchTerm=${search}&date=${date}`,
+      { headers },
+    );
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 // Read _ likeship
 export const getLikeship = async (postId: number) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(`${API_URL}/posts/${postId}/likeship`, {
@@ -565,6 +807,7 @@ export const updateFriendship = async ({
   friendId: number;
   status: null | string;
 }) => {
+  const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.put(
@@ -572,7 +815,6 @@ export const updateFriendship = async ({
       null,
       { headers },
     );
-    console.log(response);
   } catch (e) {
     console.error(e);
   }

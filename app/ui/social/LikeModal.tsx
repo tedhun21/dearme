@@ -1,10 +1,9 @@
+// TODO like 무한 스크롤
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-// TODO: Likes > follow 버튼 기능
-// TODO 유저 디폴트 이미지 AccountCircleIcon x
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   useQuery,
   useMutation,
@@ -14,10 +13,7 @@ import {
 
 import { useRecoilValue } from "recoil";
 import { meState } from "@/store/atoms";
-
 import { getLikeship, updateFriendship } from "@/store/api";
-
-// import { Like } from "@/app/social/page";
 
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -41,15 +37,15 @@ export default function LikeModal({
 }: LikeModalProps) {
   const queryClient = useQueryClient();
 
-  const { data: likes } = useQuery({
-    queryKey: ["getLikeship", postId],
-    queryFn: () => getLikeship(postId),
-  });
-
-  console.log(likes);
-
   // me
   const me = useRecoilValue(meState);
+
+  // likes 목록 친구관계 조회
+  const { isSuccess, data: likes } = useQuery({
+    queryKey: ["getLikeship", postId],
+    queryFn: () => getLikeship(postId),
+    enabled: open,
+  });
 
   // Update Friendship
   const { mutateAsync: updateFriendshipMutation } = useMutation({
@@ -71,12 +67,7 @@ export default function LikeModal({
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+    <Modal open={open} onClose={handleClose}>
       <Box
         sx={{
           position: "absolute",
@@ -86,7 +77,6 @@ export default function LikeModal({
           width: 276,
           bgcolor: "#F5F3EB",
           borderRadius: "16px",
-          // p: 4,
         }}
       >
         <div className="flex items-center justify-between px-5 py-2">
@@ -100,10 +90,10 @@ export default function LikeModal({
           </div>
         </div>
         <Divider className="" sx={{ border: "1px solid #EBE3D5" }} />
+
         {Array.isArray(likes) &&
           likes.map((like: any) => (
-            // TODO 친구 아니면 Follow
-            <section
+            <div
               key={like.likeId}
               className="my-3 flex items-center justify-between px-5"
             >
@@ -178,7 +168,7 @@ export default function LikeModal({
                   })()}
                 </button>
               </div>
-            </section>
+            </div>
           ))}
       </Box>
     </Modal>

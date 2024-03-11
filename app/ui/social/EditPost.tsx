@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -52,7 +52,7 @@ export default function EditPost({
     queryKey: ["getGoals"],
     queryFn: getGoals,
   });
-  const goals = goalsData?.data?.data.results;
+  const goals = goalsData?.data;
 
   //   Select 목표 선택
   const [selectedGoal, setSelectedGoal] = useState(
@@ -67,7 +67,7 @@ export default function EditPost({
     postData && !postData.public,
   );
   const handlePrivacyToggle = () => {
-    setIsPrivate((prevIsPrivate) => !prevIsPrivate);
+    setIsPrivate((isPrivate) => !isPrivate);
   };
 
   // 게시물 사진
@@ -91,11 +91,19 @@ export default function EditPost({
 
   // Select 댓글 옵션 선택
   const [selectedOption, setSelectedOption] = useState(
-    postData ? postData.commentSettings : "PUBLIC",
+    postData ? postData.commentSettings : "",
   );
   const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
   };
+
+  useEffect(() => {
+    if (isPrivate) {
+      setSelectedOption("FRIENDS");
+    } else {
+      setSelectedOption("ALL");
+    }
+  }, [isPrivate]);
 
   const editMutation = useMutation({
     mutationKey: ["updatedPost"],
@@ -106,8 +114,8 @@ export default function EditPost({
       postText: string;
       selectedOption: string;
     }) => updatePost(variables),
-    onSuccess: () => {
-      queryClient.invalidateQueries();
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["getPostsWithPage"] });
     },
   });
 
@@ -167,6 +175,7 @@ export default function EditPost({
           </div>
 
           <div className="mb-4 flex items-center justify-between">
+            {/* 목표 선택 */}
             <div className="flex items-center">
               <div className="text-base font-semibold text-default-500">In</div>
               <Select
@@ -207,7 +216,7 @@ export default function EditPost({
                       sx={{ fontSize: "14px" }}
                       value={goal.id}
                     >
-                      {`# ${goal.body}`}
+                      {`# ${goal.title}`}
                     </MenuItem>
                   ))}
               </Select>
@@ -335,14 +344,15 @@ export default function EditPost({
               value={selectedOption}
               onChange={handleOptionChange}
             >
-              <MenuItem sx={{ fontSize: "14px" }} value="PUBLIC">
-                All
+              <MenuItem
+                sx={{ fontSize: "14px" }}
+                value={isPrivate ? "FRIENDS" : "ALL"}
+              >
+                {isPrivate ? "Friends" : "All"}
               </MenuItem>
-              <MenuItem sx={{ fontSize: "14px" }} value="FRIENDS">
-                Friends
-              </MenuItem>
+
               <MenuItem sx={{ fontSize: "14px" }} value="OFF">
-                Turn off
+                Off
               </MenuItem>
             </Select>
           </div>

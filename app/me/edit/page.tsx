@@ -1,64 +1,51 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import { useRecoilValueLoadable } from "recoil";
-
-import { TextareaAutosize } from "@mui/base/TextareaAutosize";
-import { FormControl, Input } from "@mui/joy";
-
-import PillSwitch from "@/app/ui/me/Switch";
-import { IMe, meState } from "@/store/atoms";
-import { updateMe } from "@/store/api";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-type UpdateDataProps = {
-  id: number;
-  updateData: IUpdateData;
-};
+import { Controller, useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-type IUpdateData = {
-  name: string;
-  nickname: string;
-};
+import { FormControl, Input } from "@mui/joy";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
+
+import { getMe, updateMe } from "@/store/api";
+import { Switch } from "@mui/material";
+
+import SignOut from "@/app/ui/me/edit/SignOut";
+import Withdrawal from "@/app/ui/me/edit/Withdrawal";
 
 export default function MeEdit() {
-  // 초기값이 undefined여서 업데이트되면 초기값으로 설정
-  const me = useRecoilValueLoadable(meState);
+  const router = useRouter();
 
-  // 초기값이 undefined여서 업데이트되면 초기값으로 설정
-  const [userPrivate, setUserPrivate] = useState(false);
+  const { isSuccess, data: me } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: getMe,
+  });
+
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     setError,
+    control,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm();
 
-  // console.log(watch());
-
   const { mutate: updateProfileMutate } = useMutation({
     mutationFn: updateMe,
-    onSuccess: ({ data }) => {
+
+    onSuccess: ({ data }: any) => {
       window.alert(data.message);
-      window.location.reload();
     },
-    onError: ({
-      response: {
-        data: { error },
-      },
-    }: any) => {
-      setError(error.details.field, { type: "manual", message: error.message });
+    onError: (err: any, _, context) => {
+      setError(err.response.data.error.details.field, {
+        type: "manual",
+        message: err.response.data.error.message,
+      });
     },
   });
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserPrivate(e.target.checked);
-  };
 
   const onSubmit = (updateData: any) => {
     // 빈 스트링 제거
@@ -68,18 +55,25 @@ export default function MeEdit() {
       }
     });
 
-    if (me.state === "hasValue" && me.contents.id)
-      updateProfileMutate({
-        userId: me.contents.id,
-        updateData: { ...updateData, private: userPrivate },
-      } as any);
+    updateProfileMutate({
+      userId: me.id,
+      updateData: { ...updateData },
+    } as any);
   };
 
   useEffect(() => {
-    if (me.state === "hasValue") {
-      setUserPrivate(me.contents?.private);
+    if (isSuccess && !me) {
+      window.alert("login again");
+      router.push("/");
+    } else if (isSuccess && me) {
+      setValue("private", me.private ?? false);
+      setValue("username", me.username ?? "");
+      setValue("email", me.email ?? "");
+      setValue("nickname", me.nickname ?? "");
+      setValue("phone", me.phone ?? "");
+      setValue("body", me.body ?? "");
     }
-  }, [me.state, me.contents]);
+  }, [isSuccess, me]);
 
   return (
     <section className="mb-20 mt-4">
@@ -88,8 +82,54 @@ export default function MeEdit() {
         className="flex flex-col gap-6 p-5"
       >
         <div className="flex items-center gap-4">
-          <span className="text-xl font-semibold">Private</span>
-          <PillSwitch checked={userPrivate ?? false} onChange={handleChange} />
+          <label htmlFor="private" className="text-xl font-semibold">
+            Private
+          </label>
+          <Controller
+            name="private"
+            control={control}
+            render={({ field }) => (
+              <Switch
+                {...field}
+                checked={field.value ?? false}
+                onChange={field.onChange}
+                sx={{
+                  /// switch 기본 박스 크기
+                  padding: 0,
+                  width: "32px",
+                  height: "20px",
+                  "& .MuiSwitch-switchBase": {
+                    padding: 0,
+                    margin: "2px",
+                    transitionDuration: "300ms",
+                    /// 체크될때
+                    "&.Mui-checked": {
+                      transform: "translateX(12px)",
+                      color: "#fff",
+                      "& + .MuiSwitch-track": {
+                        backgroundColor: "#143422",
+                        opacity: 1,
+                        border: 0,
+                      },
+                      "&.Mui-disabled + .MuiSwitch-track": {
+                        opacity: 0.5,
+                      },
+                    },
+                  },
+                  "& .MuiSwitch-thumb": {
+                    boxSizing: "border-box",
+                    width: 16,
+                    height: 16,
+                  },
+                  "& .MuiSwitch-track": {
+                    borderRadius: 26 / 2,
+                    backgroundColor: "#b6b6c0",
+                    opacity: 1,
+                  },
+                }}
+              />
+            )}
+          />
         </div>
         <div>
           <div className="flex w-full flex-col gap-5">
@@ -102,8 +142,8 @@ export default function MeEdit() {
               </label>
               <Input
                 id="username"
+                {...register("username")}
                 variant="plain"
-                defaultValue={me.contents?.username}
                 readOnly
                 sx={{
                   "--Input-radius": "0px",
@@ -126,7 +166,7 @@ export default function MeEdit() {
                     transform: "scaleX(1)",
                   },
                 }}
-              ></Input>
+              />
             </FormControl>
             <FormControl>
               <label
@@ -137,8 +177,8 @@ export default function MeEdit() {
               </label>
               <Input
                 id="email"
+                {...register("email")}
                 variant="plain"
-                defaultValue={me.contents?.email}
                 readOnly
                 sx={{
                   "--Input-radius": "0px",
@@ -161,7 +201,7 @@ export default function MeEdit() {
                     transform: "scaleX(1)",
                   },
                 }}
-              ></Input>
+              />
             </FormControl>
             <FormControl>
               <label
@@ -174,7 +214,7 @@ export default function MeEdit() {
                 id="nickname"
                 {...register("nickname")}
                 variant="plain"
-                defaultValue={me.contents?.nickname}
+                defaultValue={me?.nickname}
                 sx={{
                   "--Input-radius": "0px",
                   borderBottom: "2px solid #DED0B6",
@@ -196,7 +236,7 @@ export default function MeEdit() {
                     transform: "scaleX(1)",
                   },
                 }}
-              ></Input>
+              />
               {errors.nickname && (
                 <p className="text-red-500">
                   {(errors as any).nickname.message}
@@ -214,7 +254,7 @@ export default function MeEdit() {
                 id="phone"
                 {...register("phone")}
                 variant="plain"
-                defaultValue={me.contents?.phone}
+                defaultValue={me?.phone}
                 sx={{
                   "--Input-radius": "0px",
                   borderBottom: "2px solid #DED0B6",
@@ -236,7 +276,7 @@ export default function MeEdit() {
                     transform: "scaleX(1)",
                   },
                 }}
-              ></Input>
+              />
               {errors.phone && (
                 <p className="text-red-500">{(errors as any).phone.message}</p>
               )}
@@ -251,11 +291,10 @@ export default function MeEdit() {
               <TextareaAutosize
                 id="body"
                 {...register("body")}
-                defaultValue={me.contents?.body}
                 minRows={3}
                 maxRows={6}
                 className="rounded-md border border-solid hover:border-default-800 focus:border-default-900 focus:shadow-lg focus-visible:outline-0"
-              ></TextareaAutosize>
+              />
             </FormControl>
             <div className="mx-8 flex flex-col items-center justify-center gap-4">
               <button
@@ -265,18 +304,8 @@ export default function MeEdit() {
                 Edit Profile
               </button>
               <div className="flex w-full justify-between">
-                <button
-                  type="button"
-                  className="font-semibold hover:text-default-800 active:text-default-900"
-                >
-                  Log out
-                </button>
-                <button
-                  type="button"
-                  className="font-semibold hover:text-default-800 active:text-default-900"
-                >
-                  Withdrawal
-                </button>
+                <SignOut />
+                <Withdrawal me={me} />
               </div>
             </div>
           </div>

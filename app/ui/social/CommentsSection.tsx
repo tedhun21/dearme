@@ -3,76 +3,73 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-// TODO loading / all comments are loaded
-
 import React, { ChangeEvent, useState, useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 import {
+  useQuery,
   useMutation,
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
 
-import { useRecoilValue } from "recoil";
-import { meState } from "@/store/atoms";
 import {
+  getMe,
   readCommentsWithPage,
   createComment,
   updateComment,
 } from "@/store/api";
 
-// import { Comment } from "@/app/social/page";
 import CommentSettings from "./CommentSettings";
 import { timeSince } from "./SocialPost";
 
 import InputBase from "@mui/material/InputBase";
+import { CircularProgress } from "@mui/material";
 
 import Send from "@/public/social/Send";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function CommentsSection({ postId }: { postId: number }) {
+export default function CommentsSection({
+  postId,
+  commentSettings,
+}: {
+  postId: number;
+  commentSettings: string;
+}) {
   const queryClient = useQueryClient();
-  const [ref, inView] = useInView();
 
-  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
-    any[],
-    Error
-  >({
-    queryKey: ["getCommentsWithPage", postId],
-    queryFn: ({ pageParam }: { pageParam: number }) =>
-      readCommentsWithPage({ postId: postId, pageParam: pageParam }),
+  // me
+  const { isSuccess, data: me } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: getMe,
+  });
+
+  // Read _ comments
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<any[], Error>({
+    queryKey: ["readCommentsWithPage"],
+    queryFn: ({ pageParam }) => readCommentsWithPage({ postId, pageParam }),
     getNextPageParam: (lastPage, allPages: any) => {
-      const maxPage = lastPage.length / 6;
+      const maxPage = lastPage.length / 5;
       const nextPage = allPages.length + 1;
 
-      return lastPage.length >= 6 ? lastPage.length / 6 + 1 : undefined;
+      return maxPage < 1 ? undefined : nextPage;
     },
     initialPageParam: 1,
   });
-
-  useEffect(() => {
-    if (!inView) {
-      return;
-    }
+  const handleLoadMoreComments = () => {
     fetchNextPage();
-  }, [inView]);
+  };
 
-  // me
-  const me = useRecoilValue(meState);
-
-  // 댓글 입력 상태
+  // Create _ comment
   const [comment, setComment] = useState<string>("");
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setComment(e.target.value);
   };
 
-  // 댓글 Post Request
   const { mutateAsync: addCommentMutation } = useMutation({
     mutationFn: createComment,
-    onSuccess: () => {
-      queryClient.invalidateQueries();
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["readCommentsWithPage"] });
     },
   });
 
@@ -85,15 +82,11 @@ export default function CommentsSection({ postId }: { postId: number }) {
     setComment("");
   };
 
-  // TODO 댓글 호버(...)
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-
-  // 댓글 수정 상태
+  // Update _ comment
   const [editingComment, setEditingComment] = useState<string>("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  // 댓글 Edit Request
   const { mutateAsync: updateCommentMutation } = useMutation({
     mutationFn: updateComment,
     onSuccess: () => {
@@ -117,112 +110,129 @@ export default function CommentsSection({ postId }: { postId: number }) {
   };
 
   return (
-    <section className="mt-4  ">
-      {data?.pages &&
-        data.pages.map((comments: any) =>
-          comments.map((comment: any) => (
-            <section key={comment.id} className="mb-3 flex w-full gap-2  px-5">
-              {/* 이미지*/}
-              <img
-                src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-                alt="User Image"
-                className="h-8 w-8 overflow-hidden rounded-full object-cover"
-              />
+    <>
+      {data?.pages[0].length !== 0 && (
+        <section className="mt-4 max-h-[240px] overflow-y-scroll scrollbar-hide">
+          {data?.pages.map((comments: any) =>
+            comments.map((comment: any) => (
+              <div key={comment.id} className="mb-3 flex w-full gap-2  px-5">
+                {/* 이미지*/}
+                <img
+                  src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
+                  alt="User Image"
+                  className="h-8 w-8 overflow-hidden rounded-full object-cover"
+                />
 
-              <div className="flex w-full flex-col justify-center">
-                {/* 작성자 & 댓글 */}
-                <div className="flex gap-2">
-                  <span className="text-sm font-semibold">
-                    {comment.user.nickname}
-                  </span>
-                  <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
-                    {isEditing && editingCommentId === comment.id ? (
-                      <InputBase
-                        multiline
-                        sx={{
-                          fontSize: "12px",
-                          fontWeight: 400,
-                          width: "100%",
-                          overflowWrap: "break-word",
-                          // border: 1,
-                          // borderColor: "grey.500",
-                        }}
-                        value={editingComment}
-                        onChange={(e) => setEditingComment(e.target.value)}
-                        autoFocus
-                      />
-                    ) : (
-                      comment.body
-                    )}
-                  </span>
-                </div>
-
-                {/* 작성 시간 & 댓글 설정 */}
-                <div className="flex items-center justify-end">
-                  <div
-                    className="text-2xs  text-default-500"
-                    onMouseEnter={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                  >
-                    {timeSince(comment.createdAt)}
+                <div className="flex w-full flex-col justify-center">
+                  {/* 작성자 & 댓글 */}
+                  <div className="flex gap-2">
+                    <span className="text-sm font-semibold">
+                      {comment.user.nickname}
+                    </span>
+                    <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
+                      {isEditing && editingCommentId === comment.id ? (
+                        <InputBase
+                          multiline
+                          sx={{
+                            fontSize: "12px",
+                            fontWeight: 400,
+                            width: "100%",
+                            overflowWrap: "break-word",
+                          }}
+                          value={editingComment}
+                          onChange={(e) => setEditingComment(e.target.value)}
+                          autoFocus
+                        />
+                      ) : (
+                        comment.body
+                      )}
+                    </span>
                   </div>
-                  {isEditing && editingCommentId === comment.id ? (
+
+                  {/* 작성 시간 & 댓글 설정 */}
+                  <div className="flex items-center justify-end">
                     <div
-                      className="ml-2 cursor-pointer text-xs font-normal text-default-700"
-                      onClick={handleEdit}
+                      className="text-2xs  text-default-500"
+                      // onMouseEnter={() => setIsHovered(true)}
+                      // onMouseLeave={() => setIsHovered(false)}
                     >
-                      Edit
+                      {timeSince(comment.createdAt)}
                     </div>
-                  ) : (
-                    <div>
-                      <CommentSettings
-                        postId={postId}
-                        commentId={comment.id}
-                        onEditClick={() => {
-                          setIsEditing(true);
-                          setEditingCommentId(comment.id);
-                        }}
-                      />
-                    </div>
-                  )}
+                    {comment.user.id === me.id ? (
+                      isEditing ? (
+                        editingCommentId === comment.id && (
+                          <div
+                            className="ml-2 cursor-pointer text-xs font-normal text-default-600 hover:text-default-700"
+                            onClick={handleEdit}
+                          >
+                            Edit
+                          </div>
+                        )
+                      ) : (
+                        <div>
+                          <CommentSettings
+                            postId={postId}
+                            commentId={comment.id}
+                            onEditClick={() => {
+                              setIsEditing(true);
+                              setEditingCommentId(comment.id);
+                              setEditingComment(comment.body);
+                            }}
+                          />
+                        </div>
+                      )
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </section>
-          )),
-        )}
-      {/* 댓글 작성 */}
-      <div className="mb-2 mt-5 flex items-center px-5">
-        <div>
-          <img
-            src={`${BUCKET_URL}${me.photo.url}`}
-            alt="User Image"
-            className="h-8 w-8 rounded-full"
-          />
-        </div>
+            )),
+          )}
+          {hasNextPage && (
+            <button
+              onClick={handleLoadMoreComments}
+              className="flex w-full cursor-pointer justify-center text-xs font-medium text-default-600"
+            >
+              Show more comments
+            </button>
+          )}
+        </section>
+      )}
 
-        <div className="w-full flex-col pl-3">
-          <div className="flex h-8 items-center rounded-full border-2 border-default-400 p-0.5 ">
-            <InputBase
-              sx={{
-                ml: 2,
-                flex: 1,
-                color: "#928c7f",
-                fontSize: 14,
-                fontWeight: 500,
-              }}
-              placeholder="Add a comment..."
-              inputProps={{ "aria-label": "댓글 남기기..." }}
-              onChange={handleInputChange}
-              value={comment}
+      {/* 댓글 작성 */}
+      {commentSettings !== "OFF" && (
+        <section className="mb-2 mt-5 flex items-center px-5">
+          <div>
+            <img
+              src={`${BUCKET_URL}${me.photo.url}`}
+              alt="User Image"
+              className="h-8 w-8 rounded-full"
             />
-            {comment && (
-              <div onClick={handleSubmit}>
-                <Send className="mr-1 h-5 w-5 fill-current text-default-600" />
-              </div>
-            )}
           </div>
-        </div>
-      </div>
-    </section>
+
+          <div className="w-full flex-col pl-3">
+            <div className="flex h-8 items-center rounded-full border-2 border-default-400 p-0.5 ">
+              <InputBase
+                sx={{
+                  ml: 2,
+                  flex: 1,
+                  color: "#928c7f",
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
+                placeholder="Add a comment..."
+                inputProps={{ "aria-label": "댓글 남기기..." }}
+                onChange={handleInputChange}
+                value={comment}
+              />
+              {comment && (
+                <div onClick={handleSubmit}>
+                  <Send className="mr-1 h-5 w-5 fill-current text-default-600" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }

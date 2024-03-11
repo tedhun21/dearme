@@ -57,7 +57,7 @@ const SearchResults = () => {
           <GoalTag className="h-10 w-10" />
           <div className="flex flex-col">
             <h1 className="ml-2 text-sm font-semibold text-default-700">
-              #{searchedGoals.body}
+              #{searchedGoals.title}
             </h1>
             <h2 className="ml-2 text-sm font-semibold text-default-500">
               {searchedGoals.postsCount}{" "}

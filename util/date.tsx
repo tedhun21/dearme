@@ -80,4 +80,41 @@ export const getDiaryDate = (date: string) => {
   const weekDay = dateObj.toLocaleString("ko-KR", { weekday: "short" });
 
   return `${year}. ${month}. ${day}. (${weekDay})`;
+    
+// 날짜 사이 기간
+export const diffBetweenTwoDates = ({ startDate, endDate }: any) => {
+  const standardDay = dayjs(endDate).diff(startDate, "day");
+  const standardWeek = dayjs(endDate).diff(startDate, "week");
+  const standardMonth = dayjs(endDate).diff(startDate, "month");
+
+  const subWeek = dayjs(endDate).subtract(standardWeek, "week");
+  const diffDay = dayjs(subWeek).diff(startDate, "day");
+
+  const subMonth = dayjs(endDate).subtract(standardMonth, "month");
+  const diffWeek = dayjs(subMonth).diff(startDate, "week");
+
+  if (standardMonth >= 1) {
+    return `${standardMonth}${standardMonth !== 1 ? "months" : "month"} ${
+      diffWeek !== 0 ? `${diffWeek}${diffWeek !== 0 ? "weeks" : "week"}` : ""
+    } ${diffDay !== 0 ? `${diffDay}${diffDay !== 1 ? "days" : "day"}` : ""}`;
+  } else if (standardWeek >= 1) {
+    return `${standardWeek}${standardWeek !== 1 ? "weeks" : "week"} ${
+      diffDay !== 0 ? `${diffDay}${diffDay !== 1 ? "days" : "day"}` : ""
+    }`;
+  } else if (standardDay >= 1) {
+    return `${standardDay} days`;
+  }
+};
+
+// 연월일 구하기
+export const returnDate = (date: Dayjs) => {
+  const year = dayjs(date).get("year");
+  const month = dayjs(date).get("month") + 1;
+  const day = dayjs(date).get("date");
+  return { year, month, day };
+};
+
+// 요일 구하기
+export const dayOftheWeek = (date: Dayjs) => {
+  return dayjs(date).format("dddd").slice(0, 3);
 };

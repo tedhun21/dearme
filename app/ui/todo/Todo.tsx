@@ -1,70 +1,30 @@
 import { useEffect, useState } from "react";
+
+import { useSetRecoilState } from "recoil";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+
 import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
 import TodoCheckTrueIcon from "@/public/me/TodoCheckTrueIcon";
 import TodoMenu from "./TodoMenu";
 import { todoListState } from "@/store/atoms";
-import { useMutation } from "@tanstack/react-query";
 import { updateMyTodo, updateMyTodoDone } from "@/store/api";
-import { useSetRecoilState } from "recoil";
 import XIcon from "@/public/todo/XIcon";
 import SendIcon from "@/public/todogoal/SendIcon";
-import { useForm } from "react-hook-form";
-import { usePathname } from "next/navigation";
 
 export default function Todo({ date, todo }: any) {
-  const pathname = usePathname();
-
-  const [done, setDone] = useState(todo.done);
+  const [done, setDone] = useState<boolean>();
   const setTodos = useSetRecoilState(todoListState);
 
   const [canEdit, setCanEdit] = useState(false);
   const { register, handleSubmit } = useForm();
 
   // todo done 업데이트
-  const {
-    mutate: updateMyTodoDoneMutate,
-    data,
-    isSuccess,
-  } = useMutation({
+  const { mutate: updateMyTodoDoneMutate } = useMutation({
     mutationKey: ["updateMyTodoDone"],
     mutationFn: updateMyTodoDone,
-  });
-
-  const { mutate: updateMyTodoBodyMutate } = useMutation({
-    mutationKey: ["updateMyTodo"],
-    mutationFn: updateMyTodo,
-  });
-
-  const onSubmit = ({ todoBody }: any) => {
-    if (todoBody !== "") {
-      updateMyTodoBodyMutate(
-        {
-          todoId: todo.id,
-          updateData: { body: todoBody },
-        },
-        {
-          onSuccess: (data) => {
-            setTodos((prev) =>
-              prev.map((prevTodo) => {
-                if (prevTodo.id === data.id) {
-                  return { ...data };
-                }
-                return prevTodo;
-              }),
-            );
-            setCanEdit(false);
-          },
-        },
-      );
-    }
-  };
-
-  useEffect(() => {
-    updateMyTodoDoneMutate({ todoId: todo.id, done });
-  }, [done]); // done이 변경될 때마다 호출
-
-  useEffect(() => {
-    if (isSuccess && data) {
+    onSuccess: (data) => {
+      setDone(data.done);
       setTodos((prev) =>
         prev.map((prevTodo) => {
           if (prevTodo.id === data.id) {
@@ -73,13 +33,47 @@ export default function Todo({ date, todo }: any) {
           return prevTodo;
         }),
       );
+    },
+  });
+
+  const handleTodoCheck = () => {
+    updateMyTodoDoneMutate({ todoId: todo.id, done: !done });
+    setDone((prev) => !prev);
+  };
+
+  const { mutate: updateMyTodoBodyMutate } = useMutation({
+    mutationKey: ["updateMyTodo"],
+    mutationFn: updateMyTodo,
+    onSuccess: (data) => {
+      setTodos((prev) =>
+        prev.map((prevTodo) => {
+          if (prevTodo.id === data.id) {
+            return { ...data };
+          }
+          return prevTodo;
+        }),
+      );
+      setCanEdit(false);
+    },
+  });
+
+  const onSubmit = ({ todoBody }: any) => {
+    if (todoBody !== "") {
+      updateMyTodoBodyMutate({
+        todoId: todo.id,
+        updateData: { body: todoBody },
+      });
     }
-  }, [isSuccess, data]);
+  };
+
+  useEffect(() => {
+    setDone(todo.done);
+  }, [todo]);
 
   return (
     <div className="flex items-center justify-between px-4 py-2">
       <div className="flex flex-grow gap-3">
-        <button onClick={() => setDone((prev: any) => !prev)}>
+        <button onClick={() => handleTodoCheck()}>
           {done ? (
             <TodoCheckTrueIcon className="h-6 w-6 fill-current text-default-600 hover:text-default-700" />
           ) : (

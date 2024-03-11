@@ -1,5 +1,17 @@
-import { atom } from "recoil";
+import { atom, RecoilEnv } from "recoil";
 import dayjs, { Dayjs } from "dayjs";
+// import { recoilPersist } from "recoil-persist";
+
+// RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
+
+// const localStorage =
+//   typeof window !== "undefined" ? window.localStorage : undefined;
+
+// const { persistAtom } = recoilPersist({
+//   key: "recoil-persist",
+//   storage: localStorage,
+//   converter: JSON,
+// });
 
 enum EPublic {
   ALL,
@@ -29,14 +41,14 @@ interface IPagination {
   total?: number;
 }
 
-// export interface ITodos {
-//   results: ITodo[];
-//   pagination: IPagination;
-// }
-
 export const todoListState = atom<ITodo[]>({
   key: "Todos",
   default: [],
+});
+
+export const filter = atom<string>({
+  key: "filter",
+  default: "",
 });
 
 interface IImage {
@@ -52,6 +64,7 @@ export interface IMe {
   photo: IImage;
   background: IImage;
   private: boolean;
+  friendCount: number;
 }
 
 export const meState = atom<IMe>({
@@ -78,6 +91,7 @@ interface IGoal {
   startDate: string;
   endDate: string;
   createdAt: Dayjs;
+  isPublic: boolean;
 }
 
 export const goalListState = atom<IGoal[]>({
@@ -86,13 +100,32 @@ export const goalListState = atom<IGoal[]>({
 });
 
 export interface ISetting {
+  isLogin: false;
+  isDiary: boolean;
+  date: Dayjs;
   todogoalTitle: string;
   todogoalDate: Dayjs;
 }
 
 export const settingState = atom<ISetting>({
   key: "Settings",
-  default: { todogoalTitle: "Todo", todogoalDate: dayjs() },
+  default: {
+    isLogin: false,
+    isDiary: false,
+    date: dayjs(),
+    todogoalTitle: "Todo",
+    todogoalDate: dayjs(),
+  },
+});
+
+export interface IProcess {
+  is100: boolean;
+  doReset: boolean;
+}
+
+export const processState = atom<IProcess>({
+  key: "Process",
+  default: { is100: false, doReset: false },
 });
 
 enum ECompanion {
@@ -119,6 +152,7 @@ export interface IDiary {
   endSleep: string;
   feelings: string;
   companions: ECompanion;
+  photos: IImage[];
   mood: EMood;
   remember: boolean;
   weatherId: string;
@@ -136,3 +170,10 @@ export const diaryListState = atom({
   key: "Diaries",
   default: [],
 });
+
+export interface IFriend {
+  id: number;
+  username: string;
+  nickname: string;
+  photo?: IImage;
+}

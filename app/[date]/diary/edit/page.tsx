@@ -13,6 +13,7 @@ import DialogTitle from "@mui/joy/DialogTitle";
 import DialogContent from "@mui/joy/DialogContent";
 import Input from "@mui/joy/Input";
 import Textarea from "@mui/joy/Textarea";
+import { Box } from "@mui/joy";
 
 import Exit from "@/public/diary/Exit";
 import HappyEmoji from "@/public/diary/HappyEmoji";
@@ -26,6 +27,9 @@ import ButtonExit from "@/public/diary/ButtonExit";
 import WeatherIcons from "@/app/ui/diary/WeatherIcons";
 import CirclePlus from "@/public/diary/CirclePlus";
 import PhotoIcon from "@/public/diary/PhotoIcon";
+import DearmeLogo from "@/public/login/DearmeLogo";
+import BlackPlus from "@/public/diary/BlackPlus";
+import AddPhoto from "@/public/diary/AddPhoto";
 
 import { getCookie } from "@/util/tokenCookie";
 import { getDiaryDate } from "@/util/date";
@@ -254,6 +258,127 @@ export default function Edit() {
       (photo: any) => photo.id !== photoId,
     );
     setValue("photos", updatedPhotos);
+  };
+
+  /* 오늘의 PICK Part */
+  type UploadTodayPickProps = {
+    id: number;
+    title: string;
+    date: string;
+    contributors: string;
+    image: string | null;
+  };
+  const picksData = watch("todayPick.id");
+  const [pickOpen, setPickOpen] = useState(false);
+  const [hovered, setHovered] = useState<{ [key: number]: boolean }>({});
+  const [newPick, setNewPick] = useState<UploadTodayPickProps>({
+    id: Date.now(),
+    title: "",
+    date: "",
+    contributors: "",
+    image: null,
+  });
+
+  useEffect(() => {
+    if (methods.watch("todayPick.id") && isSuccess) {
+      const updatedPick = {
+        id: fetchedDiaryData.todayPickId,
+        title: fetchedDiaryData.todayPickTitle,
+        date: fetchedDiaryData.todayPickDate,
+        contributors: fetchedDiaryData.todayPickContributors,
+        imageFile:
+          fetchedDiaryData.todayPickImage &&
+          fetchedDiaryData.todayPickImage.length > 0
+            ? `${process.env.NEXT_PUBLIC_BUCKET_URL}${fetchedDiaryData.todayPickImage[0].url}`
+            : null,
+      };
+
+      setValue("todayPick", updatedPick);
+    }
+  }, [isSuccess, fetchedDiaryData, setValue, methods]);
+
+  const handleOpen = () => setPickOpen(true);
+  const handleClose = () => setPickOpen(false);
+
+  // 마우스가 이미지 위로 이동했을 때 호출될 핸들러입니다.
+  const handleMouseEnter = (id: number) => {
+    setHovered((prev) => ({ ...prev, [id]: true }));
+  };
+  // 마우스가 이미지에서 벗어났을 때 호출될 핸들러입니다.
+  const handleMouseLeave = (id: number) => {
+    setHovered((prev) => ({ ...prev, [id]: false }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setNewPick((prev) => ({ ...prev, image: imageUrl }));
+      setPickOpen(true);
+      console.log("Image URL: ", imageUrl);
+    }
+  };
+
+  const removeImage = () => {
+    setNewPick((prev) => ({ ...prev, image: null }));
+  };
+
+  // 생성된 Pick을 삭제
+  const handleRemove = (
+    id: number,
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault();
+    if (watch("todayPick.id") === id) {
+      setValue("todayPick", {});
+      setValue("todayPick.title", "");
+      setValue("todayPick.contributors", []);
+      setValue("todayPick.date", "");
+      setValue("todayPick.id", "");
+      setValue("todayPick.imageFile", null);
+    }
+  };
+
+  // input 글자 수 제한
+  const handleLimitString = (
+    name: keyof UploadTodayPickProps,
+    value: string,
+  ) => {
+    if (value.length <= 30) {
+      setNewPick({ ...newPick, [name]: value });
+    }
+  };
+
+  // const handleComplete = () => {
+  //   const completedPick = {
+  //     ...newPick,
+  //     imageFile: newPick.image, // File 객체를 저장
+  //   };
+  //   setValue("todayPick", [...todayPick, completedPick]);
+  //   setNewPick({
+  //     id: Date.now(),
+  //     title: "",
+  //     date: "",
+  //     contributors: "",
+  //     image: null,
+  //   });
+  //   setValue("todayPickModalOpen", false);
+  // };
+  const handleComplete = () => {
+    setValue("todayPick", newPick.title);
+    setValue("todayPick.contributors", newPick.contributors);
+    setValue("todayPick.date", newPick.date);
+    setValue("todayPick.id", newPick.id);
+
+    setNewPick({
+      id: Date.now(),
+      title: "",
+      date: "",
+      contributors: "",
+      image: null,
+    });
+
+    setPickOpen(false);
   };
 
   return (
@@ -501,269 +626,210 @@ export default function Edit() {
             )}
           </div>
         </section>
+
+        {/* 오늘의 PICK 항목 */}
+        <section className="flex flex-col bg-default-800">
+          <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-default-100">
+            오늘의 PICK
+          </h2>
+          <div className="overflow-x-auto">
+            {/* 데이터가 있는경우 */}
+            {watch("todayPick.id") ? (
+              <div className="flex flex-row items-start">
+                <article key={watch("todayPick.id")} className="flex flex-col">
+                  <section
+                    className="relative flex max-h-[200px] min-h-[200px] min-w-[200px] max-w-[200px]"
+                    onMouseEnter={() => handleMouseEnter(watch("todayPick.id"))}
+                    onMouseLeave={() => handleMouseLeave(watch("todayPick.id"))}
+                  >
+                    {watch("todayPick.imageFile") ? (
+                      <img
+                        src={watch("todayPick.imageFile")}
+                        alt="Uploaded"
+                        className="ml-8 flex h-44 w-44 object-cover"
+                      />
+                    ) : (
+                      <div className="ml-8 flex h-44 w-44 flex-col items-center justify-center bg-default-600">
+                        <DearmeLogo />
+                      </div>
+                    )}
+                    <Button
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "20%",
+                        visibility: hovered[watch("todayPick.id")]
+                          ? "visible"
+                          : "hidden",
+                        opacity: hovered[watch("todayPick.id")] ? 1 : 0,
+                        transform: "translateY(-50%)",
+                        transition: "visibility 0.3s, opacity 0.3s ease",
+                      }}
+                      onClick={(
+                        event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+                      ) => handleRemove(watch("todayPick.id"), event)}
+                    >
+                      Remove
+                    </Button>
+                    {/* <span
+                      onClick={handleOpen}
+                      style={{ cursor: "pointer" }}
+                      className="ml-16 mt-24 flex justify-end"
+                    >
+                      <CirclePlus />
+                    </span> */}
+                  </section>
+                  <section className="mb-6 ml-8 mt-[-16px] flex flex-col">
+                    <h3 className="text-base text-default-100">
+                      {watch("todayPick.title")}
+                    </h3>
+                    <p className="text-xs text-default-100">
+                      {watch("todayPick.date")}
+                    </p>
+                    <p className="text-xs text-default-100">
+                      {watch("todayPick.contributors")}
+                    </p>
+                  </section>
+                </article>
+              </div>
+            ) : (
+              /* 데이터가 없는경우 */
+              <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
+                <button
+                  onClick={handleOpen}
+                  className="w-full rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300"
+                >
+                  <span className="mb-2 flex justify-center">
+                    <BlackPlus />
+                  </span>
+                  오늘의 문화생활을
+                  <h3 className="flex justify-center text-base font-medium text-gray-400">
+                    기록해봐요!
+                  </h3>
+                </button>
+              </span>
+            )}
+          </div>
+          <Modal keepMounted open={pickOpen} onClose={handleClose}>
+            <ModalDialog
+              sx={{
+                width: "400px",
+                maxWidth: "400px",
+                bgcolor: "background.paper",
+                borderRadius: 10,
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <DialogTitle id="modal-title" sx={{ justifyContent: "center" }}>
+                {`Add Today's Cultural Activity`}
+              </DialogTitle>
+              <Box
+                sx={{
+                  border: newPick.image ? "none" : "1px dashed #EBE3D5", // 이미지가 있으면 border 없앰
+                  backgroundColor: newPick.image ? "transparent" : "", // 이미지가 있으면 배경색 투명 처리
+                  position: "relative",
+                  padding: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  height: 280,
+                  overflow: "hidden", // 이미지가 넘치는 경우 잘라줌.
+                  "&:hover .remove-image-button": {
+                    // 호버링 시 특정 클래스를 가진 요소의 스타일을 변경
+                    display: "flex", // 버튼을 flex로 표시합니다.
+                  },
+                }}
+              >
+                <input
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="raised-button-file"
+                  multiple
+                  type="file"
+                  onChange={handleImageChange}
+                />
+                <label
+                  htmlFor="raised-button-file"
+                  style={{ cursor: "pointer" }}
+                >
+                  {newPick.image ? (
+                    <img
+                      src={newPick.image}
+                      alt="UploadImage"
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : (
+                    <AddPhoto />
+                  )}
+                </label>
+                {newPick.image && (
+                  <Button
+                    sx={{
+                      position: "absolute", // 버튼을 이미지 위에 절대 위치
+                      top: "50%", // 상단에서 50%의 위치
+                      left: "50%", // 좌측에서 50%의 위치
+                      transform: "translate(-50%, -50%)", // 정확히 중앙에 오도록 조정
+                      bgcolor: "rgba(76, 92, 242, 0.7)", // 버튼 배경을 약간 투명하게 설정
+                      display: "none", // 기본적으로 버튼을 숨김
+                      "&:hover": {
+                        // bgcolor: "rgba(13, 31, 188, 0.7)", // 호버링 시 더 불투명하게 설정
+                        display: "block",
+                      },
+                    }}
+                    onClick={removeImage}
+                  >
+                    Remove Image
+                  </Button>
+                )}
+              </Box>
+              <DialogContent>
+                <Input
+                  className="mb-4"
+                  fullWidth
+                  placeholder="Title (30 characters or less)"
+                  value={newPick.title || ""}
+                  onChange={(e) => handleLimitString("title", e.target.value)}
+                />
+                <Input
+                  className="mb-4"
+                  fullWidth
+                  placeholder="date (30 characters or less)"
+                  value={newPick.date || ""}
+                  onChange={(e) => handleLimitString("date", e.target.value)}
+                />
+                <Input
+                  className="mb-1"
+                  fullWidth
+                  placeholder="Contributors (Production Company, Cast, Author, etc)"
+                  value={newPick.contributors || ""}
+                  onChange={(e) =>
+                    handleLimitString("contributors", e.target.value)
+                  }
+                />
+              </DialogContent>
+              <Button
+                className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800 hover:bg-default-400"
+                onClick={() => handleClose()}
+              >
+                취소
+              </Button>
+              <Button
+                className="flex bg-default-800 px-5 text-default-100"
+                onClick={handleComplete}
+              >
+                작성 완료
+              </Button>
+            </ModalDialog>
+          </Modal>
+        </section>
       </article>
     </main>
   );
 }
-
-// export default function Edit() {
-//   const params = useParams<any>();
-//   const [diaryData, setDiaryData] = useState({
-//     mood: "",
-//     emotionTags: [],
-//     companions: [],
-//     photo: [],
-//     title: "",
-//     content: "",
-//     weather: "",
-//     weatherId: "",
-//     todayPick: {
-//       title: "",
-//       contributors: "",
-//       date: "",
-//       id: "",
-//       imageFile: [],
-//     },
-//   });
-
-//   // 최상단 날짜 표시
-//   const [formattedDate, setFormattedDate] = useState("");
-
-//   useEffect(() => {
-//     if (params.date) {
-//       const newFormat = getDiaryDate(params.date);
-//       setFormattedDate(newFormat);
-//     }
-//   }, [params.date]);
-
-//   // FormData 객체 생성
-//   const formData = new FormData();
-
-//   const mapCompanionToServerValue = (companion: string) => {
-//     const mapping: { [key: string]: string } = {
-//       가족: "FAMILY",
-//       친구: "FRIEND",
-//       연인: "LOVER",
-//       지인: "ACQUAINTANCE",
-//       안만남: "ALONE",
-//       FAMILY: "가족",
-//       FRIEND: "친구",
-//       LOVER: "연인",
-//       ACQUAINTANCE: "지인",
-//       ALONE: "안만남",
-//     };
-//     return mapping[companion] || companion;
-//   };
-
-//   const parseCompanions = (companions: any) => {
-//     // companions가 문자열인 경우 콤마로 구분하여 배열로 변환
-//     if (typeof companions === "string") {
-//       return companions.split(",");
-//     }
-//     // 이미 배열인 경우 그대로 반환
-//     else if (Array.isArray(companions)) {
-//       return companions;
-//     }
-//     // 그 외의 경우 빈 배열 반환
-//     return [];
-//   };
-
-//   const { data: fetchedDiaryData } = useQuery({
-//     queryKey: ["getDiaryForDay"],
-//     queryFn: () => getDiaryForDay({ date: params.date }),
-//   });
-
-//   // 서버에서 저장된 일기 데이터를 가져와서 상태에 저장
-//   useEffect(() => {
-//     if (fetchedDiaryData) {
-//       const companionsArray =
-//         typeof fetchedDiaryData.companions === "string"
-//           ? [fetchedDiaryData.companions]
-//           : // ? fetchedDiaryData.companions.split(",")
-//             fetchedDiaryData.companions;
-
-//       const comapionsStr = companionsArray
-//         .map(mapCompanionToServerValue)
-//         .join(",");
-
-//       const updatedDiaryData = {
-//         // ...fetchedDiaryData,
-//         title: fetchedDiaryData.title,
-//         content: fetchedDiaryData.body,
-//         mood: fetchedDiaryData.mood,
-//         emotionTags: fetchedDiaryData.feelings,
-//         companions: comapionsStr,
-//         weather: fetchedDiaryData.weather,
-//         weatherId: fetchedDiaryData.weatherId.toString(),
-//         photo: fetchedDiaryData.photos,
-//         todayPick: {
-//           title: fetchedDiaryData.todayPickTitle,
-//           contributors: fetchedDiaryData.todayPickContributors,
-//           date: fetchedDiaryData.todayPickDate,
-//           id: fetchedDiaryData.todayPickId,
-//           imageFile: fetchedDiaryData.todayPickImage,
-//         },
-//       };
-//       setDiaryData(updatedDiaryData);
-//     }
-//   }, [fetchedDiaryData]);
-
-//   console.log("수정하기 위한 데이터:", diaryData);
-
-//   // 일기 데이터 Submit
-//   const handleSubmitDiary = async (
-//     event: React.MouseEvent<HTMLButtonElement>,
-//   ) => {
-//     event.preventDefault(); // 폼 제출의 기본 동작 방지
-
-//     const diaryId = fetchedDiaryData.id;
-//     const jwtToken = getCookie("access_token");
-//     if (!jwtToken) {
-//       alert("로그인이 필요합니다.");
-//       window.location.href = "/login";
-//       return;
-//     }
-
-//     // feelings와 companions 배열을 콤마로 구분된 문자열로 변환
-//     const todaypickIdStr = diaryData.todayPick.id.toString();
-//     const companionsStr = parseCompanions(diaryData.companions)
-//       .map(mapCompanionToServerValue)
-//       .join(",");
-
-//     const data = {
-//       title: diaryData.title,
-//       body: diaryData.content,
-//       mood: diaryData.mood,
-//       feelings: diaryData.emotionTags, // // 프론트에서는 emotionTags, 서버에서는 feelings로 처리
-//       companions: companionsStr,
-//       weather: diaryData.weather,
-//       weatherId: diaryData.weatherId.toString(),
-//       remember: false, // 기본값 false 등록
-//       todayPickTitle: diaryData.todayPick.title,
-//       todayPickContributors: diaryData.todayPick.contributors,
-//       todayPickDate: diaryData.todayPick.date,
-//       todayPickId: todaypickIdStr,
-//     };
-//     formData.append("data", JSON.stringify(data));
-
-//     // `photos` 파일 추가
-//     diaryData.photo.forEach((file, index) => {
-//       formData.append(`photos`, file); // 인덱스 없이 photos로 모든 파일 추가
-//     });
-
-//     // `todayPickImage` 파일 추가
-//     if (diaryData.todayPick.imageFile) {
-//       // 이미지가 단일 파일인 경우 배열로 변환
-//       const images = Array.isArray(diaryData.todayPick.imageFile)
-//         ? diaryData.todayPick.imageFile
-//         : [diaryData.todayPick.imageFile];
-//       images.forEach((file) => {
-//         formData.append(`todayPickImage`, file); // 배열의 모든 이미지를 추가
-//       });
-//     }
-
-//     // diaryData 상태 로깅
-//     console.log("제출될 일기 데이터:", diaryData);
-
-//     try {
-//       const updatedDiary = await updateDiary(diaryId, diaryData);
-//       console.log("일기 수정 성공", updatedDiary.data);
-//       // window.location.href = `/${params.date}/diary`;
-//     } catch (error) {
-//       console.error("일기 생성 실패", error);
-//     }
-//   };
-
-//   return (
-//     <main className="flex min-h-screen justify-center">
-//       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
-//         <section className="flex items-center justify-between bg-default-100 px-8 py-4 text-center text-xl font-medium text-gray-400">
-//           {formattedDate}
-//           <div>
-//             <Exit />
-//           </div>
-//         </section>
-//         <section className="flex flex-col gap-4 bg-default-200">
-//           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
-//             기분
-//           </h2>
-//           <ChooseMood
-//             updatedMood={diaryData.mood}
-//             onMoodSelect={(mood: any) => setDiaryData({ ...diaryData, mood })}
-//           />
-//           <h3 className="flex justify-center text-sm font-medium text-gray-400">
-//             오늘 하루는 어땠나요?
-//           </h3>
-//         </section>
-//         <section className="flex flex-col bg-default-200">
-//           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
-//             감정태그
-//           </h2>
-//           <ChooseEmotionTags
-//             updatedEmotionTags={diaryData.emotionTags as any}
-//             onTagSelect={(tags: any) =>
-//               setDiaryData({ ...diaryData, emotionTags: tags })
-//             }
-//           />
-//         </section>
-//         <section className="flex flex-col bg-default-300">
-//           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
-//             함께한 사람
-//           </h2>
-//           <ChooseCompanions
-//             updatedCompanions={diaryData.companions as any}
-//             onSelectCompanion={(companions: any) =>
-//               setDiaryData({ ...diaryData, companions })
-//             }
-//           />
-//         </section>
-//         <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
-//           <DiaryCreateModal
-//             updatedDiaryData={{
-//               title: diaryData.title as any,
-//               content: diaryData.content as any,
-//               weather: diaryData.weather as any,
-//               weatherId: diaryData.weatherId as any,
-//             }}
-//             onSubmit={(modalData: any) => {
-//               console.log("onSubmit called with data:", modalData);
-//               setDiaryData({ ...diaryData, ...modalData });
-//             }}
-//           />
-//         </section>
-//         <section className="flex flex-col bg-default-400">
-//           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
-//             오늘의 사진
-//           </h2>
-//           <UploadPhoto
-//             updatedPhotos={diaryData.photo as any}
-//             onPhotosChange={(photos: any) =>
-//               setDiaryData({ ...diaryData, photo: photos })
-//             }
-//           />
-//         </section>
-//         <section className="flex flex-col bg-default-800">
-//           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-default-100">
-//             오늘의 PICK
-//           </h2>
-//           <UploadTodayPick
-//             updatedTodayPick={diaryData.todayPick as any}
-//             onSubmit={(todayPickData: any) => {
-//               setDiaryData({ ...diaryData, todayPick: todayPickData });
-//             }}
-//           />
-//         </section>
-//         <section className="mx-4 my-4 flex justify-center">
-//           <Button
-//             type="submit"
-//             variant="outlined"
-//             onClick={handleSubmitDiary}
-//             className="rounded-[20px] border-2 border-solid border-default-800 px-32 py-2 text-default-800 hover:bg-default-300"
-//           >
-//             Update Diary
-//           </Button>
-//         </section>
-//       </article>
-//     </main>
-//   );
-// }

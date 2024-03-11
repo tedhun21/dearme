@@ -1,6 +1,5 @@
 "use client";
-// TODO In 목표 디자인 수정
-// TODO strapi builder : commentSettings (ALL, FRIENDS, OFF)
+
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,15 +23,11 @@ import MenuItem from "@mui/material/MenuItem";
 
 import Close from "@/public/social/Close";
 
-type PostDataType = {
-  selectedGoal: string;
-  isPrivate: string;
-  imageFile: File | null;
-  postText: string;
-  selectedOption: string;
-};
-
-export default function CreatePost() {
+export default function CreatePost({
+  setPostUploaded,
+}: {
+  setPostUploaded: (status: boolean) => void;
+}) {
   const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
@@ -41,13 +36,9 @@ export default function CreatePost() {
 
   // goals
   const { data: goalsData } = useQuery({
-    queryKey: ["getGoals", { context: "CreatePost" }],
+    queryKey: ["getGoals"],
     queryFn: getGoals,
-    // enabled: open,
-    staleTime: Infinity,
   });
-
-  // console.log(goalsData?.data);
   const goals = goalsData?.data;
 
   //   Select 목표 선택
@@ -99,10 +90,19 @@ export default function CreatePost() {
   }, [isPrivate]);
 
   // Post Request
-  const { mutateAsync: addPostMutation } = useMutation({
+  const { isSuccess, mutate: addPostMutation } = useMutation({
     mutationFn: createPost,
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      window.alert(" Uploaded!");
+      setPostUploaded(true);
+    },
+    onError: () => {
+      window.alert(" Failed to upload your post.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getPostsWithPage"],
+      });
     },
   });
 
@@ -122,11 +122,7 @@ export default function CreatePost() {
         postText,
         selectedOption,
       };
-
-      await addPostMutation(postData);
-
-      window.alert("Uploaded!");
-
+      addPostMutation(postData);
       setSelectedGoal("");
       setIsPrivate(false);
       setImageFile(null);

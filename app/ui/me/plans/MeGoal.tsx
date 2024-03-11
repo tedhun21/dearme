@@ -6,6 +6,7 @@ import GoalList from "../GoalList";
 import { getToday } from "@/util/date";
 import { useQuery } from "@tanstack/react-query";
 import { getMyGoals } from "@/store/api";
+import { useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

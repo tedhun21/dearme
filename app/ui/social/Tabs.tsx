@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// Tab 컴포넌트
 interface TabsProps {
   selectedTab: string;
   setSelectedTab: (selectedTab: string) => void;

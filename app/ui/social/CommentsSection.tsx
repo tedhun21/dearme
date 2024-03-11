@@ -5,13 +5,14 @@
 
 import React, { ChangeEvent, useState, useEffect } from "react";
 import {
+  useQuery,
   useMutation,
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import { useRecoilValue } from "recoil";
-import { meState } from "@/store/atoms";
+
 import {
+  getMe,
   readCommentsWithPage,
   createComment,
   updateComment,
@@ -37,7 +38,10 @@ export default function CommentsSection({
   const queryClient = useQueryClient();
 
   // me
-  const me = useRecoilValue(meState);
+  const { isSuccess, data: me } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: getMe,
+  });
 
   // Read _ comments
   const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<any[], Error>({
@@ -64,8 +68,8 @@ export default function CommentsSection({
 
   const { mutateAsync: addCommentMutation } = useMutation({
     mutationFn: createComment,
-    onSuccess: () => {
-      queryClient.invalidateQueries();
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["readCommentsWithPage"] });
     },
   });
 
@@ -104,9 +108,6 @@ export default function CommentsSection({
       console.error(e);
     }
   };
-
-  console.log(data);
-  console.log(me);
 
   return (
     <>

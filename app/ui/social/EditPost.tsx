@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -47,14 +47,11 @@ export default function EditPost({
 }: EditPostProps) {
   const queryClient = useQueryClient();
 
-  console.log(postData);
-
   // goals
   const { data: goalsData } = useQuery({
     queryKey: ["getGoals"],
     queryFn: getGoals,
   });
-  console.log(goalsData);
   const goals = goalsData?.data;
 
   //   Select 목표 선택
@@ -100,6 +97,14 @@ export default function EditPost({
     setSelectedOption(e.target.value);
   };
 
+  useEffect(() => {
+    if (isPrivate) {
+      setSelectedOption("FRIENDS");
+    } else {
+      setSelectedOption("ALL");
+    }
+  }, [isPrivate]);
+
   const editMutation = useMutation({
     mutationKey: ["updatedPost"],
     mutationFn: (variables: {
@@ -109,8 +114,8 @@ export default function EditPost({
       postText: string;
       selectedOption: string;
     }) => updatePost(variables),
-    onSuccess: () => {
-      queryClient.invalidateQueries();
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["getPostsWithPage"] });
     },
   });
 

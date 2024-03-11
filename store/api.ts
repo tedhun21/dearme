@@ -390,7 +390,6 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
       return response.data.results;
     } else if (tab === "friends") {
       const access_token = getCookie("access_token");
-
       const headers = { Authorization: `Bearer ${access_token}` };
       const response = await axios.get(url, { headers });
       return response.data.results;
@@ -401,7 +400,7 @@ export const getPostWithPage = async ({ tab, pageParam }: any) => {
 };
 
 // Create _ post
-export const getGoals = async ({ queryKey }: any) => {
+export const getGoals = async () => {
   const date = getToday();
   const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };

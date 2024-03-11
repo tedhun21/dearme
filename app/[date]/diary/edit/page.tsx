@@ -3,9 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
+import { Transition } from "react-transition-group";
 
 import Button from "@mui/joy/Button";
+import Modal from "@mui/joy/Modal";
+import ModalDialog from "@mui/joy/ModalDialog";
+import DialogTitle from "@mui/joy/DialogTitle";
+import DialogContent from "@mui/joy/DialogContent";
+import Input from "@mui/joy/Input";
+import Textarea from "@mui/joy/Textarea";
 
 import Exit from "@/public/diary/Exit";
 import HappyEmoji from "@/public/diary/HappyEmoji";
@@ -15,6 +22,9 @@ import SadEmoji from "@/public/diary/SadEmoji";
 import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 import Tags from "@/public/diary/Tags";
 import Companions from "@/public/diary/Companions";
+import ButtonExit from "@/public/diary/ButtonExit";
+import WeatherIcons from "@/app/ui/diary/WeatherIcons";
+import CirclePlus from "@/public/diary/CirclePlus";
 
 import { getCookie } from "@/util/tokenCookie";
 import { getDiaryDate } from "@/util/date";
@@ -23,7 +33,7 @@ import { getDiaryForDay, updateDiary } from "@/store/api";
 export default function Edit() {
   const params = useParams<any>();
   const methods = useForm();
-  const { register, setValue, watch } = methods;
+  const { register, setValue, watch, reset, handleSubmit } = methods;
 
   // 통신된 데이터 기본값 정의
   const { isSuccess, data: fetchedDiaryData } = useQuery({
@@ -175,6 +185,36 @@ export default function Edit() {
     }
   }, [isSuccess, fetchedDiaryData, methods]);
 
+  /* 일기 작성 Part */
+  const [open, setOpen] = useState(false);
+  const [originalDiaryData, setOriginalDiaryData] = useState({});
+
+  const updatedDiaryData = {
+    title: watch("title") as string,
+    content: watch("content") as string,
+    weather: watch("weather") as string | undefined,
+    weatherId: watch("weatherId") as string | undefined,
+  };
+
+  const handleLimitTitle = (e: any) => {
+    const input = e.target.value;
+    if (input.length <= 25) {
+      setValue("title", input);
+    }
+  };
+
+  const openModal = () => {
+    setOriginalDiaryData(updatedDiaryData);
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    Object.keys(originalDiaryData).forEach((key) => {
+      setValue(key, originalDiaryData[key]);
+    });
+    setOpen(false);
+  };
+
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -185,6 +225,7 @@ export default function Edit() {
             <Exit />
           </div>
         </section>
+
         {/* 기분 항목 */}
         <section className="flex flex-col gap-4 bg-default-200">
           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
@@ -218,6 +259,7 @@ export default function Edit() {
             오늘 하루는 어땠나요?
           </h3>
         </section>
+
         {/* 감정 태그 항목 */}
         <section className="flex flex-col bg-default-200">
           <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
@@ -234,6 +276,7 @@ export default function Edit() {
             ))}
           </span>
         </section>
+
         {/* 함께한 사람 항목 */}
         <section className="flex flex-col bg-default-300">
           <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
@@ -251,6 +294,125 @@ export default function Edit() {
               />
             ))}
           </span>
+        </section>
+
+        {/* 일기 작성 항목 */}
+        <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
+          {updatedDiaryData ? (
+            <div className="flex flex-col rounded bg-white p-4 py-8 pl-8 shadow hover:bg-default-400">
+              <button
+                onClick={openModal}
+                className="mr-2 flex items-center justify-end"
+              >
+                <ButtonExit />
+              </button>
+              <h3 className="mb-2 text-lg font-bold">{watch("title")}</h3>
+              <p className="mb-8">{watch("content")}</p>
+              <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
+                <span className="mr-2">
+                  <WeatherIcons weatherId={watch("weatherId")} />
+                </span>
+                <h4 className="flex justify-end text-xs font-medium text-default-800">
+                  {watch("weather") || "날씨 정보를 가져오는 중입니다."}
+                </h4>
+              </section>
+            </div>
+          ) : (
+            <>
+              <Button
+                className="flex flex-col px-8 py-28 text-base text-default-800"
+                variant="plain"
+                color="primary"
+                onClick={() => setOpen(true)}
+              >
+                <CirclePlus />
+                {`당신의 소중한 이야기를 기록해주세요:)`}
+              </Button>
+              <section className="absolute bottom-2 right-4 mb-4 mr-4 flex items-center">
+                <span className="mr-2">
+                  <WeatherIcons weatherId={watch("weatherId")} />
+                </span>
+                <h4 className="flex justify-end text-xs font-medium text-default-800">
+                  {watch("weather") || "날씨 정보를 가져오는 중입니다."}
+                </h4>
+              </section>
+            </>
+          )}
+          {/* 모달창 */}
+          <Transition in={open} timeout={400}>
+            {(state: string) => (
+              <Modal
+                keepMounted
+                open={!["exited", "exiting"].includes(state)}
+                onClose={() => setOpen(false)}
+                slotProps={{
+                  backdrop: {
+                    sx: {
+                      opacity: 0,
+                      backdropFilter: "none",
+                      transition: `opacity 400ms, backdrop-filter 400ms`,
+                      ...{
+                        entering: { opacity: 1, backdropFilter: "blur(8px)" },
+                        entered: { opacity: 1, backdropFilter: "blur(8px)" },
+                      }[state],
+                    },
+                  },
+                }}
+                sx={{
+                  visibility: state === "exited" ? "hidden" : "visible",
+                }}
+              >
+                <ModalDialog // 여기서부터는 모달창 안에 들어가는 컴포넌트
+                  className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-100"
+                  sx={{
+                    opacity: 0,
+                    transition: `opacity 300ms`,
+                    ...{
+                      entering: { opacity: 1 },
+                      entered: { opacity: 1 },
+                    }[state],
+                  }}
+                >
+                  <DialogTitle className="text-sm">제목</DialogTitle>
+                  <DialogContent>
+                    <Input
+                      className="flex border-2 border-default-300 bg-default-200 text-center"
+                      variant="soft"
+                      id="title"
+                      {...register("title")}
+                      placeholder="최대 25자 내외로 작성해주세요."
+                      onChange={handleLimitTitle}
+                      sx={{ minHeight: "40px", justifyItems: "center" }}
+                    />
+                  </DialogContent>
+                  <DialogTitle className="text-sm">내용</DialogTitle>
+                  <DialogContent>
+                    <Textarea
+                      className="flex justify-center border-2 border-default-300 bg-default-200"
+                      variant="soft"
+                      id="content"
+                      {...register("content")}
+                      sx={{ minHeight: "200px" }}
+                    />
+                  </DialogContent>
+                  <section className="flex justify-center gap-8 px-4 py-2">
+                    <Button
+                      className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800 hover:bg-default-400"
+                      onClick={handleCancel}
+                    >
+                      취소
+                    </Button>
+                    <Button
+                      className="flex bg-default-800 px-5 text-default-100"
+                      onClick={() => setOpen(false)}
+                    >
+                      작성 완료
+                    </Button>
+                  </section>
+                </ModalDialog>
+              </Modal>
+            )}
+          </Transition>
         </section>
       </article>
     </main>

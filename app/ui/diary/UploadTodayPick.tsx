@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -22,9 +22,11 @@ type UploadTodayPickProps = {
 };
 
 export default function UploadTodayPick({
+  updatedTodayPick,
   onSubmit,
 }: {
   onSubmit: (data: UploadTodayPickProps) => void;
+  updatedTodayPick: any;
 }) {
   const [open, setOpen] = useState(false);
   const [picks, setPicks] = useState<UploadTodayPickProps[]>([]);
@@ -37,6 +39,22 @@ export default function UploadTodayPick({
     contributors: "",
     image: null,
   });
+
+  /* 업데이트된 TodayPick이 있을경우 picks 상태 업데이트 */
+  useEffect(() => {
+    if (updatedTodayPick) {
+      const imageUrl = `${process.env.NEXT_PUBLIC_BUCKET_URL}${updatedTodayPick.imageFile?.[0]?.url}`;
+
+      const updatedPick = {
+        id: updatedTodayPick.id,
+        title: updatedTodayPick.title,
+        date: updatedTodayPick.date,
+        contributors: updatedTodayPick.contributors,
+        image: imageUrl,
+      };
+      setPicks([updatedPick]);
+    }
+  }, [updatedTodayPick]);
 
   const handleOpen = () => setOpen(true);
 

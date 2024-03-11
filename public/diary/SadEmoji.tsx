@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function SadEmoji({ selected, onClick }) {
+export default function SadEmoji({ selected, onClick }: any) {
   // Selected 상태일 때의 SVG path
   const selectedPath = (
     <svg>

@@ -4,11 +4,26 @@ import PhotoIcon from "@/public/diary/PhotoIcon";
 
 interface UploadPhotoProps {
   onPhotosChange: (photos: File[]) => void;
+  updatedPhotos: any;
 }
 
-export default function UploadPhoto({ onPhotosChange }: UploadPhotoProps) {
+export default function UploadPhoto({
+  onPhotosChange,
+  updatedPhotos,
+}: UploadPhotoProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    // updatedPhotos가 객체 배열로 주어졌을 때 처리
+    if (updatedPhotos && updatedPhotos.length > 0) {
+      // 객체 배열에서 url만 추출하여 setPreviewUrls에 할당
+      const urls = updatedPhotos.map(
+        (photo: any) => `${process.env.NEXT_PUBLIC_BUCKET_URL}${photo.url}`,
+      );
+      setPreviewUrls(urls);
+    }
+  }, [updatedPhotos]);
 
   useEffect(() => {
     // 선택된 파일이 변경될 때 미리보기 URL 생성
@@ -31,11 +46,37 @@ export default function UploadPhoto({ onPhotosChange }: UploadPhotoProps) {
     }
   };
 
+  // const handleDeleteImage = (index: number) => {
+  //   // 특정 인덱스의 이미지 삭제
+  //   const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+  //   setSelectedFiles(updatedFiles);
+  //   onPhotosChange(updatedFiles);
+  // };
+
   const handleDeleteImage = (index: number) => {
-    // 특정 인덱스의 이미지 삭제
-    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
-    setSelectedFiles(updatedFiles);
-    onPhotosChange(updatedFiles);
+    // updatedPhotos가 정의되어 있는지 확인
+    const updatedPhotosLength = updatedPhotos ? updatedPhotos.length : 0;
+
+    if (index < updatedPhotosLength) {
+      // 서버로부터 받은 이미지 URL 삭제
+      const newPreviewUrls = [...previewUrls];
+      newPreviewUrls.splice(index, 1);
+      setPreviewUrls(newPreviewUrls);
+      // 서버로부터 받은 이미지를 삭제하는 경우, selectedFiles는 업데이트할 필요가 없음
+    } else {
+      // 사용자가 추가한 이미지 파일 삭제
+      const fileIndex = index - updatedPhotosLength;
+      const newSelectedFiles = [...selectedFiles];
+      newSelectedFiles.splice(fileIndex, 1);
+      setSelectedFiles(newSelectedFiles);
+      // 이 경우, previewUrls도 업데이트 필요
+      const newPreviewUrls = [...previewUrls];
+      newPreviewUrls.splice(index, 1);
+      setPreviewUrls(newPreviewUrls);
+    }
+
+    // 상위 컴포넌트에 업데이트된 파일 목록 전달
+    onPhotosChange(selectedFiles);
   };
 
   return (

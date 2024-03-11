@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Tags from "@/public/diary/Tags";
 
 export default function ChooseEmotionTags({
   onTagSelect,
+  updatedEmotionTags,
 }: {
-  onTagSelect: (tags: string[]) => void;
+  onTagSelect: (tags: string) => void;
+  updatedEmotionTags: string;
 }) {
   const [selectedTags, setSelectedTags] = useState([] as string[]);
 
@@ -28,14 +30,30 @@ export default function ChooseEmotionTags({
     "#부담되는",
   ];
 
-  // 각 태그를 클릭했을 때의 핸들러
+  // 업데이트된(수정) 태그가 있을 때
+  useEffect(() => {
+    if (
+      typeof updatedEmotionTags === "string" &&
+      updatedEmotionTags.trim().length > 0
+    ) {
+      setSelectedTags(updatedEmotionTags.split(" "));
+    } else {
+      setSelectedTags([]);
+    }
+  }, [updatedEmotionTags]);
+
   const handleTagClick = (tag: string) => {
     setSelectedTags((prevTags) => {
-      // 이미 선택된 태그라면 제거, 아니라면 추가
-      const newTags = prevTags.includes(tag)
-        ? prevTags.filter((prevTag) => prevTag !== tag)
-        : [...prevTags, tag];
-      onTagSelect(newTags);
+      const isTagSelected = prevTags.includes(tag);
+      let newTags;
+
+      if (isTagSelected) {
+        newTags = prevTags.filter((prevTag) => prevTag !== tag);
+      } else {
+        newTags = [...prevTags, tag];
+      }
+
+      onTagSelect(newTags.join(" "));
       return newTags;
     });
   };

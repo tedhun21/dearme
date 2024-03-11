@@ -68,7 +68,7 @@ export default function Create() {
     const jwtToken = getCookie("access_token");
     if (!jwtToken) {
       alert("로그인이 필요합니다.");
-      console.error("로그인이 필요합니다.");
+      window.location.href = "/login";
       return;
     }
 
@@ -90,7 +90,6 @@ export default function Create() {
 
     // feelings와 companions 배열을 콤마로 구분된 문자열로 변환
     const todaypickIdStr = diaryData.todayPick.id.toString();
-    const feelingsStr = diaryData.emotionTags.join(",");
     const companionsStr = diaryData.companions
       .map(mapCompanionToServerValue)
       .join(",");
@@ -99,7 +98,7 @@ export default function Create() {
       title: diaryData.title,
       body: diaryData.content,
       mood: diaryData.mood,
-      feelings: feelingsStr, // // 프론트에서는 emotionTags, 서버에서는 feelings로 처리
+      feelings: diaryData.emotionTags, // // 프론트에서는 emotionTags, 서버에서는 feelings로 처리
       companions: companionsStr,
       weather: diaryData.weather,
       weatherId: diaryData.weatherId.toString(),
@@ -142,6 +141,7 @@ export default function Create() {
         },
       );
       console.log("일기 생성 성공", response.data);
+      window.location.href = `/${params.date}/diary`;
     } catch (error) {
       console.error("일기 생성 실패", error);
     }

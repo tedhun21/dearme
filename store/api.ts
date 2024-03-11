@@ -258,6 +258,58 @@ export const getDiariesForMonth = async ({
         headers: { Authorization: `Bearer ${access_token}` },
       },
     );
+
+    return data;
+  }
+};
+
+export const getDiaryForDay = async ({ date }: any) => {
+  if (access_token) {
+    const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    return data;
+  }
+};
+
+export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify({}));
+
+    const { data } = await axios.put(
+      `${API_URL}/diaries/${diaryId}?remember=${remember}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
+export const updateDiary = async (diaryId: string, diaryData: any) => {
+  if (access_token) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(diaryData));
+
+    const { data } = await axios.put(
+      `${API_URL}/diaries/${diaryId}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    console.log(data);
+    return data;
+  }
+};
+
+export const deleteDiary = async (diaryId: string) => {
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/diaries/${diaryId}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    console.log(data);
     return data;
   } else {
     return [];

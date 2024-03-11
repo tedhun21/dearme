@@ -4,30 +4,30 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 
-export default function TodayPick() {
-  // 임시 picks (지우기)
-  const picks = [
-    {
-      imageUrl:
-        "https://i.namu.wiki/i/UvSjCQ9Ip4eNYF45gYO1OmGHQYkngAnE2ztZIgMHJBHc1PffPPGQ0OfucZYYC-liHCuVi0__4E2AK6usStPsuw.webp",
-      title: "사랑한다고 말해줘",
-      figures: "정우성 | 신현빈",
-      details: "(2023 - 2024)",
-    },
-    {
-      imageUrl: "https://image.yes24.com/goods/96087459/XL",
-      title: "부자의 그릇",
-      figures: "이즈미 마사토",
-      details: "(다산북스)",
-    },
-    {
-      imageUrl:
-        "https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/before-sunrise-poster-george-wilson.jpg",
-      title: "Before sunrise",
-      figures: "Ethan Hawke | Julie Delpy",
-      details: "Richard Linklater",
-    },
-  ];
+export default function TodayPick({ diaryData }: any) {
+  // 모든 필요한 데이터의 유무에 따라 렌더링 여부 결정
+  const hasData =
+    diaryData &&
+    diaryData.todayPickImage &&
+    diaryData.todayPickImage.length > 0 &&
+    diaryData.todayPickTitle &&
+    diaryData.todayPickContributors &&
+    diaryData.todayPickDate;
+
+  if (!hasData) {
+    return null;
+  }
+
+  const picks = diaryData
+    ? [
+        {
+          imageUrl: `${process.env.NEXT_PUBLIC_BUCKET_URL}${diaryData.todayPickImage[0].url}`,
+          title: diaryData.todayPickTitle,
+          contributors: diaryData.todayPickContributors,
+          date: diaryData.todayPickDate,
+        },
+      ]
+    : [];
 
   return (
     <div>
@@ -50,10 +50,10 @@ export default function TodayPick() {
                     {pick.title}
                   </div>
                   <div className=" text-sm font-normal text-white">
-                    {pick.figures}{" "}
+                    {pick.contributors}
                   </div>
                   <div className=" text-sm font-normal text-white">
-                    {pick.details}
+                    {pick.date}
                   </div>
                 </div>
               </div>

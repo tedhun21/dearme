@@ -54,6 +54,33 @@ export const getWeeksInMonth = (date: Dayjs) => {
   return lastDayOfWeek.diff(firstDayOfWeek, "week") + 1;
 };
 
+// month/day, year
+export const formatDate = (dateString: any): any => {
+  if (!dateString) return "";
+  const dateObj = new Date(dateString);
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth() + 1;
+  const day = dateObj.getDate();
+
+  return `${month}/${day}, ${year}`;
+};
+
+// 일기에 들어가는 날짜 형식
+export const getDiaryDate = (date: string) => {
+  if (!date) return "";
+
+  const dateObj = new Date(date);
+  const year = dateObj.getFullYear();
+  // 한 자리 수의 월 앞에 0을 추가
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  // 한 자리 수의 일 앞에 0을 추가
+  const day = String(dateObj.getDate()).padStart(2, "0");
+
+  //요일
+  const weekDay = dateObj.toLocaleString("ko-KR", { weekday: "short" });
+
+  return `${year}. ${month}. ${day}. (${weekDay})`;
+    
 // 날짜 사이 기간
 export const diffBetweenTwoDates = ({ startDate, endDate }: any) => {
   const standardDay = dayjs(endDate).diff(startDate, "day");

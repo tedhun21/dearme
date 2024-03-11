@@ -25,6 +25,7 @@ import Companions from "@/public/diary/Companions";
 import ButtonExit from "@/public/diary/ButtonExit";
 import WeatherIcons from "@/app/ui/diary/WeatherIcons";
 import CirclePlus from "@/public/diary/CirclePlus";
+import PhotoIcon from "@/public/diary/PhotoIcon";
 
 import { getCookie } from "@/util/tokenCookie";
 import { getDiaryDate } from "@/util/date";
@@ -213,6 +214,46 @@ export default function Edit() {
       setValue(key, originalDiaryData[key]);
     });
     setOpen(false);
+  };
+
+  /* 사진 업로드 Part */
+  const selectedFiles = watch("photos");
+
+  useEffect(() => {
+    if (isSuccess) {
+      const photosUrl = fetchedDiaryData.photos.map((photo: any) => ({
+        url: `${process.env.NEXT_PUBLIC_BUCKET_URL}${photo.url}`,
+        id: photo.id,
+      }));
+      setValue("photos", photosUrl);
+    }
+  }, [isSuccess, fetchedDiaryData, setValue]);
+
+  const handleFileChange = (e: any) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    const files = Array.from(e.target.files);
+    const newPhotos = files
+      .map((file) => {
+        if (file instanceof Blob) {
+          return {
+            url: URL.createObjectURL(file),
+            file,
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter((photo) => photo !== null);
+
+    setValue("photos", [...watch("photos"), ...newPhotos]);
+  };
+
+  const handleDeletePhoto = (photoId: number) => {
+    const updatedPhotos = watch("photos").filter(
+      (photo: any) => photo.id !== photoId,
+    );
+    setValue("photos", updatedPhotos);
   };
 
   return (
@@ -413,6 +454,52 @@ export default function Edit() {
               </Modal>
             )}
           </Transition>
+        </section>
+
+        {/* 사진 업로드 항목 */}
+        <section className="flex flex-col bg-default-400">
+          <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
+            오늘의 사진
+          </h2>
+          <div className="mb-8 mt-2 flex justify-center gap-2 px-6">
+            {selectedFiles?.length > 0 ? (
+              <div className="flex w-full flex-wrap justify-center gap-2">
+                {selectedFiles.map((file: any, index: number) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={file?.url ? file.url : URL.createObjectURL(file)}
+                      alt={`Preview ${index}`}
+                      className="h-32 w-32 rounded-md object-cover"
+                    />
+                    <button
+                      onClick={() => handleDeletePhoto(file.id)}
+                      className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 pb-[1.8px] text-white hover:bg-red-600"
+                      style={{ cursor: "pointer" }}
+                    >
+                      &times; {/* 이 부분은 삭제 아이콘을 나타냅니다. */}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <label className="flex w-full cursor-pointer flex-col items-center rounded-lg bg-default-100 py-16 py-6 text-base font-semibold text-gray-400 hover:bg-gray-300">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/jpeg, image/png"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+                <span className="mb-2 flex justify-center">
+                  <PhotoIcon />
+                </span>
+                사진을 등록해주세요
+                <h3 className="text-xs font-medium text-gray-400">
+                  (최대 3장)
+                </h3>
+              </label>
+            )}
+          </div>
         </section>
       </article>
     </main>

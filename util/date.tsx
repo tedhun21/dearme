@@ -80,7 +80,8 @@ export const getDiaryDate = (date: string) => {
   const weekDay = dateObj.toLocaleString("ko-KR", { weekday: "short" });
 
   return `${year}. ${month}. ${day}. (${weekDay})`;
-    
+};
+
 // 날짜 사이 기간
 export const diffBetweenTwoDates = ({ startDate, endDate }: any) => {
   const standardDay = dayjs(endDate).diff(startDate, "day");

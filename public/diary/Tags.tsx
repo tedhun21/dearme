@@ -13,7 +13,7 @@ export default function Tag({ text, selected, onClick }: TagsProps) {
     : "mt-1 rounded-full border-2 border-default-400 bg-default-300 px-2 py-0.5 text-base font-semibold text-default-800 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2";
 
   return (
-    <button onClick={onClick} className={tagClasses}>
+    <button type="button" onClick={(e) => onClick()} className={tagClasses}>
       {text}
     </button>
   );

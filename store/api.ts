@@ -264,6 +264,7 @@ export const getDiariesForMonth = async ({
 };
 
 export const getDiaryForDay = async ({ date }: any) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const { data } = await axios.get(`${API_URL}/diaries?date=${date}`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -273,7 +274,39 @@ export const getDiaryForDay = async ({ date }: any) => {
   }
 };
 
+export const createDiary = async ({
+  date,
+  createData,
+  photos,
+  todayPickImage,
+}: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+
+    if (createData) {
+      formData.append("data", JSON.stringify(createData));
+      if (photos) {
+        for (let i = 0; i < photos.length; i++) {
+          formData.append("photos", photos[i]);
+        }
+      }
+      if (todayPickImage) {
+        formData.append("todayPickImage", todayPickImage);
+      }
+    }
+    const { data } = await axios.post(
+      `${API_URL}/diaries?date=${date}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
 export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const formData = new FormData();
     formData.append("data", JSON.stringify({}));
@@ -289,6 +322,7 @@ export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
 };
 
 export const updateDiary = async (diaryId: string, diaryData: any) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const formData = new FormData();
     formData.append("data", JSON.stringify(diaryData));
@@ -299,12 +333,12 @@ export const updateDiary = async (diaryId: string, diaryData: any) => {
       { headers: { Authorization: `Bearer ${access_token}` } },
     );
 
-    console.log(data);
     return data;
   }
 };
 
 export const deleteDiary = async (diaryId: string) => {
+  const access_token = getCookie("access_token");
   if (access_token) {
     const { data } = await axios.delete(`${API_URL}/diaries/${diaryId}`, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -313,20 +347,6 @@ export const deleteDiary = async (diaryId: string) => {
     return data;
   } else {
     return [];
-  }
-};
-
-// Read _ Diary(특정 날짜)
-export const getDiaryForDay = async ({ date }: any) => {
-  const access_token = getCookie("access_token");
-
-  if (access_token) {
-    console.log(date);
-    const response = await axios.get(`${API_URL}/diaries?date=${date}`, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-
-    return response.data;
   }
 };
 

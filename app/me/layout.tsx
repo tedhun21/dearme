@@ -1,12 +1,9 @@
+import { cookies } from "next/headers";
+import axios from "axios";
+
 import Footer from "../ui/footer";
 import MeNav from "../ui/me/MeNav";
 import MeProfile from "../ui/me/profile/me/MeProfile";
-import { cookies } from "next/headers";
-import { useQuery } from "@tanstack/react-query";
-import { getMe } from "@/store/api";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

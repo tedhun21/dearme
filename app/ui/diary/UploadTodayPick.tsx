@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -12,6 +12,8 @@ import BlackPlus from "@/public/diary/BlackPlus";
 import AddPhoto from "@/public/diary/AddPhoto";
 import CirclePlus from "@/public/diary/CirclePlus";
 import DearmeLogo from "@/public/login/DearmeLogo";
+import Image from "next/image";
+import PickCard from "./PickCard";
 
 type UploadTodayPickProps = {
   id: number;
@@ -22,105 +24,243 @@ type UploadTodayPickProps = {
 };
 
 export default function UploadTodayPick({
-  updatedTodayPick,
-  onSubmit,
-}: {
-  onSubmit: (data: UploadTodayPickProps) => void;
-  updatedTodayPick: any;
-}) {
+  register,
+  getValues,
+  setValue,
+  pickImage,
+  setPickImage,
+}: any) {
   const [open, setOpen] = useState(false);
-  const [picks, setPicks] = useState<UploadTodayPickProps[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [picks, setPicks] = useState<any>([]);
+
+  const [pickTitle, setPickTitle] = useState(getValues().todayPickTitle);
+  const [pickDate, setPickDate] = useState(getValues().todayPickDate);
+  const [pickContributors, setPickContributors] = useState(
+    getValues().todayPickContributors,
+  );
+
   const [hovered, setHovered] = useState<{ [key: number]: boolean }>({});
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [newPick, setNewPick] = useState<UploadTodayPickProps>({
-    id: Date.now(),
-    title: "",
-    date: "",
-    contributors: "",
-    image: null,
-  });
 
-  /* 업데이트된 TodayPick이 있을경우 picks 상태 업데이트 */
-  useEffect(() => {
-    if (updatedTodayPick) {
-      const imageUrl = `${process.env.NEXT_PUBLIC_BUCKET_URL}${updatedTodayPick.imageFile?.[0]?.url}`;
-
-      const updatedPick = {
-        id: updatedTodayPick.id,
-        title: updatedTodayPick.title,
-        date: updatedTodayPick.date,
-        contributors: updatedTodayPick.contributors,
-        image: imageUrl,
-      };
-      setPicks([updatedPick]);
+  const openFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
-  }, [updatedTodayPick]);
-
-  const handleOpen = () => setOpen(true);
-
-  const handleClose = () => setOpen(false);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      setImageFile(file);
-      const image = URL.createObjectURL(file);
-      setNewPick((prev) => ({ ...prev, image: image }));
-      console.log(image);
+      setPickImage(file);
+      if (e.target) {
+        // input target value 초기화
+        e.target.value = "";
+      }
     }
   };
 
-  const removeImage = () => {
-    setNewPick((prev) => ({ ...prev, image: null }));
+  const handleRemoveImage = (e: any) => {
+    e.stopPropagation();
+    setPickImage(null);
   };
 
-  const handleComplete = () => {
-    const completedPick = {
-      ...newPick,
-      // image: imageFile ? URL.createObjectURL(imageFile) : null,
-      imageFile: imageFile, // File 객체를 저장
-    };
+  const handleCancel = () => {
+    setValue("todayPickTitle", "");
+    setValue("todayPickDate", "");
+    setValue("todayPickContributors", "");
 
-    onSubmit(completedPick);
+    setPickImage(null);
 
-    // 상위 컴포넌트에서 처리할 수 있도록 picks 상태 업데이트
-    setPicks((prevPicks) => [...prevPicks, completedPick]);
-
-    setNewPick({
-      id: Date.now(),
-      title: "",
-      date: "",
-      contributors: "",
-      image: null,
-    });
     setOpen(false);
   };
 
-  // 생성된 Pick을 삭제
-  const handleRemove = (id: number) => {
-    setPicks(picks.filter((pick) => pick.id !== id));
+  const handleComplete = () => {
+    setValue("todayPickTitle", pickTitle);
+    setValue("todayPickDate", pickDate);
+    setValue("todayPickContributors", pickContributors);
+
+    setPicks((prev: any) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        title: pickTitle,
+        date: pickDate,
+        contributors: pickContributors,
+        image: pickImage,
+      },
+    ]);
+    setOpen(false);
   };
 
-  // input 글자 수 제한
-  const handleChange = (name: keyof UploadTodayPickProps, value: string) => {
-    if (value.length <= 30) {
-      setNewPick({ ...newPick, [name]: value });
-    }
-  };
+  // // 마우스가 이미지 위로 이동했을 때 호출될 핸들러입니다.
+  // const handleMouseEnter = (id: number) => {
+  //   setHovered((prev) => ({ ...prev, [id]: true }));
+  // };
 
-  // 마우스가 이미지 위로 이동했을 때 호출될 핸들러입니다.
-  const handleMouseEnter = (id: number) => {
-    setHovered((prev) => ({ ...prev, [id]: true }));
-  };
+  // // 마우스가 이미지에서 벗어났을 때 호출될 핸들러입니다.
+  // const handleMouseLeave = (id: number) => {
+  //   setHovered((prev) => ({ ...prev, [id]: false }));
+  // };
 
-  // 마우스가 이미지에서 벗어났을 때 호출될 핸들러입니다.
-  const handleMouseLeave = (id: number) => {
-    setHovered((prev) => ({ ...prev, [id]: false }));
+  const handleDeletePick = (index: number) => {
+    console.log(index);
+    setPicks((prev: any) => prev.filter((pick: any) => pick.id !== index));
+
+    setValue("todayPickTitle", "");
+    setValue("todayPickDate", "");
+    setValue("todayPickContributors", "");
+
+    setPickTitle("");
+    setPickImage(null);
+    setPickDate("");
+    setPickContributors("");
   };
 
   return (
     <>
-      <div className="overflow-x-auto">
+      {picks.length > 0 ? (
+        <div className="flex w-full justify-around">
+          {picks.map((pick: any) => (
+            <PickCard
+              key={pick.id}
+              pick={pick}
+              handleDeletePick={handleDeletePick}
+            />
+          ))}
+          {/* <button>
+            <CirclePlus />
+          </button> */}
+        </div>
+      ) : picks.length === 0 ? (
+        <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
+            className="flex w-full flex-col items-center rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300"
+          >
+            <span className="mb-2 flex justify-center">
+              <BlackPlus />
+            </span>
+            <span>Cature your</span>
+            <span>relaxed cultural adventures of the day.</span>
+          </button>
+        </span>
+      ) : null}
+      <Modal keepMounted open={open} onClose={() => setOpen(false)}>
+        <ModalDialog
+          sx={{
+            width: "400px",
+            maxWidth: "400px",
+            bgcolor: "background.paper",
+            borderRadius: 10,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <DialogTitle id="modal-title" sx={{ justifyContent: "center" }}>
+            {`Add Today's Cultural Activity`}
+          </DialogTitle>
+
+          <Box
+            sx={{
+              border: pickImage ? "none" : "1px dashed #EBE3D5", // 이미지가 있으면 border 없앰
+              backgroundColor: pickImage ? "transparent" : "", // 이미지가 있으면 배경색 투명 처리
+              // position: "relative",
+              // padding: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              height: 280,
+              // overflow: "hidden", // 이미지가 넘치는 경우 잘라줌.
+              "&:hover .remove-image-button": {
+                // 호버링 시 특정 클래스를 가진 요소의 스타일을 변경
+                display: "flex", // 버튼을 flex로 표시합니다.
+              },
+            }}
+            onClick={openFileInput}
+          >
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="raised-button-file"
+              type="file"
+              onChange={handleImageChange}
+              ref={fileInputRef}
+              hidden
+            />
+            {!pickImage ? (
+              <AddPhoto />
+            ) : (
+              <div className="relative h-full w-full">
+                <Image
+                  src={URL.createObjectURL(pickImage)}
+                  alt="UploadImage"
+                  fill
+                  className="object-contain"
+                  // style={{
+                  //   maxWidth: "100%",
+                  //   maxHeight: "100%",
+                  //   objectFit: "contain",
+                  // }}
+                />
+                <button
+                  onClick={(e) => handleRemoveImage(e)}
+                  className="absolute right-[-4px] top-[-4px] flex h-5 w-5 items-center justify-center rounded-full bg-red-500 pb-[1.8px] text-white hover:bg-red-600"
+                >
+                  &times;
+                </button>
+              </div>
+            )}
+          </Box>
+          <DialogContent>
+            <Input
+              className="mb-4"
+              fullWidth
+              placeholder="Title (30 characters or less)"
+              value={pickTitle}
+              onChange={(e) => setPickTitle(e.target.value)}
+            />
+            <Input
+              className="mb-4"
+              fullWidth
+              placeholder="date (30 characters or less)"
+              value={pickDate}
+              onChange={(e) => setPickDate(e.target.value)}
+            />
+            <Input
+              className="mb-1"
+              fullWidth
+              placeholder="Contributors (Production Company, Cast, Author, etc)"
+              value={pickContributors}
+              onChange={(e) => setPickContributors(e.target.value)}
+            />
+          </DialogContent>
+          <Button
+            className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800 hover:bg-default-400"
+            onClick={() => handleCancel()}
+          >
+            취소
+          </Button>
+          <Button
+            className="flex bg-default-800 px-5 text-default-100"
+            onClick={() => handleComplete()}
+          >
+            작성 완료
+          </Button>
+        </ModalDialog>
+      </Modal>
+    </>
+  );
+}
+
+{
+  /* <div className="overflow-x-auto">
         <div className="flex flex-row items-start">
           {picks.length > 0 &&
             picks.map((pick, index) => (
@@ -175,137 +315,5 @@ export default function UploadTodayPick({
               </article>
             ))}
         </div>
-      </div>
-      {picks.length === 0 && (
-        <span className="mb-8 mt-2 flex justify-center gap-2 px-6">
-          <button
-            onClick={handleOpen}
-            className="w-full rounded-lg border-2 border-dashed border-black bg-default-800 py-24 text-base font-medium text-gray-400 hover:bg-gray-300"
-          >
-            <span className="mb-2 flex justify-center">
-              <BlackPlus />
-            </span>
-            오늘의 문화생활을
-            <h3 className="flex justify-center text-base font-medium text-gray-400">
-              기록해봐요!
-            </h3>
-          </button>
-        </span>
-      )}
-      <Modal keepMounted open={open} onClose={handleClose}>
-        <ModalDialog
-          sx={{
-            width: "400px",
-            maxWidth: "400px",
-            bgcolor: "background.paper",
-            borderRadius: 10,
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <DialogTitle id="modal-title" sx={{ justifyContent: "center" }}>
-            {`Add Today's Cultural Activity`}
-          </DialogTitle>
-
-          <Box
-            sx={{
-              border: newPick.image ? "none" : "1px dashed #EBE3D5", // 이미지가 있으면 border 없앰
-              backgroundColor: newPick.image ? "transparent" : "", // 이미지가 있으면 배경색 투명 처리
-              position: "relative",
-              padding: 2,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              height: 280,
-              overflow: "hidden", // 이미지가 넘치는 경우 잘라줌.
-              "&:hover .remove-image-button": {
-                // 호버링 시 특정 클래스를 가진 요소의 스타일을 변경
-                display: "flex", // 버튼을 flex로 표시합니다.
-              },
-            }}
-          >
-            <input
-              accept="image/*"
-              style={{ display: "none" }}
-              id="raised-button-file"
-              multiple
-              type="file"
-              onChange={handleImageChange}
-            />
-            <label htmlFor="raised-button-file" style={{ cursor: "pointer" }}>
-              {newPick.image ? (
-                <img
-                  src={newPick.image}
-                  alt="UploadImage"
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                  }}
-                />
-              ) : (
-                <AddPhoto />
-              )}
-            </label>
-            {newPick.image && (
-              <Button
-                sx={{
-                  position: "absolute", // 버튼을 이미지 위에 절대 위치
-                  top: "50%", // 상단에서 50%의 위치
-                  left: "50%", // 좌측에서 50%의 위치
-                  transform: "translate(-50%, -50%)", // 정확히 중앙에 오도록 조정
-                  bgcolor: "rgba(76, 92, 242, 0.7)", // 버튼 배경을 약간 투명하게 설정
-                  display: "none", // 기본적으로 버튼을 숨김
-                  "&:hover": {
-                    // bgcolor: "rgba(13, 31, 188, 0.7)", // 호버링 시 더 불투명하게 설정
-                    display: "block",
-                  },
-                }}
-                onClick={removeImage}
-              >
-                Remove Image
-              </Button>
-            )}
-          </Box>
-          <DialogContent>
-            <Input
-              className="mb-4"
-              fullWidth
-              placeholder="Title (30 characters or less)"
-              value={newPick.title}
-              onChange={(e) => handleChange("title", e.target.value)}
-            />
-            <Input
-              className="mb-4"
-              fullWidth
-              placeholder="date (30 characters or less)"
-              value={newPick.date}
-              onChange={(e) => handleChange("date", e.target.value)}
-            />
-            <Input
-              className="mb-1"
-              fullWidth
-              placeholder="Contributors (Production Company, Cast, Author, etc)"
-              value={newPick.contributors}
-              onChange={(e) => handleChange("contributors", e.target.value)}
-            />
-          </DialogContent>
-          <Button
-            className="flex border-2 border-default-200 bg-default-300 px-8 text-default-800 hover:bg-default-400"
-            onClick={() => setOpen(false)}
-          >
-            취소
-          </Button>
-          <Button
-            className="flex bg-default-800 px-5 text-default-100"
-            onClick={handleComplete}
-          >
-            작성 완료
-          </Button>
-        </ModalDialog>
-      </Modal>
-    </>
-  );
+      </div> */
 }

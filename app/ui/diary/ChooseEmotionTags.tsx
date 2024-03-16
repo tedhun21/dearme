@@ -41,7 +41,7 @@ export default function ChooseEmotionTags({
   };
 
   return (
-    <span className="mb-8 mt-2 flex flex-wrap gap-2 px-6">
+    <span className="flex flex-wrap gap-2 px-6 pb-4">
       {tags.map((tag) => (
         <Tags
           key={tag}

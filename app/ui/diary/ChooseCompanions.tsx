@@ -18,7 +18,7 @@ export default function ChooseCompanions({
   };
 
   return (
-    <span className="mb-8 mt-2 flex flex-wrap gap-2 px-6">
+    <span className="flex flex-wrap gap-2">
       {companions.map((companion) => (
         <Companions
           key={companion}

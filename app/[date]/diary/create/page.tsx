@@ -4,20 +4,21 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-import Button from "@mui/joy/Button";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 
-import Exit from "@/public/diary/Exit";
-import DiaryCreateModal from "@/app/ui/diary/DiaryCreateModal";
+import { CircularProgress } from "@mui/material";
+
 import ChooseMood from "@/app/ui/diary/ChooseMood";
 import ChooseEmotionTags from "@/app/ui/diary/ChooseEmotionTags";
 import ChooseCompanions from "@/app/ui/diary/ChooseCompanions";
 import UploadPhoto from "@/app/ui/diary/UploadPhoto";
 import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
+import DiaryModal from "@/app/ui/diary/DiaryModal";
+import Exit from "@/public/diary/Exit";
 
-import { useForm } from "react-hook-form";
-import { getDiaryDate, getToday } from "@/util/date";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { createDiary } from "@/store/api";
+import { getDiaryDate, getToday } from "@/util/date";
 
 function removeAllEmptyStrings(obj: any) {
   for (const key in obj) {
@@ -36,6 +37,7 @@ export default function Create() {
   const router = useRouter();
   const { date } = useParams<{ date: string }>();
   const [formattedDate, setFormattedDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [selectedMood, setSelectedMood] = useState<any>(null);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -45,7 +47,6 @@ export default function Create() {
 
   const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-
   const [pickImage, setPickImage] = useState<File | null>(null);
 
   const { register, watch, getValues, setValue, handleSubmit } = useForm({
@@ -55,6 +56,7 @@ export default function Create() {
       companions: "",
       title: "",
       body: "",
+      todayPickId: "",
       todayPickTitle: "",
       todayPickDate: "",
       todayPickContributors: "",
@@ -64,17 +66,22 @@ export default function Create() {
   const { mutate: createDiaryMutate } = useMutation({
     mutationKey: ["createDiary"],
     mutationFn: createDiary,
+    onMutate: () => {
+      setIsLoading(true);
+    },
     onSuccess: (data: any) => {
-      window.alert(data.message);
-      router.push(`/${date}/diary`);
+      router.replace(`/${date}/diary`);
     },
     onError: ({ response }: any) => {
-      console.log(response.data.error.message);
+      window.alert(response.data.error.message);
+    },
+    onSettled: () => {
+      setIsLoading(false);
     },
   });
 
   const onSubmit = (data: any) => {
-    const { mood, feelings, companions, title, body } = getValues();
+    const { mood, feelings, companions, title, body } = data;
     if (
       mood !== "" &&
       feelings !== "" &&
@@ -82,7 +89,7 @@ export default function Create() {
       title !== "" &&
       body !== ""
     ) {
-      const modifiedData = removeAllEmptyStrings(getValues());
+      const modifiedData = removeAllEmptyStrings(data);
 
       createDiaryMutate({
         date: getToday(),
@@ -99,6 +106,8 @@ export default function Create() {
     }
   }, [date]);
 
+  console.log(isLoading);
+
   // console.log(watch());
   return (
     <main className="flex min-h-screen justify-center">
@@ -111,7 +120,7 @@ export default function Create() {
             </div>
           </section>
           <section className="flex flex-col gap-4 bg-default-200">
-            <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
+            <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
               Mood
             </h2>
             <ChooseMood
@@ -124,7 +133,7 @@ export default function Create() {
             </h3>
           </section>
           <section className="flex flex-col bg-default-200">
-            <h2 className="mb-2 ml-8 flex pt-4 text-lg font-medium text-gray-400">
+            <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
               Feelings
             </h2>
             <ChooseEmotionTags
@@ -133,10 +142,8 @@ export default function Create() {
               onTagSelect={(tags: any) => setValue("feelings", tags)}
             />
           </section>
-          <section className="flex flex-col bg-default-300">
-            <h2 className="ml-8 flex pt-4 text-lg font-medium text-gray-400">
-              With
-            </h2>
+          <section className="flex flex-col bg-default-300 px-8 py-4">
+            <h2 className="flex text-lg font-medium text-gray-400">With</h2>
             <ChooseCompanions
               selectedCompanions={selectedCompanions}
               setSelectedCompanions={setSelectedCompanions}
@@ -146,7 +153,11 @@ export default function Create() {
             />
           </section>
           <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
-            <DiaryCreateModal getValues={getValues} setValue={setValue} />
+            <DiaryModal
+              type="create"
+              getValues={getValues}
+              setValue={setValue}
+            />
           </section>
           <section className="flex flex-col bg-default-400 px-5 py-4">
             <h2 className="flex  text-lg font-medium text-gray-400">
@@ -159,26 +170,24 @@ export default function Create() {
               setPreviewUrls={setPreviewUrls}
             />
           </section>
-          <section className="flex flex-col gap-2 bg-default-800 px-5 py-4">
+          <section className="flex flex-col gap-2 bg-default-800 px-5 pb-8 pt-4">
             <h2 className="flex text-lg font-medium text-default-100">
               Today&#39;s PICK
             </h2>
             <UploadTodayPick
-              register={register}
               getValues={getValues}
               setValue={setValue}
               pickImage={pickImage}
               setPickImage={setPickImage}
             />
           </section>
-          <section className="mx-4 my-4 flex justify-center">
-            <Button
+          <section className="m-4 flex items-center justify-center">
+            <button
               type="submit"
-              variant="outlined"
-              className="rounded-[20px] border-2 border-solid border-default-800 px-32 py-2 text-default-800 hover:bg-default-300"
+              className="rounded-3xl border-2 border-default-800 px-32 py-2 text-sm font-semibold text-default-800 hover:bg-default-300 active:bg-default-800 active:text-white"
             >
-              Create Diary
-            </Button>
+              {isLoading ? <CircularProgress /> : <span>Create Diary</span>}
+            </button>
           </section>
         </form>
       </article>

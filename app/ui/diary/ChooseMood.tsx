@@ -7,9 +7,9 @@ import SadEmoji from "@/public/diary/SadEmoji";
 import UnhappyEmoji from "@/public/diary/UnhappyEmoji";
 
 export default function ChooseMood({
-  onMoodSelect,
   selectedMood,
   setSelectedMood,
+  onMoodSelect,
 }: any) {
   const handleMoodClick = (mood: string) => {
     // 이미 선택된 기분을 다시 클릭했는지 확인

@@ -530,6 +530,24 @@ export const unblockFriend = async (friendId: number) => {
   }
 };
 
+// 이미지 삭제
+export const deleteImage = async (id: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/upload/files/${id}`);
+    return data;
+  }
+};
+
+// today-pick 삭제
+export const deleteTodayPick = async (id: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/today-picks/${id}`);
+    return data;
+  }
+};
+
 // Read _ post
 export const getPostWithPage = async ({ tab, pageParam }: any) => {
   try {

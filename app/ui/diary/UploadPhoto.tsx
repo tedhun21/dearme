@@ -2,6 +2,8 @@ import { useState, useEffect, ChangeEvent, useRef } from "react";
 
 import PhotoIcon from "@/public/diary/PhotoIcon";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { deleteImage } from "@/store/api";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 export default function UploadPhoto({
@@ -17,6 +19,17 @@ export default function UploadPhoto({
       fileInputRef.current.click();
     }
   };
+
+  const { mutate: deleteImageMutate } = useMutation({
+    mutationKey: ["deleteImage"],
+    mutationFn: deleteImage,
+    onSuccess: (data) => {
+      const updatedFiles = previewUrls.filter(
+        (photo: any) => photo.id !== data.id,
+      );
+      setPreviewUrls(updatedFiles);
+    },
+  });
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -38,14 +51,13 @@ export default function UploadPhoto({
     // onPhotosChange(updatedFiles);
   };
 
-  // const handleDeleteFetchedImage = (index: number) => {
-  //   const updatedFiles = previewUrls.filter((_: any, i: number) => i !== index);
-  //   setPreviewUrls(updatedFiles);
-  // };
+  const handleDeleteFetchedImage = (index: number) => {
+    deleteImageMutate(index);
+  };
 
   return (
-    <div className="mb-8 mt-2 flex justify-center gap-2 px-6">
-      {selectedPhotos.length === 0 && previewUrls.length === 0 ? (
+    <div className="flex justify-center gap-2 px-4 py-6">
+      {selectedPhotos?.length === 0 && previewUrls?.length === 0 ? (
         <button
           type="button"
           onClick={openFileInput}
@@ -65,7 +77,7 @@ export default function UploadPhoto({
             hidden
           />
         </button>
-      ) : selectedPhotos.length > 0 || previewUrls.length > 0 ? (
+      ) : selectedPhotos?.length > 0 || previewUrls?.length > 0 ? (
         <div className="flex w-full flex-wrap justify-center gap-2">
           {selectedPhotos.map((file: File, index: number) => (
             <div key={index} className="relative h-[128px] w-[128px]">
@@ -83,19 +95,22 @@ export default function UploadPhoto({
               </button>
             </div>
           ))}
-          {/* {previewUrls.map((image: any) => (
-            <div key={image.id}>
+          {previewUrls.map((image: any) => (
+            <div key={image.id} className="relative h-[128px] w-[128px]">
               <Image
                 src={`${BUCKET_URL}${image.url}`}
                 alt={`Preview ${image.id}`}
                 className="rounded-md object-cover"
                 fill
               />
-              <button onClick={() => handleDeleteFetchedImage(image.id)}>
+              <button
+                onClick={() => handleDeleteFetchedImage(image.id)}
+                className="absolute right-[-8px] top-[-8px] flex h-5 w-5 items-center justify-center rounded-full bg-red-500 pb-[1.8px] text-white hover:bg-red-600"
+              >
                 &times;
               </button>
             </div>
-          ))} */}
+          ))}
         </div>
       ) : null}
     </div>

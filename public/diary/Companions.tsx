@@ -17,7 +17,7 @@ export default function Companions({
     : "mt-1 rounded-lg border-2 border-default-400 bg-default-100 px-3 py-1 text-base font-semibold text-default-800 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2";
 
   return (
-    <button onClick={onClick} className={tagClasses}>
+    <button type="button" onClick={() => onClick()} className={tagClasses}>
       {text}
     </button>
   );

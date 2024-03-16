@@ -29,9 +29,9 @@ export default function Diary() {
   return (
     <main className="relative flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
+        <Header />
         {diaryData ? (
           <>
-            <Header />
             {/* 일기 데이터가 있을 경우 렌더링 */}
             <ReadDiary date={date} diaryData={diaryData} />
             <TodayPick diaryData={diaryData} />
@@ -53,7 +53,6 @@ export default function Diary() {
         ) : (
           // 일기 데이터가 없을 경우 렌더링
           <>
-            <Header />
             <article className="absolute flex flex-col">
               <SentimentalQuotes />
               <section className="relative top-[-120px]">

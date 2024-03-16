@@ -274,6 +274,37 @@ export const getDiaryForDay = async ({ date }: any) => {
   }
 };
 
+export const createDiary = async ({
+  date,
+  createData,
+  photos,
+  todayPickImage,
+}: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+
+    if (createData) {
+      formData.append("data", JSON.stringify(createData));
+      if (photos) {
+        for (let i = 0; i < photos.length; i++) {
+          formData.append("photos", photos[i]);
+        }
+      }
+      if (todayPickImage) {
+        formData.append("todayPickImage", todayPickImage);
+      }
+    }
+    const { data } = await axios.post(
+      `${API_URL}/diaries?date=${date}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
+  }
+};
+
 export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
   const access_token = getCookie("access_token");
   if (access_token) {
@@ -495,6 +526,24 @@ export const unblockFriend = async (friendId: number) => {
       { headers: { Authorization: `Bearer ${access_token}` } },
     );
 
+    return data;
+  }
+};
+
+// 이미지 삭제
+export const deleteImage = async (id: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/upload/files/${id}`);
+    return data;
+  }
+};
+
+// today-pick 삭제
+export const deleteTodayPick = async (id: number) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const { data } = await axios.delete(`${API_URL}/today-picks/${id}`);
     return data;
   }
 };

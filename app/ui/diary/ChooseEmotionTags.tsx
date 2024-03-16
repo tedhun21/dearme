@@ -1,54 +1,36 @@
-import { useEffect, useState } from "react";
-
 import Tags from "@/public/diary/Tags";
 
 export default function ChooseEmotionTags({
+  selectedTags,
+  setSelectedTags,
   onTagSelect,
-  updatedEmotionTags,
-}: {
-  onTagSelect: (tags: string) => void;
-  updatedEmotionTags: string;
-}) {
-  const [selectedTags, setSelectedTags] = useState([] as string[]);
-
+}: any) {
   const tags = [
-    "#상쾌한",
-    "#피곤한",
-    "#행복한",
-    "#의욕적인",
-    "#짜증나는",
-    "#외로운",
-    "#신나는",
-    "#뿌듯한",
-    "#불안한",
-    "#우울한",
-    "#설레는",
-    "#편안한",
-    "#화남",
-    "#슬픈",
-    "#기대되는",
-    "#부담되는",
+    "#FRESH",
+    "#TIRED",
+    "#HAPPY",
+    "#MOTIVATED",
+    "#ANNOYING",
+    "#LONELY",
+    "#EXCITING",
+    "#PROUD",
+    "#ANXIETY",
+    "#DEPRESSED",
+    "#PIT-A-PAT",
+    "#COZY",
+    "#ANGRY",
+    "#GLOOMY",
+    "#EXCITED",
+    "#PRESSURE",
   ];
 
-  // 업데이트된(수정) 태그가 있을 때
-  useEffect(() => {
-    if (
-      typeof updatedEmotionTags === "string" &&
-      updatedEmotionTags.trim().length > 0
-    ) {
-      setSelectedTags(updatedEmotionTags.split(" "));
-    } else {
-      setSelectedTags([]);
-    }
-  }, [updatedEmotionTags]);
-
   const handleTagClick = (tag: string) => {
-    setSelectedTags((prevTags) => {
+    setSelectedTags((prevTags: any) => {
       const isTagSelected = prevTags.includes(tag);
       let newTags;
 
       if (isTagSelected) {
-        newTags = prevTags.filter((prevTag) => prevTag !== tag);
+        newTags = prevTags.filter((prevTag: any) => prevTag !== tag);
       } else {
         newTags = [...prevTags, tag];
       }
@@ -59,7 +41,7 @@ export default function ChooseEmotionTags({
   };
 
   return (
-    <span className="mb-8 mt-2 flex flex-wrap gap-2 px-6">
+    <span className="flex flex-wrap gap-2 px-6 pb-4">
       {tags.map((tag) => (
         <Tags
           key={tag}

@@ -16,7 +16,6 @@ export default function ProfileSetting() {
   const open = Boolean(anchorEl);
 
   const fileInput = useRef(null);
-  console.log(fileInput);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);

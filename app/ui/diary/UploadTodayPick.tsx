@@ -17,14 +17,6 @@ import PickCard from "./PickCard";
 import { deleteImage } from "@/store/api";
 import { useMutation } from "@tanstack/react-query";
 
-type UploadTodayPickProps = {
-  id: number;
-  title: string;
-  date: string;
-  contributors: string;
-  image: string | null;
-};
-
 export default function UploadTodayPick({
   picks,
   setPicks,
@@ -101,9 +93,9 @@ export default function UploadTodayPick({
 
   return (
     <section>
-      {picks?.length > 0 || selectedPicks?.length > 0 ? (
+      {(picks?.length ?? 0) > 0 || (selectedPicks?.length ?? 0) > 0 ? (
         <div className="flex w-full items-center gap-4 overflow-x-auto p-3">
-          {picks.map((pick: any) => (
+          {picks?.map((pick: any) => (
             <PickCard
               key={pick.id}
               type="url"
@@ -111,7 +103,7 @@ export default function UploadTodayPick({
               setPicks={setPicks}
             />
           ))}
-          {selectedPicks.map((pick: any, index: number) => (
+          {selectedPicks?.map((pick: any, index: number) => (
             <PickCard
               key={index}
               type="blob"
@@ -123,7 +115,7 @@ export default function UploadTodayPick({
             <CirclePlus className="h-10 w-10 fill-current text-white group-hover:text-default-900" />
           </button>
         </div>
-      ) : picks?.length === 0 ? (
+      ) : (
         <div className="flex justify-center gap-2 px-6">
           <button
             type="button"
@@ -140,7 +132,7 @@ export default function UploadTodayPick({
             <span>relaxed cultural adventures of the day.</span>
           </button>
         </div>
-      ) : null}
+      )}
       <Modal keepMounted open={open} onClose={() => setOpen(false)}>
         <ModalDialog
           sx={{
@@ -196,7 +188,7 @@ export default function UploadTodayPick({
             <input
               value={pickDate}
               onChange={(e) => setPickDate(e.target.value)}
-              placeholder="Date (YYYY. MM. DD.)"
+              placeholder="Date (YYYY-MM-DD)"
               className="rounded-md border-2 border-default-300 px-3 py-1 outline-none hover:border-default-400 hover:bg-default-100 focus:border-default-900 focus:bg-default-200"
             />
             <input

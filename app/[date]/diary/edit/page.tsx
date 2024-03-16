@@ -74,82 +74,85 @@ export default function Edit() {
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
-        <form>
-          {/* 최상단 날짜 표시 */}
-          <section className="flex items-center justify-between bg-default-100 px-8 py-4 text-center text-xl font-medium text-gray-400">
-            {formattedDate}
-            <div>
-              <Exit />
-            </div>
-          </section>
+        <form className="flex h-full flex-col justify-between">
+          <div>
+            <section className="flex items-center justify-between bg-default-100 px-8 py-4 text-center text-xl font-medium text-gray-400">
+              {formattedDate}
+              <div>
+                <Exit />
+              </div>
+            </section>
 
-          {/* 기분 항목 */}
-          <section className="flex flex-col gap-4 bg-default-200">
-            <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
-              Mood
-            </h2>
-            <ChooseMood
-              selectedMood={selectedMood}
-              setSelectedMood={setSelectedMood}
-              onMoodSelect={(mood: any) => setValue("mood", mood)}
-            />
-            <h3 className="flex justify-center text-sm font-medium text-gray-400">
-              How are you today?
-            </h3>
-          </section>
-          {/* 감정 태그 항목 */}
-          <section className="flex flex-col bg-default-200">
-            <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
-              Feelings
-            </h2>
-            <ChooseEmotionTags
-              selectedTags={selectedTags}
-              setSelectedTags={setSelectedTags}
-              onTagSelect={(tags: any) => setValue("feelings", tags)}
-            />
-          </section>
+            <section className="flex flex-col gap-4 bg-default-200">
+              <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
+                Mood
+              </h2>
+              <ChooseMood
+                selectedMood={selectedMood}
+                setSelectedMood={setSelectedMood}
+                onMoodSelect={(mood: any) => setValue("mood", mood)}
+              />
+              <h3 className="flex justify-center text-sm font-medium text-gray-400">
+                How are you today?
+              </h3>
+            </section>
 
-          {/* 함께한 사람 항목 */}
-          <section className="flex flex-col bg-default-300 px-8 py-4">
-            <h2 className="flex text-lg font-medium text-gray-400">With</h2>
-            <ChooseCompanions
-              selectedCompanions={selectedCompanions}
-              setSelectedCompanions={setSelectedCompanions}
-              onSelectCompanion={(companions: any) =>
-                setValue("companions", companions)
-              }
-            />
-          </section>
+            <section className="flex flex-col bg-default-200">
+              <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
+                Feelings
+              </h2>
+              <ChooseEmotionTags
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+                onTagSelect={(tags: any) => setValue("feelings", tags)}
+              />
+            </section>
 
-          <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
-            <DiaryModal type="edit" getValues={getValues} setValue={setValue} />
-          </section>
+            <section className="flex flex-col bg-default-300 px-8 py-4">
+              <h2 className="flex text-lg font-medium text-gray-400">With</h2>
+              <ChooseCompanions
+                selectedCompanions={selectedCompanions}
+                setSelectedCompanions={setSelectedCompanions}
+                onSelectCompanion={(companions: any) =>
+                  setValue("companions", companions)
+                }
+              />
+            </section>
 
-          <section className="flex flex-col bg-default-400 px-5 py-4">
-            <h2 className="flex  text-lg font-medium text-gray-400">
-              Today&#39;s PICTURE
-            </h2>
-            <UploadPhoto
-              selectedPhotos={selectedPhotos}
-              setSelectedPhotos={setSelectedPhotos}
-              previewUrls={previewUrls}
-              setPreviewUrls={setPreviewUrls}
-            />
-          </section>
+            <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
+              <DiaryModal
+                type="edit"
+                getValues={getValues}
+                setValue={setValue}
+              />
+            </section>
 
-          <section className="flex flex-col gap-2 bg-default-800 px-5 pb-8 pt-4">
-            <h2 className="flex text-lg font-medium text-default-100">
-              Today&#39;s PICK
-            </h2>
-            <UploadTodayPick
-              picks={picks}
-              setPicks={setPicks}
-              selectedPicks={selectedPicks}
-              setSelectedPicks={setSelectedPicks}
-              getValues={getValues}
-              setValue={setValue}
-            />
-          </section>
+            <section className="flex flex-col bg-default-400 px-5 py-4">
+              <h2 className="flex  text-lg font-medium text-gray-400">
+                Today&#39;s PICTURE
+              </h2>
+              <UploadPhoto
+                selectedPhotos={selectedPhotos}
+                setSelectedPhotos={setSelectedPhotos}
+                previewUrls={previewUrls}
+                setPreviewUrls={setPreviewUrls}
+              />
+            </section>
+
+            <section className="flex flex-col gap-2 bg-default-800 px-5 pb-8 pt-4">
+              <h2 className="flex text-lg font-medium text-default-100">
+                Today&#39;s PICK
+              </h2>
+              <UploadTodayPick
+                picks={picks}
+                setPicks={setPicks}
+                selectedPicks={selectedPicks}
+                setSelectedPicks={setSelectedPicks}
+                getValues={getValues}
+                setValue={setValue}
+              />
+            </section>
+          </div>
           <section className="m-4 flex items-center justify-center">
             <button
               type="submit"

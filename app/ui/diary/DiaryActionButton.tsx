@@ -16,6 +16,7 @@ export default function DiaryActionButton({
   actionType: "Edit" | "Delete";
 }) {
   const router = useRouter();
+
   const { mutate } = useMutation({
     mutationKey: ["deleteDiary", diaryId],
     mutationFn: () => deleteDiary(diaryId),
@@ -53,15 +54,15 @@ export default function DiaryActionButton({
     >
       <div className="flex items-center justify-center">
         {actionType === "Delete" ? (
-          <>
-            <Delete className="mr-1 h-4 w-4 fill-current text-white" />
+          <div className="flex items-center gap-1">
+            <Delete className="h-4 w-4 fill-current text-white" />
             <span className="text-sm font-semibold text-white">삭제하기</span>
-          </>
+          </div>
         ) : (
-          <>
-            <EditPost className="mr-1 h-4 w-4 fill-current" />
+          <div className="flex items-center gap-1">
+            <EditPost className="h-4 w-4 fill-current" />
             <span className="text-sm font-semibold">수정하기</span>
-          </>
+          </div>
         )}
       </div>
     </button>

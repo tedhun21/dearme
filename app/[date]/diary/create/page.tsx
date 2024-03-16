@@ -17,7 +17,7 @@ import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
 import DiaryModal from "@/app/ui/diary/DiaryModal";
 import Exit from "@/public/diary/Exit";
 
-import { createDiary } from "@/store/api";
+import { createDiary, createTodayPick } from "@/store/api";
 import { getDiaryDate, getToday } from "@/util/date";
 
 function removeAllEmptyStrings(obj: any) {
@@ -47,7 +47,8 @@ export default function Create() {
 
   const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [pickImage, setPickImage] = useState<File | null>(null);
+
+  const [selectedPicks, setSelectedPicks] = useState([]);
 
   const { register, watch, getValues, setValue, handleSubmit } = useForm({
     defaultValues: {
@@ -63,13 +64,22 @@ export default function Create() {
     },
   });
 
+  // 다이어리 생성
   const { mutate: createDiaryMutate } = useMutation({
     mutationKey: ["createDiary"],
     mutationFn: createDiary,
     onMutate: () => {
       setIsLoading(true);
     },
-    onSuccess: (data: any) => {
+    onSuccess: async ({ diaryId }: any) => {
+      if (selectedPicks.length > 0) {
+        for (let i = 0; i < selectedPicks.length; i++) {
+          await createTodayPickMutate({
+            createData: selectedPicks[i],
+            diaryId,
+          });
+        }
+      }
       router.replace(`/${date}/diary`);
     },
     onError: ({ response }: any) => {
@@ -78,6 +88,12 @@ export default function Create() {
     onSettled: () => {
       setIsLoading(false);
     },
+  });
+
+  // today pick 생성
+  const { mutate: createTodayPickMutate } = useMutation({
+    mutationKey: ["createTodayPick"],
+    mutationFn: createTodayPick,
   });
 
   const onSubmit = (data: any) => {
@@ -92,10 +108,9 @@ export default function Create() {
       const modifiedData = removeAllEmptyStrings(data);
 
       createDiaryMutate({
-        date: getToday(),
+        date,
         createData: modifiedData,
         photos: selectedPhotos,
-        todayPickImage: pickImage,
       });
     }
   };
@@ -106,81 +121,84 @@ export default function Create() {
     }
   }, [date]);
 
-  console.log(isLoading);
-
   // console.log(watch());
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <section className="flex items-center justify-between bg-default-100 px-8 py-4 text-center text-xl font-medium text-gray-400">
-            {formattedDate}
-            <div>
-              <Exit />
-            </div>
-          </section>
-          <section className="flex flex-col gap-4 bg-default-200">
-            <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
-              Mood
-            </h2>
-            <ChooseMood
-              selectedMood={selectedMood}
-              setSelectedMood={setSelectedMood}
-              onMoodSelect={(mood: any) => setValue("mood", mood)}
-            />
-            <h3 className="flex justify-center text-sm font-medium text-gray-400">
-              How are you today?
-            </h3>
-          </section>
-          <section className="flex flex-col bg-default-200">
-            <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
-              Feelings
-            </h2>
-            <ChooseEmotionTags
-              selectedTags={selectedTags}
-              setSelectedTags={setSelectedTags}
-              onTagSelect={(tags: any) => setValue("feelings", tags)}
-            />
-          </section>
-          <section className="flex flex-col bg-default-300 px-8 py-4">
-            <h2 className="flex text-lg font-medium text-gray-400">With</h2>
-            <ChooseCompanions
-              selectedCompanions={selectedCompanions}
-              setSelectedCompanions={setSelectedCompanions}
-              onSelectCompanion={(companions: any) =>
-                setValue("companions", companions)
-              }
-            />
-          </section>
-          <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
-            <DiaryModal
-              type="create"
-              getValues={getValues}
-              setValue={setValue}
-            />
-          </section>
-          <section className="flex flex-col bg-default-400 px-5 py-4">
-            <h2 className="flex  text-lg font-medium text-gray-400">
-              Today&#39;s PICTURE
-            </h2>
-            <UploadPhoto
-              selectedPhotos={selectedPhotos}
-              setSelectedPhotos={setSelectedPhotos}
-              previewUrls={previewUrls}
-              setPreviewUrls={setPreviewUrls}
-            />
-          </section>
-          <section className="flex flex-col gap-2 bg-default-800 px-5 pb-8 pt-4">
-            <h2 className="flex text-lg font-medium text-default-100">
-              Today&#39;s PICK
-            </h2>
-            <UploadTodayPick
-              getValues={getValues}
-              setValue={setValue}
-              pickImage={pickImage}
-              setPickImage={setPickImage}
-            />
-          </section>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex h-full flex-col justify-between"
+        >
+          <div>
+            <section className="flex items-center justify-between bg-default-100 px-8 py-4 text-center text-xl font-medium text-gray-400">
+              {formattedDate}
+              <div>
+                <Exit />
+              </div>
+            </section>
+            <section className="flex flex-col gap-4 bg-default-200">
+              <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
+                Mood
+              </h2>
+              <ChooseMood
+                selectedMood={selectedMood}
+                setSelectedMood={setSelectedMood}
+                onMoodSelect={(mood: any) => setValue("mood", mood)}
+              />
+              <h3 className="flex justify-center text-sm font-medium text-gray-400">
+                How are you today?
+              </h3>
+            </section>
+            <section className="flex flex-col bg-default-200">
+              <h2 className="flex px-8 py-4 text-lg font-medium text-gray-400">
+                Feelings
+              </h2>
+              <ChooseEmotionTags
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+                onTagSelect={(tags: any) => setValue("feelings", tags)}
+              />
+            </section>
+            <section className="flex flex-col bg-default-300 px-8 py-4">
+              <h2 className="flex text-lg font-medium text-gray-400">With</h2>
+              <ChooseCompanions
+                selectedCompanions={selectedCompanions}
+                setSelectedCompanions={setSelectedCompanions}
+                onSelectCompanion={(companions: any) =>
+                  setValue("companions", companions)
+                }
+              />
+            </section>
+            <section className="relative my-4 flex flex-col rounded bg-default-100 shadow-xl hover:bg-gray-300">
+              <DiaryModal
+                type="create"
+                getValues={getValues}
+                setValue={setValue}
+              />
+            </section>
+            <section className="flex flex-col bg-default-400 px-5 py-4">
+              <h2 className="flex  text-lg font-medium text-gray-400">
+                Today&#39;s PICTURE
+              </h2>
+              <UploadPhoto
+                selectedPhotos={selectedPhotos}
+                setSelectedPhotos={setSelectedPhotos}
+                previewUrls={previewUrls}
+                setPreviewUrls={setPreviewUrls}
+              />
+            </section>
+            <section className="flex flex-col gap-2 bg-default-800 px-5 pb-8 pt-4">
+              <h2 className="flex text-lg font-medium text-default-100">
+                Today&#39;s PICK
+              </h2>
+              <UploadTodayPick
+                selectedPicks={selectedPicks}
+                setSelectedPicks={setSelectedPicks}
+                getValues={getValues}
+                setValue={setValue}
+              />
+            </section>
+          </div>
           <section className="m-4 flex items-center justify-center">
             <button
               type="submit"

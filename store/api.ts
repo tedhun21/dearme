@@ -274,25 +274,19 @@ export const getDiaryForDay = async ({ date }: any) => {
   }
 };
 
-export const createDiary = async ({
-  date,
-  createData,
-  photos,
-  todayPickImage,
-}: any) => {
+export const createDiary = async ({ date, createData, photos }: any) => {
   const access_token = getCookie("access_token");
+
   if (access_token) {
     const formData = new FormData();
 
     if (createData) {
       formData.append("data", JSON.stringify(createData));
+
       if (photos) {
         for (let i = 0; i < photos.length; i++) {
           formData.append("photos", photos[i]);
         }
-      }
-      if (todayPickImage) {
-        formData.append("todayPickImage", todayPickImage);
       }
     }
     const { data } = await axios.post(
@@ -302,6 +296,27 @@ export const createDiary = async ({
     );
 
     return data;
+  }
+};
+
+export const createTodayPick = async ({ createData, diaryId }: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    if (createData && diaryId) {
+      const formData = new FormData();
+      const { title, date, contributors, image } = createData;
+      formData.append(
+        "data",
+        JSON.stringify({ title, date, contributors, diaryId }),
+      );
+      if (image) {
+        formData.append("image", image);
+      }
+      const { data } = await axios.post(`${API_URL}/today-picks`, formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      return data;
+    }
   }
 };
 

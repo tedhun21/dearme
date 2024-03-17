@@ -87,6 +87,7 @@ export default function DiaryModal({ type, getValues, setValue }: any) {
       {getValues().title !== "" || getValues().body !== "" ? (
         <div className="group relative">
           <button
+            type="button"
             onClick={() => setOpen(true)}
             className="flex w-full flex-col rounded-md bg-white px-5 py-4 group-hover:bg-default-900"
           >
@@ -95,10 +96,10 @@ export default function DiaryModal({ type, getValues, setValue }: any) {
               <p className="pl-1 text-left">{getValues().body}</p>
             </div>
           </button>
-          <div className="absolute bottom-4 right-8 flex items-center text-default-800">
+          <div className="absolute bottom-4 right-8 flex items-center gap-2 text-default-800">
             <WeatherIcons
               weatherId={getValues().weatherId}
-              className="h-4 w-4 fill-current"
+              className="h-6 w-6 fill-current"
             />
             <h4 className="flex justify-end text-xs font-medium text-default-800">
               {getValues().weather || "날씨 정보를 가져오는 중입니다."}
@@ -114,6 +115,7 @@ export default function DiaryModal({ type, getValues, setValue }: any) {
       ) : (
         <>
           <button
+            type="button"
             className="group px-8 py-20 text-base text-default-800 transition-all duration-300 hover:bg-default-900"
             onClick={() => setOpen(true)}
           >

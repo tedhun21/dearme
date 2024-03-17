@@ -112,6 +112,8 @@ export default function Create() {
         createData: modifiedData,
         photos: selectedPhotos,
       });
+    } else {
+      window.alert("Mood, Feelings, With, Diary are required");
     }
   };
 

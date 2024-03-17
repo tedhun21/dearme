@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 
 import PhotoIcon from "@/public/diary/PhotoIcon";
 import Image from "next/image";
@@ -88,6 +88,7 @@ export default function UploadPhoto({
                 fill
               />
               <button
+                type="button"
                 onClick={() => handleDeleteSelectedImage(index)}
                 className="absolute right-[-8px] top-[-8px] flex h-5 w-5 items-center justify-center rounded-full bg-red-500 pb-[1.8px] text-white hover:bg-red-600"
               >
@@ -104,6 +105,7 @@ export default function UploadPhoto({
                 fill
               />
               <button
+                type="button"
                 onClick={() => handleDeleteFetchedImage(image.id)}
                 className="absolute right-[-8px] top-[-8px] flex h-5 w-5 items-center justify-center rounded-full bg-red-500 pb-[1.8px] text-white hover:bg-red-600"
               >

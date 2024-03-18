@@ -34,7 +34,9 @@ export default function Diary() {
             {/* 일기 데이터가 있을 경우 렌더링 */}
             <div>
               <ReadDiary date={date} diaryData={diaryData} />
-              <TodayPicks picks={diaryData.today_picks} />
+              {diaryData.today_picks.length > 0 && (
+                <TodayPicks picks={diaryData.today_picks} />
+              )}
             </div>
             <section className="p-5">
               <div className="flex justify-end gap-2">

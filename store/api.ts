@@ -299,24 +299,46 @@ export const createDiary = async ({ date, createData, photos }: any) => {
   }
 };
 
-export const createTodayPick = async ({ createData, diaryId }: any) => {
+export const createTodayPick = async ({ createData, photos, diaryId }: any) => {
   const access_token = getCookie("access_token");
   if (access_token) {
     if (createData && diaryId) {
       const formData = new FormData();
-      const { title, date, contributors, image } = createData;
+      const { title, date, contributors } = createData;
       formData.append(
         "data",
         JSON.stringify({ title, date, contributors, diaryId }),
       );
-      if (image) {
-        formData.append("image", image);
+      if (photos) {
+        formData.append("photos", photos);
       }
       const { data } = await axios.post(`${API_URL}/today-picks`, formData, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       return data;
     }
+  }
+};
+
+export const updateDiary = async ({ updateData, photos, diaryId }: any) => {
+  const access_token = getCookie("access_token");
+  if (access_token) {
+    const formData = new FormData();
+
+    formData.append("data", JSON.stringify(updateData));
+    if (photos) {
+      for (let i = 0; i < photos.length; i++) {
+        formData.append("photos", photos[i]);
+      }
+    }
+
+    const { data } = await axios.put(
+      `${API_URL}/diaries/${diaryId}`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } },
+    );
+
+    return data;
   }
 };
 
@@ -328,22 +350,6 @@ export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
 
     const { data } = await axios.put(
       `${API_URL}/diaries/${diaryId}?remember=${remember}`,
-      formData,
-      { headers: { Authorization: `Bearer ${access_token}` } },
-    );
-
-    return data;
-  }
-};
-
-export const updateDiary = async (diaryId: string, diaryData: any) => {
-  const access_token = getCookie("access_token");
-  if (access_token) {
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(diaryData));
-
-    const { data } = await axios.put(
-      `${API_URL}/diaries/${diaryId}`,
       formData,
       { headers: { Authorization: `Bearer ${access_token}` } },
     );

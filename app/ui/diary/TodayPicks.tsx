@@ -10,14 +10,12 @@ export default function TodayPicks({ picks }: any) {
           <h1 className="mb-3 text-lg font-semibold text-white">
             Today&#39;s PICK
           </h1>
-          {picks.length > 0 ? (
+          {picks.length > 0 && (
             <div className="flex overflow-x-scroll whitespace-nowrap scrollbar-hide">
               {picks.map((pick: any) => (
                 <TodayPick key={pick.id} pick={pick} />
               ))}
             </div>
-          ) : (
-            <div>no Today&#39;s PICK</div>
           )}
         </section>
       </article>

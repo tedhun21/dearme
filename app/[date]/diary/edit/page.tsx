@@ -9,7 +9,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { getDiaryDate } from "@/util/date";
 
-import { getDiaryForDay, updateDiary } from "@/store/api";
+import { createTodayPick, getDiaryForDay, updateDiary } from "@/store/api";
 import ChooseMood from "@/app/ui/diary/ChooseMood";
 import ChooseEmotionTags from "@/app/ui/diary/ChooseEmotionTags";
 import ChooseCompanions from "@/app/ui/diary/ChooseCompanions";
@@ -50,9 +50,23 @@ export default function Edit() {
   const { mutate: updateDiaryMutate } = useMutation({
     mutationKey: ["updateDiary"],
     mutationFn: updateDiary,
-    onSuccess: (data) => {
+    onSuccess: async ({ diaryId }) => {
+      if (selectedPicks.length > 0) {
+        for (let i = 0; i < selectedPicks.length; i++) {
+          await createTodayPickMutate({
+            createData: selectedPicks[i],
+            diaryId,
+          });
+        }
+      }
       router.push(`/${date}/diary`);
     },
+  });
+
+  // today pick 생성
+  const { mutate: createTodayPickMutate } = useMutation({
+    mutationKey: ["createTodayPick"],
+    mutationFn: createTodayPick,
   });
 
   const onSubmit = (data: any) => {

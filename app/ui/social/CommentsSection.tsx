@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -22,7 +22,6 @@ import CommentSettings from "./CommentSettings";
 import { timeSince } from "./SocialPost";
 
 import InputBase from "@mui/material/InputBase";
-import { CircularProgress } from "@mui/material";
 
 import Send from "@/public/social/Send";
 
@@ -38,7 +37,7 @@ export default function CommentsSection({
   const queryClient = useQueryClient();
 
   // me
-  const { isSuccess, data: me } = useQuery({
+  const { data: me } = useQuery({
     queryKey: ["getMe"],
     queryFn: getMe,
   });
@@ -55,6 +54,7 @@ export default function CommentsSection({
     },
     initialPageParam: 1,
   });
+
   const handleLoadMoreComments = () => {
     fetchNextPage();
   };
@@ -187,6 +187,7 @@ export default function CommentsSection({
               </div>
             )),
           )}
+          {/* TODO 댓글 5개  */}
           {hasNextPage && (
             <button
               onClick={handleLoadMoreComments}
@@ -220,7 +221,6 @@ export default function CommentsSection({
                   fontWeight: 500,
                 }}
                 placeholder="Add a comment..."
-                inputProps={{ "aria-label": "댓글 남기기..." }}
                 onChange={handleInputChange}
                 value={comment}
               />

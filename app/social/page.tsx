@@ -125,8 +125,16 @@ export default function Social() {
               No posts yet
             </div>
           ) : (
-            <div className="flex justify-center px-5 py-2 text-sm text-default-500">
-              All posts are loaded.
+            <div className="flex flex-col items-center">
+              <div className=" px-5 py-2 text-sm text-default-500">
+                All posts are loaded.
+              </div>
+              <button
+                onClick={() => window.scrollTo(0, 0)}
+                className="rounded-2xl bg-default-500 px-4 py-1 text-white hover:opacity-50"
+              >
+                <span className="text-sm">to the top</span>
+              </button>
             </div>
           )}
         </div>
@@ -146,14 +154,14 @@ export default function Social() {
 
         {/* New Post */}
         {postUploaded && window.scrollY > 100 && (
-          <div className=" fixed top-20 flex w-full max-w-[600px] justify-center">
+          <div className=" fixed top-10 flex w-full max-w-[600px] justify-center">
             <div className="absolute">
               <New setPostUploaded={setPostUploaded} />
             </div>
           </div>
         )}
 
-        <Footer />
+        <Footer me={me} />
       </div>
     </main>
   );

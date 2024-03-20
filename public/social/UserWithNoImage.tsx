@@ -12,15 +12,15 @@ export default function UserWithNoImage({ className }: IconProps) {
       viewBox="0 0 40 40"
       className={className}
     >
-      <g clip-path="url(#a)">
+      <g clipPath="url(#a)">
         <rect width="40" height="40" fill="#D6D2C4" rx="20" />
-        <circle cx="20" cy="16" r="7" fill="url(#b)" fill-opacity=".5" />
+        <circle cx="20" cy="16" r="7" fill="url(#b)" fillOpacity=".5" />
         <circle cx="20" cy="16" r="7" fill="#F5F3EB" />
         <ellipse
           cx="20"
           cy="35.5"
           fill="url(#c)"
-          fill-opacity=".5"
+          fillOpacity="0.5"
           rx="13"
           ry="9.5"
         />

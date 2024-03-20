@@ -19,8 +19,6 @@ const ViewPostModal: React.FC<ViewPostModalProps> = ({
   handleClose,
   postId,
 }) => {
-  console.log(postId);
-
   const { isLoading, data: getPostResult } = useQuery({
     queryKey: ["getPostResult", postId],
     queryFn: () => getPost(postId),
@@ -37,6 +35,8 @@ const ViewPostModal: React.FC<ViewPostModalProps> = ({
           transform: "translate(-50%, -50%)",
           width: "100%",
           maxWidth: "480px",
+          maxHeight: "calc(100vh - 80px)",
+          overflowY: "auto",
           backgroundColor: "#F5F3EB",
           borderRadius: "16px",
           py: "20px",

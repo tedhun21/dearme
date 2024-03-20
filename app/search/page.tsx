@@ -1,21 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-// TODO: 헤더 검색 버튼 추가
 
 import "../globals.css";
-import React, { useState } from "react";
+import React from "react";
+
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/store/api";
 
 import SearchBar from "../ui/search/SearchBar";
-import Users from "../ui/search/Users";
-import ImageTag from "../ui/search/ImageTag";
 import Footer from "../ui/footer";
-
-import { Divider } from "@mui/material";
 
 import BackIcon from "@/public/signup/BackIcon";
 import SearchTitle from "@/public/search/SearchTitle";
 
 export default function Search() {
+  // me
+  const { data: meData } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: getMe,
+  });
+
   return (
     <main className="relative flex min-h-screen justify-center">
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 pb-[52px] shadow-lg">
@@ -33,7 +37,7 @@ export default function Search() {
           <SearchBar />
         </div>
 
-        <Footer />
+        <Footer me={meData} />
       </div>
     </main>
   );

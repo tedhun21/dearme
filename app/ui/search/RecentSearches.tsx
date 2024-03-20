@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import CloseIcon from "@mui/icons-material/Close";
 import GoalTag from "@/public/search/GoalTag";
+import UserWithNoImage from "@/public/social/UserWithNoImage";
 
 interface RecentSearchesProps {
   recentSearches: {
@@ -20,13 +21,11 @@ const RecentSearches: React.FC<RecentSearchesProps> = ({
   onRecentRemove,
   onClearRecent,
 }) => {
-  console.log(recentSearches);
   return (
     <section className="mt-5 flex w-full  flex-col  rounded-lg border-default-400 bg-default-100 px-5 pt-5">
       {/* Recent & Clear All */}
       <div className="mb-3 flex w-full justify-between">
         <span className="text-base font-medium">Recent</span>
-        {/* TODO 검색 기록 없을 때 -> 버튼 x */}
         {recentSearches.length === 0 ? (
           <></>
         ) : (
@@ -61,14 +60,15 @@ const RecentSearches: React.FC<RecentSearchesProps> = ({
                 <div className="flex cursor-pointer items-center">
                   {recent.text.startsWith("#") ? (
                     <GoalTag className="h-12 w-12 rounded-full" />
-                  ) : (
+                  ) : recent.photo ? (
                     <img
                       src={`${BUCKET_URL}${recent.photo}`}
                       alt="User Image"
                       className="h-12 w-12 rounded-full"
                     />
+                  ) : (
+                    <UserWithNoImage className="l h-12 w-12" />
                   )}
-
                   <span className="ml-5 text-base font-semibold text-default-700">
                     {recent.text}
                   </span>

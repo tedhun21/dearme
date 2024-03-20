@@ -8,69 +8,62 @@
 // TODO: 이미지 코너
 
 import "../../globals.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRemembersForMonth } from "@/store/api";
 
 import Image from "next/image";
 import Link from "next/link";
 
-import MoodCards from "@/app/ui/remember/MoodCards";
+import MoodCards from "@/app/ui/remember/MoodArrays";
 import RememberModal from "@/app/ui/remember/RememberModal";
 
 import Select from "@mui/material/Select";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import MenuItem from "@mui/material/MenuItem";
+import { getToday } from "@/util/date";
+import MoodArrays from "@/app/ui/remember/MoodArrays";
 
 export interface RememberItem {
   id: number;
   date: string;
   mood: string;
   title: string;
-  photos: string;
+  photos: any;
 }
 
-export default function Remeber() {
-  // Month
-  const months = [
-    { month: "Jan", value: "01" },
-    { month: "Feb", value: "02" },
-    { month: "Mar", value: "03" },
-    { month: "Apr", value: "04" },
-    { month: "May", value: "05" },
-    { month: "Jun", value: "06" },
-    { month: "Jul", value: "07" },
-    { month: "Aug", value: "08" },
-    { month: "Sep", value: "09" },
-    { month: "Oct", value: "10" },
-    { month: "Nov", value: "11" },
-    { month: "Dec", value: "12" },
-  ];
+// Month
+const months = [
+  { month: "Jan", value: "01" },
+  { month: "Feb", value: "02" },
+  { month: "Mar", value: "03" },
+  { month: "Apr", value: "04" },
+  { month: "May", value: "05" },
+  { month: "Jun", value: "06" },
+  { month: "Jul", value: "07" },
+  { month: "Aug", value: "08" },
+  { month: "Sep", value: "09" },
+  { month: "Oct", value: "10" },
+  { month: "Nov", value: "11" },
+  { month: "Dec", value: "12" },
+];
 
+export default function Remeber() {
   //   Select
-  const [selectedMonth, setSelectedMonth] = useState("01");
+  const [selectedMonth, setSelectedMonth] = useState(getToday().slice(5, 7));
   const handleMonthChange = (e: any) => {
     setSelectedMonth(e.target.value);
-    // console.log(selectedMonth);
   };
 
   // get _ remembers
-  const { data: remembers } = useQuery({
-    queryKey: [selectedMonth],
+  const { data: remembers, refetch: refecthRemeberDiary } = useQuery({
+    queryKey: ["selectedMonth"],
     queryFn: () => getRemembersForMonth(selectedMonth),
   });
 
-  // modal
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = (item: string): void => {
-    setSelectedItem(item);
-    setOpen(true);
-  };
-
-  const handleClose = () => setOpen(false);
+  useEffect(() => {
+    refecthRemeberDiary();
+  }, [selectedMonth]);
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -145,17 +138,8 @@ export default function Remeber() {
 
         {/* Moods 카드 */}
         <section className="mx-5 h-[calc(100vh-172px)] overflow-scroll scrollbar-hide">
-          <MoodCards remembers={remembers} handleOpen={handleOpen} />
+          <MoodArrays remembers={remembers} />
         </section>
-
-        {/* 모달 */}
-        {selectedItem && (
-          <RememberModal
-            selectedItem={selectedItem}
-            open={open}
-            handleClose={handleClose}
-          />
-        )}
       </div>
     </main>
   );

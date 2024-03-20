@@ -3,9 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { useQuery } from "@tanstack/react-query";
-
-import { findFriendship } from "@/store/api";
 import FollowButton from "./FollowButton";
 
 import CancelFollowButton from "./CancelFollowButton";

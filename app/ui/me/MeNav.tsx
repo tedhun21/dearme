@@ -8,7 +8,7 @@ const navList = [
   { id: 1, name: "Plans", href: "/me" },
   { id: 2, name: "Posts", href: "/me/posts" },
   { id: 3, name: "Followers", href: "/me/followers" },
-  { id: 4, name: "Remembers", href: "/diary/remembers" },
+  { id: 4, name: "Remembers", href: "/diary/remember" },
 ];
 
 export default function MeNav() {

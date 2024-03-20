@@ -376,17 +376,16 @@ export const deleteDiary = async (diaryId: string) => {
 export const getRemembersForMonth = async (month: any) => {
   const access_token = getCookie("access_token");
 
-  try {
-    console.log(month);
+  if (access_token) {
     const headers = { Authorization: `Bearer ${access_token}` };
-    const response = await axios.get(
+    const { data } = await axios.get(
       `${API_URL}/diaries?date=2024-${month}&remember=true`,
       { headers },
     );
 
-    return response.data;
-  } catch (e) {
-    console.error(e);
+    return data;
+  } else {
+    return [];
   }
 };
 

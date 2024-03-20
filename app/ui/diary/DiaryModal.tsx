@@ -102,7 +102,7 @@ export default function DiaryModal({ type, getValues, setValue }: any) {
               className="h-6 w-6 fill-current"
             />
             <h4 className="flex justify-end text-xs font-medium text-default-800">
-              {getValues().weather || "날씨 정보를 가져오는 중입니다."}
+              {getValues().weather || "No data for weather"}
             </h4>
           </div>
           <button

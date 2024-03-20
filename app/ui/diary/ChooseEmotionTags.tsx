@@ -26,11 +26,11 @@ export default function ChooseEmotionTags({
 
   const handleTagClick = (tag: string) => {
     setSelectedTags((prevTags: any) => {
-      const isTagSelected = prevTags.includes(tag);
+      const isTagSelected = prevTags?.includes(tag);
       let newTags;
 
       if (isTagSelected) {
-        newTags = prevTags.filter((prevTag: any) => prevTag !== tag);
+        newTags = prevTags?.filter((prevTag: any) => prevTag !== tag);
       } else {
         newTags = [...prevTags, tag];
       }
@@ -46,7 +46,7 @@ export default function ChooseEmotionTags({
         <Tags
           key={tag}
           text={tag}
-          selected={selectedTags.includes(tag)}
+          selected={selectedTags?.includes(tag)}
           onClick={() => handleTagClick(tag)}
         />
       ))}

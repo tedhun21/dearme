@@ -30,6 +30,7 @@ export default function CreateDiaryButton({ currentPage }: any) {
   };
   return (
     <button
+      type="button"
       onClick={() => handleClick()}
       className="relative mx-4 my-4 flex flex-col items-center gap-1 rounded bg-default-100 py-24 shadow-xl hover:bg-gray-300"
     >

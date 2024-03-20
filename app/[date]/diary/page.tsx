@@ -27,6 +27,7 @@ export default function Diary() {
     queryKey: ["getDiaryForDay"],
     queryFn: () => getDiaryForDay({ date }),
   });
+  console.log(diaryData);
 
   const handleClick = () => {
     if (date) {

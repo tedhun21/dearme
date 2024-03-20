@@ -50,14 +50,6 @@ export default function ReadDiary({ date, diaryData }: any) {
   return (
     <article className="relative">
       <section className="mb-5 mt-5 flex w-full min-w-[360px] max-w-[600px] flex-col rounded ">
-        {/* <div className="mb-[420px]"> */}
-        {/* <Background className="absolute left-0 top-0 z-10 fill-current text-default-400" />
-          <Background className="absolute left-2 top-2 z-10 fill-current text-default-300" /> */}
-        {/* <Background
-            className="absolute left-4 right-0 top-4 z-20"
-            imageUrl="https://i.pinimg.com/564x/18/7e/66/187e66dd64de9f323ed7b7261fd29fc8.jpg"
-          /> */}
-
         {/* 이미지 있을 경우에만 (images &&)*/}
         {diaryData && diaryData.photos && diaryData.photos.length > 0 && (
           <div>
@@ -124,7 +116,10 @@ export default function ReadDiary({ date, diaryData }: any) {
           </div>
           {/* 일기의 날씨정보 */}
           <div className="flex w-full items-center justify-end gap-1">
-            <WeatherIcons weatherId={diaryData.weatherId} />
+            <WeatherIcons
+              weatherId={diaryData.weatherId}
+              className="h-4 w-4 fill-current text-black"
+            />
             <span className="text-sm font-medium">{diaryData.weather}</span>
           </div>
         </div>

@@ -47,7 +47,7 @@ export default function MeNavList({ nav }: any) {
                 : "text-default-500 group-hover:text-default-700",
             )}
           />
-        ) : nav.href === "/diary/remembers" ? (
+        ) : nav.href === "/diary/remember" ? (
           <RememberIcon
             className={clsx(
               "h-5 w-5 fill-current",

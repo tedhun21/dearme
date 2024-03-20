@@ -1,10 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-// TODO 일기 1개 조회 api
 import React, { useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
-import { getDiaryForDay } from "@/store/api";
-import { getDate } from "./MoodCards";
+import { getDate } from "./MoodArrays";
 
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -26,28 +23,14 @@ import DeleteRemember from "@/public/remember/DeleteRemember";
 import CloseRemember from "@/public/remember/CloseRemember";
 
 interface RmemberModalProps {
-  selectedItem: string | null;
+  selectedItem: any;
   open: boolean;
   handleClose: () => void;
 }
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function RememberModal({
-  selectedItem,
-  open,
-  handleClose,
-}: RmemberModalProps) {
-  console.log(selectedItem);
-
-  // get _ Diary
-  const { data: diary } = useQuery({
-    queryKey: ["getDiary", selectedItem],
-    queryFn: () => getDiaryForDay(selectedItem),
-  });
-
-  console.log(diary);
-
+export default function RememberModal({ remember, open, handleClose }: any) {
   // tags
   const [showAllTags, setShowAllTags] = useState(false);
 
@@ -104,15 +87,15 @@ export default function RememberModal({
         </div> */}
 
         {/* Diary */}
-        {diary && (
+        {remember && (
           <article className="flex w-full flex-col  ">
             <div className="mx-5 mb-2 flex items-center justify-between text-sm font-medium text-default-900">
               <div>
-                {getDate(diary.date).day + " "}
-                {getDate(diary.date).month + " "}
-                {getDate(diary.date).year}
+                {getDate(remember.date).day + " "}
+                {getDate(remember.date).month + " "}
+                {getDate(remember.date).year}
               </div>
-              {diary.photos && (
+              {remember.photos && (
                 <div>
                   <button
                     className="flex items-center text-default-500 hover:text-default-900"
@@ -125,13 +108,13 @@ export default function RememberModal({
               )}
             </div>
             {/* 일기 이미지 */}
-            {diary.photos && showPhotos && (
+            {remember.photos && showPhotos && (
               <Swiper
                 pagination={true}
                 modules={[Pagination]}
                 className=" mb-5 w-full flex-1 object-cover"
               >
-                {diary.photos.map((photo: any, index: any) => (
+                {remember.photos.map((photo: any, index: any) => (
                   <SwiperSlide
                     key={index}
                     className=" flex items-center justify-center "
@@ -142,7 +125,7 @@ export default function RememberModal({
                       className=" h-[300px] w-full cursor-pointer object-cover"
                     />
                     <div className="flex items-center justify-end px-2 text-[10px] font-medium text-default-400">
-                      {index + 1} / {diary.photos?.length}
+                      {index + 1} / {remember.photos?.length}
                     </div>
                   </SwiperSlide>
                 ))}
@@ -152,13 +135,16 @@ export default function RememberModal({
             {/* 날짜 & 제목 & tags */}
             <section className="mx-5">
               <h1 className="mb-1 text-base font-semibold text-white">
-                {'"' + diary.title + '"'}
+                {'"' + remember.title + '"'}
               </h1>
 
               {/* TODO emotion tags 수정 */}
-              {diary.feelings
+              {remember.feelings
                 ?.split(",")
-                .slice(0, showAllTags ? diary.feelings?.split(",").length : 3)
+                .slice(
+                  0,
+                  showAllTags ? remember.feelings?.split(",").length : 3,
+                )
                 .map((feeling: string, index: number) => (
                   <div
                     key={index}
@@ -167,12 +153,12 @@ export default function RememberModal({
                     {feeling}
                   </div>
                 ))}
-              {!showAllTags && diary.feelings?.split(",").length > 3 && (
+              {!showAllTags && remember.feelings?.split(",").length > 3 && (
                 <div
                   className="border-1 mr-3 mt-1 inline-block cursor-pointer rounded-full border-default-400 bg-default-300 px-2 py-0.5 text-sm font-semibold text-default-800 hover:bg-gray-300 focus:outline-none focus:ring-2"
                   onClick={handleShowMoreTags}
                 >
-                  +{diary.feelings?.split(",").length - 3}
+                  +{remember.feelings?.split(",").length - 3}
                 </div>
               )}
             </section>
@@ -180,23 +166,23 @@ export default function RememberModal({
             {/* 일기 내용 */}
             <section
               className={
-                diary.photos
+                remember.photos
                   ? `mx-5 max-h-[300px] flex-1 overflow-scroll scrollbar-hide`
                   : `mx-5 mb-3 max-h-[500px] flex-1 overflow-scroll scrollbar-hide`
               }
             >
               <div className="mb-5 text-sm font-light text-white">
-                {diary.body}
+                {remember.body}
               </div>
 
               <div className="mb-5 flex w-full items-center justify-end">
                 <WeatherIcons
-                  weatherId={diary.weatherId}
+                  weatherId={remember.weatherId}
                   className="mr-2 h-4 w-4 fill-current text-white"
                 />
 
                 <span className="font-base text-xs text-white">
-                  {diary.weather}
+                  {remember.weather}
                 </span>
               </div>
             </section>

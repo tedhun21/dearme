@@ -61,15 +61,15 @@ export default function Social() {
     queryFn: getMe,
   });
 
+  // Tab (query)
+  const [selectedTab, setSelectedTab] = useState<string>("all");
+
   useEffect(() => {
-    if (isSuccess && !me) {
+    if (isSuccess && !me && selectedTab === "friends") {
       window.alert("Please log in first.");
       router.replace("/login");
     }
-  }, [me]);
-
-  // Tab (query)
-  const [selectedTab, setSelectedTab] = useState<string>("all");
+  }, [me, selectedTab]);
 
   // infinite scroll
   const [ref, inView] = useInView();
@@ -99,7 +99,6 @@ export default function Social() {
 
   // New post
   const [postUploaded, setPostUploaded] = useState(false);
-  console.log(postUploaded);
 
   return (
     <main className="flex min-h-screen w-full justify-center">
@@ -148,7 +147,7 @@ export default function Social() {
         {/* 게시물 작성 버튼 */}
         <div className="fixed bottom-0 w-full max-w-[600px]">
           <div className="absolute bottom-24 right-5 flex">
-            <CreatePost setPostUploaded={setPostUploaded} />
+            {me && <CreatePost setPostUploaded={setPostUploaded} />}
           </div>
         </div>
 

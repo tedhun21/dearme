@@ -13,6 +13,7 @@ export default function Header() {
           width={80}
           height={26}
           style={{ width: "80px", height: "26px" }}
+          priority
         />
       </Link>
       <div className="flex flex-row gap-2 p-3">

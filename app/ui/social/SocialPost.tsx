@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-//TODO 이미지 크기 수정 react-cropper
+
 import React, { useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
@@ -98,7 +98,7 @@ export default function SocialPost({ post }: SocialPostProps) {
 
   return (
     <>
-      <div className="mb-5 flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 ">
+      <section className="mb-5 flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 ">
         {/* 유저 프로필 & 목표 & 설정 */}
         <div className="relative mb-2 flex  items-center px-5">
           <div className="h-10 w-10 rounded-full">
@@ -133,7 +133,7 @@ export default function SocialPost({ post }: SocialPostProps) {
         </div>
 
         {/* 게시물 사진 */}
-        <div className="relative mb-2 mt-1  px-5">
+        <div className="relative mt-1  px-5">
           {post.photo?.url && (
             <Image
               src={`${BUCKET_URL}${post.photo?.url}`}
@@ -152,65 +152,68 @@ export default function SocialPost({ post }: SocialPostProps) {
           )}
         </div>
 
-        <div className="flex items-center justify-between px-5">
+        <div className="my-2 flex items-center justify-between px-5">
           {/* 좋아요 & 댓글 아이콘 */}
-          <div className="flex">
-            <div
-              className={`mr-2 flex transform cursor-pointer items-center transition-all duration-500 ${
-                liked ? "scale-105 text-red-500" : "scale-100 text-default-600"
-              }`}
-              onClick={toggleLike}
-            >
-              {liked ? (
-                <FullHeart className="h-6 w-5 fill-current text-red-500" />
-              ) : (
-                <EmptyHeart className="h-6 w-5 fill-current text-default-600" />
+          {me && (
+            <div className="flex">
+              <div
+                className={`mr-2 flex transform cursor-pointer items-center transition-all duration-500 ${
+                  liked
+                    ? "scale-105 text-red-500"
+                    : "scale-100 text-default-600"
+                }`}
+                onClick={toggleLike}
+              >
+                {liked ? (
+                  <FullHeart className="h-6 w-5 fill-current text-red-500" />
+                ) : (
+                  <EmptyHeart className="h-6 w-5 fill-current text-default-600" />
+                )}
+              </div>
+              {post.commentSettings !== "OFF" && (
+                <div className="flex items-center" onClick={toggleComments}>
+                  <Comments className="ml-1 h-6 w-5 cursor-pointer fill-current text-default-600" />
+                </div>
               )}
             </div>
-            {post.commentSettings !== "OFF" && (
-              <div className="flex items-center" onClick={toggleComments}>
-                <Comments className="ml-1 h-6 w-5 cursor-pointer fill-current text-default-600" />
-              </div>
-            )}
-          </div>
-          {/* 게시글 작성시간 */}
-          <div className=" flex justify-end  text-xs  text-default-500">
-            {timeSince(post.createdAt)}
-          </div>
+          )}
         </div>
 
         {/* Likes 목록 */}
-        <div className="items-centers my-2 flex px-5">
+        <div className="items-centers  flex px-5">
           <div className="flex">
-            {post.likes.slice(0, 3).map((like, index) => {
-              return like.photo?.url ? (
-                <img
-                  key={index}
-                  className={` h-7 w-7 rounded-full border-2 border-solid border-default-200 ${
-                    index > 0 ? "-ml-4" : ""
-                  }`}
-                  alt="likes"
-                  src={`${BUCKET_URL}${like.photo?.url}`}
-                />
-              ) : (
-                <UserWithNoImage
-                  className={`m-0 h-7 w-7 rounded-full border-2 border-solid border-default-200 ${
-                    index > 0 ? "-ml-4" : ""
-                  }`}
-                />
-              );
-            })}
+            {post.likes.slice(0, 3).map((like, index) => (
+              <div
+                key={like.id}
+                className={clsx(
+                  "relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-full border-2 border-solid border-default-200",
+                  index > 0 ? "-ml-4" : "",
+                )}
+              >
+                {like.photo?.url ? (
+                  <Image
+                    src={`${BUCKET_URL}${like.photo?.url}`}
+                    fill
+                    sizes="24px"
+                    alt={`{like.id}`}
+                    className="object-cover"
+                  />
+                ) : (
+                  <UserWithNoImage className="" />
+                )}
+              </div>
+            ))}
+          </div>
 
-            <div
-              className="ml-2 flex cursor-pointer items-center text-xs font-medium text-default-900"
-              onClick={openLikeModal}
-            >
-              {post.likes.length === 0
-                ? ""
-                : post.likes.length === 1
-                  ? `${post.likes.length} Like`
-                  : `${post.likes.length} Likes`}
-            </div>
+          <div
+            className="ml-2 flex cursor-pointer items-center text-xs font-medium text-default-900"
+            onClick={openLikeModal}
+          >
+            {post.likes.length === 0
+              ? ""
+              : post.likes.length === 1
+                ? `${post.likes.length} Like`
+                : `${post.likes.length} Likes`}
           </div>
         </div>
 
@@ -222,7 +225,7 @@ export default function SocialPost({ post }: SocialPostProps) {
         />
 
         {/* 게시물 body */}
-        <div className="flex w-full items-start gap-2 px-5 py-4 text-sm font-medium text-default-700">
+        <div className="flex w-full items-start gap-2 px-5 py-2 text-sm font-medium text-default-700">
           <div className="text-sm font-semibold">{post.user?.nickname}</div>
 
           <div className="flex">
@@ -255,6 +258,11 @@ export default function SocialPost({ post }: SocialPostProps) {
           </div>
         </div>
 
+        {/* 게시글 작성시간 */}
+        <div className="flex w-full justify-end pr-5  text-xs  text-default-500">
+          {timeSince(post.createdAt)}
+        </div>
+
         {/* View n Comments */}
         {post.commentSettings !== "OFF" && (
           <div
@@ -277,8 +285,8 @@ export default function SocialPost({ post }: SocialPostProps) {
             commentSettings={post.commentSettings}
           />
         )}
-        <Divider className="mt-5" sx={{ border: "1px solid #EBE3D5" }} />
-      </div>
+        <Divider sx={{ border: "1px solid #EBE3D5", marginTop: "20px" }} />
+      </section>
     </>
   );
 }

@@ -7,18 +7,19 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
 import XIcon from "@/public/todo/XIcon";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createMyGoal } from "@/store/api";
-import { useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { goalListState } from "@/store/atoms";
 
-export default function CreateGoalModal({
+export default function NewGoalModal({
   date,
   modalOpen,
   setModalOpen,
+  setOpenCreatePost,
+  goals,
 }: any) {
-  const [goals, setGoals] = useRecoilState(goalListState);
+  // const [goals, setGoals] = useRecoilState(goalListState);
+
+  const queryClient = useQueryClient();
 
   const {
     register: createGoalRegister,
@@ -43,7 +44,12 @@ export default function CreateGoalModal({
     mutationKey: ["createMyGoal"],
     mutationFn: createMyGoal,
     onSuccess: (data) => {
-      setGoals((prev) => [...prev, data]);
+      // create goal 모달 닫기
+      setModalOpen(false);
+      // 닫혀있던 create post모달 열기
+      setOpenCreatePost(true);
+      // goal 통신 다시 하기
+      queryClient.invalidateQueries({ queryKey: ["getGoals"] });
     },
   });
 
@@ -59,6 +65,8 @@ export default function CreateGoalModal({
       createGoalMutate(data);
     }
   };
+
+  // console.log(watch());
 
   return (
     <Modal
@@ -167,7 +175,7 @@ export default function CreateGoalModal({
               placeholder="please write the content..."
             />
           </div>
-          <div></div>
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div>PUBLIC</div>
@@ -218,13 +226,13 @@ export default function CreateGoalModal({
                 )}
               />
             </div>
-            <button
-              type="submit"
-              className="rounded-lg bg-default-800 px-3 py-2 font-semibold text-white hover:bg-default-900"
-            >
-              Create Todo
-            </button>
           </div>
+          <button
+            type="submit"
+            className="rounded-lg bg-default-800 px-3 py-2 font-semibold text-white hover:bg-default-900"
+          >
+            Create Todo
+          </button>
         </form>
       </div>
     </Modal>

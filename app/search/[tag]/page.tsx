@@ -96,7 +96,9 @@ const SearchResults = () => {
                       <Image
                         src={`${BUCKET_URL}${post.photo}`}
                         alt="Post Image"
-                        layout={"fill"}
+                        fill
+                        sizes="160px"
+                        priority
                       />
                     </div>
                   </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 
 export default function SentimentalQuotes() {
   const [imageSrc, setImageSrc] = useState("");
@@ -23,7 +24,7 @@ export default function SentimentalQuotes() {
   }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때만 실행
 
   return (
-    <>
+    <div>
       {imageSrc && (
         <Image
           src={imageSrc}
@@ -34,6 +35,6 @@ export default function SentimentalQuotes() {
           priority
         />
       )}
-    </>
+    </div>
   );
 }

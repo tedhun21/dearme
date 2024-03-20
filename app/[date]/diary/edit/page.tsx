@@ -98,7 +98,7 @@ export default function Edit() {
   useEffect(() => {
     if (isSuccess && diaryData) {
       setSelectedMood(diaryData.mood);
-      setSelectedTags(diaryData.feelings.split(" "));
+      setSelectedTags(diaryData.feelings?.split(" ") || []);
       setSelectedCompanions(diaryData.companions);
       setPreviewUrls(diaryData.photos ?? []);
       setPicks(diaryData.today_picks);

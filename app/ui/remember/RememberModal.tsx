@@ -5,7 +5,7 @@ import { getDate } from "./MoodArrays";
 
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import { Divider } from "@mui/material";
+import { Divider, IconButton } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -21,6 +21,7 @@ import Film from "@/public/remember/Film";
 import EditRemember from "@/public/remember/EditRemeber";
 import DeleteRemember from "@/public/remember/DeleteRemember";
 import CloseRemember from "@/public/remember/CloseRemember";
+import { useQuery } from "@tanstack/react-query";
 
 interface RmemberModalProps {
   selectedItem: any;
@@ -46,13 +47,15 @@ export default function RememberModal({ remember, open, handleClose }: any) {
     console.log(showPhotos);
   };
 
+  // console.log(remember);
+
   return (
     <Modal
       open={open}
       onClose={handleClose}
       sx={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
     >
-      <Box className="relative left-1/2 top-1/2 h-auto  w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[16px]  bg-black ">
+      <Box className="relative left-1/2 top-1/2 h-auto w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[16px]  bg-black ">
         {/* 필름 디자인 */}
         <div className="flex justify-between px-2 text-[10px] text-default-700 ">
           <div className="">DEARME 5017 EPR</div>
@@ -72,23 +75,23 @@ export default function RememberModal({ remember, open, handleClose }: any) {
 
         {/* 버튼 */}
         {/* <div>
-          <button
-            className="absolute right-4 top-4 z-10  "
-            onClick={handleClose}
-          >
-            <CloseRemember className="h-5 w-5 fill-current text-default-400 hover:text-default-800" />
-          </button>
-          <button className="absolute right-12 top-4 z-10 ">
-            <DeleteRemember className="h-5 w-5 fill-current text-default-400 hover:text-default-400" />
-          </button>
-          <button className="absolute right-20 top-4 z-10 ">
-            <EditRemember className="h-5 w-5 fill-current text-default-400 hover:text-default-400" />
-          </button>
-        </div> */}
+<button
+className="absolute right-4 top-4 z-10  "
+onClick={handleClose}
+>
+<CloseRemember className="h-5 w-5 fill-current text-default-400 hover:text-default-800" />
+</button>
+<button className="absolute right-12 top-4 z-10 ">
+<DeleteRemember className="h-5 w-5 fill-current text-default-400 hover:text-default-400" />
+</button>
+<button className="absolute right-20 top-4 z-10 ">
+<EditRemember className="h-5 w-5 fill-current text-default-400 hover:text-default-400" />
+</button>
+</div> */}
 
         {/* Diary */}
         {remember && (
-          <article className="flex w-full flex-col  ">
+          <article className="flex w-full flex-col">
             <div className="mx-5 mb-2 flex items-center justify-between text-sm font-medium text-default-900">
               <div>
                 {getDate(remember.date).day + " "}

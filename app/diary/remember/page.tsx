@@ -7,16 +7,12 @@
 // TODO: select 태그 위치 수정
 // TODO: 이미지 코너
 
-import "../../globals.css";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRemembersForMonth } from "@/store/api";
 
 import Image from "next/image";
 import Link from "next/link";
-
-import MoodCards from "@/app/ui/remember/MoodArrays";
-import RememberModal from "@/app/ui/remember/RememberModal";
 
 import Select from "@mui/material/Select";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
@@ -129,15 +125,13 @@ export default function Remeber() {
           </div>
         </header>
 
-        <div className="mb-5 ml-5 mr-5 mt-5 flex items-baseline">
+        <div className="flex items-baseline gap-1 p-5">
           <h1 className="text-xl font-semibold text-white">Remember</h1>
-          <h3 className="ml-0.5 text-xs font-semibold text-default-300">
-            moments
-          </h3>
+          <h3 className="text-xs font-semibold text-default-300">moments</h3>
         </div>
 
         {/* Moods 카드 */}
-        <section className="mx-5 h-[calc(100vh-172px)] overflow-scroll scrollbar-hide">
+        <section className="overflow-scroll px-5 scrollbar-hide">
           <MoodArrays remembers={remembers} />
         </section>
       </div>

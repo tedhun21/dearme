@@ -22,25 +22,25 @@ export default function SearchBar() {
     setIsInputFocused(true);
   };
 
-  // 검색 상태
+  // 검색어 (Debounce)
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
-
-  const handleDelete = () => {
-    setSearch("");
-  };
 
   useEffect(() => {
     const delay = setTimeout(() => {
       if (search !== "") {
         setDebouncedSearch(search);
       }
-    }, 300);
+    }, 500);
     return () => clearTimeout(delay);
   }, [search]);
 
+  const handleDelete = () => {
+    setSearch("");
+  };
+
   // 유저 검색
-  const { isLoading, data: searchResult } = useQuery({
+  const { data: searchResult } = useQuery({
     queryKey: ["getSearchResult", debouncedSearch],
     queryFn: () => getSearchUsers(debouncedSearch),
     enabled: Boolean(search),
@@ -56,7 +56,6 @@ export default function SearchBar() {
     staleTime: 0,
   });
   const searchedGoals = getGoalSearchResult || [];
-  console.log(searchedGoals);
 
   // 최근 검색어
   interface recentSearch {
@@ -146,9 +145,9 @@ export default function SearchBar() {
       ) : (
         <section className="mb-5 flex w-full flex-col  rounded-b-lg border-x-2 border-b-2 border-default-300 bg-default-100 px-5 pt-5">
           {/* 검색 결과 */}
+          {/* #목표 검색 */}
           {search.trim() !== "" && search.startsWith("#") ? (
-            // 목표 검색
-            <section>
+            <div>
               <div className="mb-3 text-sm font-medium text-default-400">
                 Goals
               </div>
@@ -180,10 +179,10 @@ export default function SearchBar() {
                   No goals found
                 </div>
               )}
-            </section>
+            </div>
           ) : (
-            // 유저 검색
-            <section>
+            //  유저 검색
+            <div>
               <div className="mb-3 text-sm font-medium text-default-400">
                 Users
               </div>
@@ -218,7 +217,7 @@ export default function SearchBar() {
                   No users found
                 </div>
               )}
-            </section>
+            </div>
           )}
         </section>
       )}

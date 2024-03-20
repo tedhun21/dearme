@@ -370,6 +370,7 @@ export const getRemembersForMonth = async (month: any) => {
   const access_token = getCookie("access_token");
 
   try {
+    console.log(month);
     const headers = { Authorization: `Bearer ${access_token}` };
     const response = await axios.get(
       `${API_URL}/diaries?date=2024-${month}&remember=true`,
@@ -606,10 +607,6 @@ export const createPost = async (data: any): Promise<any> => {
     }),
   );
   formData.append("file", data.imageFile);
-
-  // for (let value of formData.values()) {
-  //   console.log(value);
-  // }
 
   return await axios.post(`${API_URL}/posts`, formData, { headers });
 };

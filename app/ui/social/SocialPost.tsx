@@ -1,14 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-// TODO more 버튼 위치
 //TODO 이미지 크기 수정 react-cropper
 import React, { useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRecoilValue } from "recoil";
-import { meState } from "@/store/atoms";
 import { getMe, likePost } from "@/store/api";
 
 import { Post } from "@/app/social/page";
@@ -75,7 +72,7 @@ export default function SocialPost({ post }: SocialPostProps) {
     mutationKey: ["likedPost"],
     mutationFn: ({ postId }: { postId: number }) => likePost(postId),
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ["getPostsWithPage"] });
     },
   });
 
@@ -126,7 +123,7 @@ export default function SocialPost({ post }: SocialPostProps) {
               className="text-xs font-semibold text-default-500"
               style={{ marginTop: "-4px" }}
             >
-              #{post.goal.title}
+              {post.goal ? `#${post.goal.title}` : ""}
             </div>
           </div>
 
@@ -148,7 +145,7 @@ export default function SocialPost({ post }: SocialPostProps) {
               style={{
                 width: "100%",
                 height: "auto",
-                // maxHeight: "680px",
+                maxHeight: "680px",
                 borderRadius: "4px",
               }}
             />
@@ -194,7 +191,6 @@ export default function SocialPost({ post }: SocialPostProps) {
                   }`}
                   alt="likes"
                   src={`${BUCKET_URL}${like.photo?.url}`}
-                  style={{ borderColor: "#F5F3EB" }}
                 />
               ) : (
                 <UserWithNoImage

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-
 import "../../globals.css";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -23,7 +23,6 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 const SearchResults = () => {
   const params = useParams();
   const searchTerm = params.tag;
-  console.log(typeof searchTerm);
 
   // # 목표 검색
   const { data: getGoalSearchResult } = useQuery({
@@ -53,18 +52,18 @@ const SearchResults = () => {
         </div>
 
         {/* #목표 & 목표 개수 */}
-        <div className=" mx-5 my-10 flex items-center">
+        <section className=" mx-5 my-10 flex items-center">
           <GoalTag className="h-10 w-10" />
           <div className="flex flex-col">
-            <h1 className="ml-2 text-sm font-semibold text-default-700">
+            <span className="ml-2 text-base font-semibold text-default-700">
               #{searchedGoals.title}
-            </h1>
-            <h2 className="ml-2 text-sm font-semibold text-default-500">
+            </span>
+            <span className="ml-2 text-xs font-medium text-default-500">
               {searchedGoals.postsCount}{" "}
               {searchedGoals.postsCount <= 1 ? " post" : " posts"}
-            </h2>
+            </span>
           </div>
-        </div>
+        </section>
 
         {/* #목표 관련 포스트 */}
         {searchedGoals.postsCount > 0 ? (
@@ -84,7 +83,7 @@ const SearchResults = () => {
                 searchedGoals.postsData.map((post: any) => (
                   <div
                     key={post.postId}
-                    className="flex items-center justify-center "
+                    className="flex cursor-pointer items-center justify-center"
                   >
                     <div
                       style={{
@@ -95,10 +94,9 @@ const SearchResults = () => {
                       onClick={() => handleOpen(post.postId)}
                     >
                       <Image
-                        src={`${BUCKET_URL}${post.photo.formats.thumbnail.url}`}
+                        src={`${BUCKET_URL}${post.photo}`}
                         alt="Post Image"
                         layout={"fill"}
-                        objectFit="fill"
                       />
                     </div>
                   </div>

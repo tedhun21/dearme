@@ -239,21 +239,11 @@ export const updateMyGoal = async ({ updateData, goalId }: any) => {
   }
 };
 
-// preview: /diary/:month 쿼리
-export const getDiariesForMonth = async ({
-  date,
-  preview,
-}: {
-  date: any;
-  preview?: boolean;
-}) => {
+export const getDiariesForMonth = async (month: any) => {
   const access_token = getCookie("access_token");
-
   if (access_token) {
     const { data } = await axios.get(
-      preview
-        ? `${API_URL}/diaries?date=${date.slice(0, 7)}&preview=true`
-        : `${API_URL}/diaries?date=${date.slice(0, 7)}`,
+      `${API_URL}/diaries?date=${month.slice(0, 7)}`,
       {
         headers: { Authorization: `Bearer ${access_token}` },
       },
@@ -344,6 +334,7 @@ export const updateDiary = async ({ updateData, photos, diaryId }: any) => {
 };
 
 export const updateDiaryRemember = async ({ diaryId, remember }: any) => {
+  console.log(diaryId, remember);
   const access_token = getCookie("access_token");
   if (access_token) {
     const formData = new FormData();

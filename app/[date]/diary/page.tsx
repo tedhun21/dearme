@@ -24,6 +24,7 @@ export default function Diary() {
     queryKey: ["getDiaryForDay"],
     queryFn: () => getDiaryForDay({ date }),
   });
+  console.log(diaryData);
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -34,7 +35,7 @@ export default function Diary() {
             {/* 일기 데이터가 있을 경우 렌더링 */}
             <div>
               <ReadDiary date={date} diaryData={diaryData} />
-              {diaryData.today_picks.length > 0 && (
+              {diaryData.today_picks?.length > 0 && (
                 <TodayPicks picks={diaryData.today_picks} />
               )}
             </div>

@@ -21,15 +21,10 @@ export default function MeProfileHeaderMeatball({
   // 유저 백그라운드 사진 바꾸기
   const { mutate: updateBackGroundMutate } = useMutation({
     mutationKey: ["updateBackGroundPhoto"],
-    mutationFn: ({
-      userId,
-      selectedFile,
-    }: {
-      userId: number;
-      selectedFile: File;
-    }) => updateBackGroundPhoto({ userId, selectedFile }),
+    mutationFn: updateBackGroundPhoto,
     onSuccess: ({ data }: any) => {
       window.alert(data.message);
+      setAnchorEl(null);
     },
     onError: ({ response }: any) => {
       window.alert(response.data.error.message);
@@ -60,9 +55,9 @@ export default function MeProfileHeaderMeatball({
   };
 
   return (
-    <div>
+    <div className="rounded-full bg-default-200 bg-opacity-50">
       <IconButton onClick={handleClick}>
-        <MoreHorizIcon sx={{ color: "#2D2422" }} />
+        <MoreHorizIcon sx={{ opacity: 1, color: "#143422" }} />
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -71,13 +66,15 @@ export default function MeProfileHeaderMeatball({
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         sx={{
+          opacity: "0.6",
           "& .MuiMenu-paper": {
-            backgroundColor: "transparent",
+            backgroundColor: "#F5F3EB",
             boxShadow: "none",
           },
         }}
       >
-        <div className="flex flex-col items-end gap-4 pr-1">
+        <div className="flex flex-col items-end gap-4 p-2 pr-1">
+          {/* share 버튼 */}
           <button className="group flex items-center gap-2">
             <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
               Share
@@ -86,6 +83,7 @@ export default function MeProfileHeaderMeatball({
               <ShareIcon className="h-5 w-5" />
             </div>
           </button>
+          {/* background 버튼 */}
           <button
             onClick={() => {
               (BackGroundfileInput.current as any).click();

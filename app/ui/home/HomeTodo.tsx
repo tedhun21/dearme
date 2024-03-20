@@ -15,15 +15,15 @@ export default function HomeTodo() {
   const [todos, setTodos] = useRecoilState(todoListState);
 
   const checkedTodos =
-    todos.length > 0 ? todos.filter((todo) => todo.done === true) : [];
+    todos?.length > 0 ? todos.filter((todo) => todo.done === true) : [];
 
   const { value, reset } = useCountUp({
     isCounting: true,
     duration: 3,
     start: 0,
     end:
-      todos.length !== 0
-        ? Math.round((checkedTodos.length / todos.length) * 100)
+      todos?.length !== 0
+        ? Math.round((checkedTodos?.length / todos?.length) * 100)
         : 0,
 
     onUpdate: (data) => {
@@ -49,7 +49,7 @@ export default function HomeTodo() {
             Todo & Goal
           </span>
           <div className="flex justify-center p-6">
-            {todos.length !== 0 ? (
+            {todos?.length !== 0 ? (
               <CircularProgress
                 size="lg"
                 determinate

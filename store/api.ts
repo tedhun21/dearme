@@ -261,6 +261,7 @@ export const getDiariesForMonth = async ({
 
     return data;
   }
+  return [];
 };
 
 export const getDiaryForDay = async ({ date }: any) => {

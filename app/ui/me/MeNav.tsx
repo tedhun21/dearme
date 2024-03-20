@@ -14,9 +14,6 @@ const navList = [
 export default function MeNav() {
   const pathname = usePathname();
 
-  {
-    /* {pathname !== "/me/friends" && pathname !== "/me/edit" && <MeNav />} */
-  }
   return (
     <>
       {pathname !== "/me/friends" && pathname !== "/me/edit" && (

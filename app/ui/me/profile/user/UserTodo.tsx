@@ -1,14 +1,17 @@
-"use client";
+import TodoCheckFalseIcon from "@/public/me/TodoCheckFalseIcon";
+import TodoCheckTrueIcon from "@/public/me/TodoCheckTrueIcon";
 
-import { useQuery } from "@tanstack/react-query";
-import TodoRate from "../../plans/TodoRate";
-import { getUserTodosWithDate } from "@/store/api";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
-import { useSetRecoilState } from "recoil";
-import { todoListState } from "@/store/atoms";
-import { getToday } from "@/util/date";
-
-export default function UserTodo() {
-  return <TodoRate />;
+export default function UserTodo({ todo }: any) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl bg-default-300 p-3">
+      {todo.done ? (
+        <TodoCheckTrueIcon className="fill current h-6 w-6 text-default-600" />
+      ) : (
+        <TodoCheckFalseIcon className="fill current h-6 w-6 text-default-600" />
+      )}
+      <span className="text-sm font-semibold text-default-700">
+        {todo.body}
+      </span>
+    </div>
+  );
 }

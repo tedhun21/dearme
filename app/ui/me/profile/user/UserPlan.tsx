@@ -1,6 +1,6 @@
 "use client";
 
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useQuery } from "@tanstack/react-query";
 
 import { getToday } from "@/util/date";
@@ -13,19 +13,21 @@ import TodoRate from "../../plans/TodoRate";
 
 import Blur from "./Blur";
 import LockIcon from "@/public/me/LockIcon";
+import UserTodos from "./UserTodos";
 
-export default function UserPlan({ user }: any) {
+export default function UserPlan({ user, friendshipData }: any) {
+  const [isDrop, setIsDrop] = useState(false);
+  const [todos, setTodos] = useRecoilState(todoListState);
+
   const { isSuccess, data: todoData } = useQuery({
     queryKey: ["getUserTodosWithDate"],
     queryFn: () => getUserTodosWithDate({ userId: user.id, date: getToday() }),
     enabled: !!user,
   });
 
-  const setTodos = useSetRecoilState(todoListState);
-
   useEffect(() => {
     if (isSuccess) {
-      setTodos(todoData);
+      setTodos(todoData.filter((todo: any) => todo.public === "ALL"));
     }
   }, [isSuccess]);
 
@@ -43,7 +45,8 @@ export default function UserPlan({ user }: any) {
         </div>
       ) : (
         <section className="mb-20 mt-4 flex flex-col">
-          <TodoRate />
+          <TodoRate isDrop={isDrop} setIsDrop={setIsDrop} />
+          {isDrop && todos.length > 0 && <UserTodos todos={todos} />}
           <UserGoal user={user} />
         </section>
       )}

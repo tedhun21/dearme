@@ -64,7 +64,7 @@ export default function MeFriend() {
               )),
             )
           ) : (
-            <div className="w-full py-5 text-center">
+            <div className="w-full p-5 text-center">
               <span>No Request</span>
             </div>
           )}

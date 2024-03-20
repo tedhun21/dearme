@@ -3,7 +3,7 @@ import AskModal from "../../AskModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { unblockFriend } from "@/store/api";
 
-export default function UnblockButton({ userId }: any) {
+export default function UnblockButton({ meId, userId }: any) {
   const queryClient = useQueryClient();
   const [openUnblockModal, setOpenUnblockModal] = useState(false);
 
@@ -15,15 +15,20 @@ export default function UnblockButton({ userId }: any) {
 
       const prevFriendship = queryClient.getQueryData(["getFriendship"]);
 
+      console.log(prevFriendship);
       if ((prevFriendship as any)?.status === "BLOCK_ONE") {
         queryClient.setQueryData(["getFriendship"], (old: any) => ({
           ...old,
           status: "FRIEND",
+          block: old.block.filter((block: any) => block.id !== meId),
+          blocked: old.blocked.filter((blocked: any) => blocked.id !== userId),
         }));
       } else if ((prevFriendship as any)?.status === "BLOCK_BOTH") {
         queryClient.setQueryData(["getFriendship"], (old: any) => ({
           ...old,
           status: "BLOCK_ONE",
+          block: old.block.filter((block: any) => block.id !== meId),
+          blocked: old.blocked.filter((blocked: any) => blocked.id !== userId),
         }));
       }
       return { prevFriendship };

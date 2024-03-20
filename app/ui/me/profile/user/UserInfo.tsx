@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 
 import UserProfile from "./UserProfile";
 import { useQuery } from "@tanstack/react-query";
-import { getUser } from "@/store/api";
+import { findFriendship, getUser } from "@/store/api";
 import UserPlan from "./UserPlan";
 
 export default function UserInfo({ me }: any) {
@@ -16,10 +16,17 @@ export default function UserInfo({ me }: any) {
     queryFn: () => getUser({ userId: profileId }),
   });
 
+  // 유저와 나와의 관계
+  const { data: friendshipData } = useQuery({
+    queryKey: ["getFriendship"],
+    queryFn: () => findFriendship(userData.id),
+    enabled: !!userData,
+  });
+
   return (
     <>
-      <UserProfile user={userData} me={me} />
-      <UserPlan user={userData} />
+      <UserProfile user={userData} me={me} friendshipData={friendshipData} />
+      <UserPlan user={userData} me={me} friendshipData={friendshipData} />
     </>
   );
 }

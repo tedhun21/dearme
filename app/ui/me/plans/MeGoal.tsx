@@ -1,14 +1,11 @@
 "use client";
+
 import clsx from "clsx";
 
 import GoalList from "../GoalList";
-
 import { getToday } from "@/util/date";
 import { useQuery } from "@tanstack/react-query";
 import { getMyGoals } from "@/store/api";
-import { useEffect } from "react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function MeGoal({ route }: any) {
   const { data: goalData } = useQuery({
@@ -32,7 +29,7 @@ export default function MeGoal({ route }: any) {
             <GoalList key={goal.id} route="home" goal={goal} />
           ))
         ) : (
-          <div className="text-center font-bold">No Goal</div>
+          <div className="p-4 text-center font-bold">No Goal</div>
         )}
       </div>
     </section>

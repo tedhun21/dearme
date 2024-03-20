@@ -11,6 +11,7 @@ import Find from "@/public/search/Find";
 import Delete from "@/public/search/Delete";
 import GoalTag from "@/public/search/GoalTag";
 import UserWithNoImage from "@/public/social/UserWithNoImage";
+import Link from "next/link";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
@@ -43,7 +44,7 @@ export default function SearchBar() {
   const { data: searchResult } = useQuery({
     queryKey: ["getSearchResult", debouncedSearch],
     queryFn: () => getSearchUsers(debouncedSearch),
-    enabled: Boolean(search),
+    enabled: Boolean(search) && !search.includes("#"),
     staleTime: 0,
   });
   const users = searchResult || [];
@@ -153,26 +154,27 @@ export default function SearchBar() {
               </div>
               {Array.isArray(searchedGoals) && searchedGoals.length > 0 ? (
                 searchedGoals.map((goal: any) => (
-                  <a
+                  <div
                     key={goal.id}
-                    href={`/search/${goal.title}`}
                     onClick={() => {
                       handleAddRecent(`#${goal.title}`, "");
                     }}
                   >
-                    <div className="mb-3 flex items-center">
-                      <GoalTag className="h-10 w-10 rounded-full" />
-                      <div className="flex items-center">
-                        <div className="ml-3 text-sm font-medium">
-                          {goal.title}
-                        </div>
-                        <div className="ml-3 text-xs font-medium">
-                          {goal.postsCount.toLocaleString() +
-                            (goal.postsCount <= 1 ? " post" : " posts")}
+                    <Link href={`/search/${goal.title}`}>
+                      <div className="mb-3 flex items-center">
+                        <GoalTag className="h-10 w-10 rounded-full" />
+                        <div className="flex items-center">
+                          <div className="ml-3 text-sm font-medium">
+                            {goal.title}
+                          </div>
+                          <div className="ml-3 text-xs font-medium">
+                            {goal.postsCount.toLocaleString() +
+                              (goal.postsCount <= 1 ? " post" : " posts")}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </a>
+                    </Link>
+                  </div>
                 ))
               ) : (
                 <div className="mb-5 flex w-full justify-center  text-xs font-normal text-default-300">

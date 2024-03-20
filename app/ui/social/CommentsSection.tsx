@@ -1,16 +1,17 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { ChangeEvent, useState } from "react";
+import Image from "next/image";
 import {
   useQuery,
   useMutation,
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-
 import {
   getMe,
   readCommentsWithPage,
@@ -24,6 +25,7 @@ import { timeSince } from "./SocialPost";
 import InputBase from "@mui/material/InputBase";
 
 import Send from "@/public/social/Send";
+import UserWithNoImage from "@/public/social/UserWithNoImage";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
@@ -91,6 +93,7 @@ export default function CommentsSection({
     mutationFn: updateComment,
     onSuccess: () => {
       queryClient.invalidateQueries();
+      window.alert("Updated your comment successfully!");
       setIsEditing(false);
       setEditingComment("");
       setEditingCommentId(null);
@@ -115,13 +118,20 @@ export default function CommentsSection({
         <section className="mt-4 max-h-[240px] overflow-y-scroll scrollbar-hide">
           {data?.pages.map((comments: any) =>
             comments.map((comment: any) => (
-              <div key={comment.id} className="mb-3 flex w-full gap-2  px-5">
+              <div key={comment.id} className="mb-3 flex  w-full gap-2 px-5">
                 {/* 이미지*/}
-                <img
-                  src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-                  alt="User Image"
-                  className="h-8 w-8 overflow-hidden rounded-full object-cover"
-                />
+                {(comment.user as any).photo ? (
+                  <div className="relative h-8 w-8  overflow-hidden rounded-full px-2">
+                    <Image
+                      src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
+                      alt="User Image"
+                      fill
+                      sizes="24px"
+                    />
+                  </div>
+                ) : (
+                  <UserWithNoImage className="h-8 w-8 " />
+                )}
 
                 <div className="flex w-full flex-col justify-center">
                   {/* 작성자 & 댓글 */}
@@ -151,14 +161,10 @@ export default function CommentsSection({
 
                   {/* 작성 시간 & 댓글 설정 */}
                   <div className="flex items-center justify-end">
-                    <div
-                      className="text-2xs  text-default-500"
-                      // onMouseEnter={() => setIsHovered(true)}
-                      // onMouseLeave={() => setIsHovered(false)}
-                    >
+                    <div className="text-2xs  text-default-500">
                       {timeSince(comment.createdAt)}
                     </div>
-                    {comment.user.id === me.id ? (
+                    {me && comment.user.id === me.id ? (
                       isEditing ? (
                         editingCommentId === comment.id && (
                           <div
@@ -200,15 +206,19 @@ export default function CommentsSection({
       )}
 
       {/* 댓글 작성 */}
-      {commentSettings !== "OFF" && (
+      {me && commentSettings !== "OFF" && (
         <section className="mb-2 mt-5 flex items-center px-5">
-          <div>
-            <img
-              src={`${BUCKET_URL}${me.photo.url}`}
-              alt="User Image"
-              className="h-8 w-8 rounded-full"
-            />
-          </div>
+          {(me as any).photo ? (
+            <div className="relative h-8 w-8  overflow-hidden rounded-full px-2">
+              <Image
+                src={`${BUCKET_URL}${(me as any).photo.url}`}
+                alt="User Image"
+                fill
+              />
+            </div>
+          ) : (
+            <UserWithNoImage className="h-8 w-8 " />
+          )}
 
           <div className="w-full flex-col pl-3">
             <div className="flex h-8 items-center rounded-full border-2 border-default-400 p-0.5 ">

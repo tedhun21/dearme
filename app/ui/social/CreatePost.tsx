@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -10,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import UploadPostImg from "./UploadPostImg";
+import NewGoalModal from "./NewGoalModal";
 
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
@@ -30,14 +32,17 @@ export default function CreatePost({
 }) {
   const queryClient = useQueryClient();
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  // CreatePost modal
+  const [openCreatePost, setOpenCreatePost] = useState(false);
+
+  // CreateGoal modal
+  const [modalCreateGoalOpen, setModalCreateGoalOpen] = useState(false);
 
   // goals
   const { data: goalsData } = useQuery({
     queryKey: ["getGoals"],
     queryFn: getGoals,
+    enabled: openCreatePost,
   });
   const goals = goalsData?.data;
 
@@ -91,8 +96,10 @@ export default function CreatePost({
 
   // Post Request
   const { isSuccess, mutate: addPostMutation } = useMutation({
+    mutationKey: ["createPost"],
     mutationFn: createPost,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setOpenCreatePost(false);
       window.alert(" Uploaded!");
       setPostUploaded(true);
     },
@@ -106,7 +113,7 @@ export default function CreatePost({
     },
   });
 
-  const handlePost = async () => {
+  const handlePost = () => {
     if (!selectedGoal) {
       window.alert("Please select your goal.");
       return;
@@ -114,35 +121,43 @@ export default function CreatePost({
       window.alert("Please select a photo.");
       return;
     }
-    try {
-      const postData = {
-        selectedGoal,
-        isPrivate,
-        imageFile,
-        postText,
-        selectedOption,
-      };
-      addPostMutation(postData);
-      setSelectedGoal("");
-      setIsPrivate(false);
-      setImageFile(null);
-      setPostText("");
-      handleClose();
-    } catch (error) {
-      console.error(error);
-    }
+
+    const postData = {
+      selectedGoal,
+      isPrivate,
+      postText,
+      selectedOption,
+    };
+
+    addPostMutation({ createData: postData, imageFile });
+
+    setSelectedGoal("");
+    setIsPrivate(false);
+    setImageFile(null);
+    setPostText("");
+    setOpenCreatePost(false);
   };
 
   return (
     <>
       <button
         className="flex h-10 w-10 items-center justify-center rounded-full bg-default-800 hover:bg-opacity-75"
-        onClick={handleOpen}
+        onClick={() => setOpenCreatePost(true)}
       >
         <AddIcon sx={{ color: "white" }} />
       </button>
 
-      <Modal open={open} onClose={handleClose}>
+      {/* CreateGoalModal */}
+      <NewGoalModal
+        date={formattedDate}
+        modalOpen={modalCreateGoalOpen}
+        setModalOpen={setModalCreateGoalOpen}
+        setOpenCreatePost={setOpenCreatePost}
+        goals={goals}
+      />
+
+      {/* CreatePostModal */}
+      <Modal open={openCreatePost} onClose={() => setOpenCreatePost(false)}>
         <Box
           sx={{
             position: "absolute",
@@ -168,7 +183,10 @@ export default function CreatePost({
               />
             </Link>
 
-            <button className="border-none" onClick={handleClose}>
+            <button
+              className="border-none"
+              onClick={() => setOpenCreatePost(false)}
+            >
               <Close className="h-3 w-3 cursor-pointer fill-current text-default-600" />
             </button>
           </div>
@@ -195,10 +213,6 @@ export default function CreatePost({
                       borderColor: "#DED0B6",
                     },
                   },
-
-                  // "& .MuiSelect-select": {
-                  //   padding: "0px",
-                  // },
                 }}
                 IconComponent={({ ...rest }) => (
                   <MoreHorizIcon
@@ -210,6 +224,7 @@ export default function CreatePost({
                 onChange={handleGoalChange}
               >
                 {Array.isArray(goals) &&
+                  goals.length > 0 &&
                   goals.map((goal) => (
                     <MenuItem
                       key={goal.id}
@@ -219,6 +234,18 @@ export default function CreatePost({
                       {`# ${goal.title}`}
                     </MenuItem>
                   ))}
+
+                <MenuItem value="" sx={{ fontSize: "14px" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenCreatePost(false);
+                      setModalCreateGoalOpen(true);
+                    }}
+                  >
+                    Add a new goal
+                  </button>
+                </MenuItem>
               </Select>
             </div>
 
@@ -355,7 +382,7 @@ export default function CreatePost({
           <div className="flex items-center justify-end">
             <button
               className="w-20 rounded bg-default-800 p-1 text-sm font-medium text-white"
-              onClick={handlePost}
+              onClick={() => handlePost()}
             >
               Post
             </button>

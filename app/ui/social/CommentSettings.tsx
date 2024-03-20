@@ -7,11 +7,6 @@ import { deleteComment } from "@/store/api";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import Divider from "@mui/material/Divider";
-
-import Comments from "@/public/social/Comments";
-import Delete from "@/public/social/Delete";
-import Edit from "@/public/social/Edit";
 
 interface CommentSettingsProps {
   postId: number;
@@ -48,13 +43,13 @@ export default function CommentSettings({
   });
 
   const handleDeleteComment = async () => {
-    try {
+    const result = window.confirm("Would you like to delete your comment?");
+    if (result) {
       deleteMutation.mutate({ postId, commentId });
       handleClose();
       window.alert("Deleted your comment successfully.");
-    } catch (e) {
-      console.error(e);
     }
+    handleClose();
   };
 
   const handleEditClick = () => {
@@ -88,8 +83,6 @@ export default function CommentSettings({
       >
         <div className="flex flex-col px-3">
           <button className="my-1 flex items-center" onClick={handleEditClick}>
-            {/* <Edit className="mr-1 h-5 w-6 fill-current text-default-600" /> */}
-
             <div className=" text-sm font-medium text-default-700">Edit</div>
           </button>
 
@@ -97,7 +90,6 @@ export default function CommentSettings({
             className="my-1 flex items-center"
             onClick={() => handleDeleteComment()}
           >
-            {/* <Delete className="mr-1 h-5 w-6 fill-current text-default-600" /> */}
             <div className="text-sm font-medium text-red-500">Delete</div>
           </button>
         </div>

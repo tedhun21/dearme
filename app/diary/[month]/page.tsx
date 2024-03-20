@@ -206,7 +206,7 @@ export default function MonthlyDiary() {
                       <Image
                         src={`${BUCKET_URL}${diary.photos}`}
                         alt="Diary Photo"
-                        layout={"fill"}
+                        fill
                         objectFit="cover"
                         className="rounded-2xl group-hover:opacity-20"
                       />

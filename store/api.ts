@@ -598,23 +598,34 @@ export const getGoals = async () => {
   return await axios.get(`${API_URL}/goals?date=${date}`, { headers });
 };
 
-export const createPost = async (data: any): Promise<any> => {
+export const createPost = async ({
+  createData,
+  imageFile,
+}: any): Promise<any> => {
   const access_token = getCookie("access_token");
-  const headers = { Authorization: `Bearer ${access_token}` };
-  const formData = new FormData();
+  if (access_token) {
+    if (createData) {
+      const headers = { Authorization: `Bearer ${access_token}` };
+      const formData = new FormData();
+      formData.append(
+        "data",
+        JSON.stringify({
+          goalId: createData.selectedGoal,
+          body: createData.postText,
+          isPublic: !createData.isPrivate,
+          commentSettings: createData.selectedOption,
+        }),
+      );
+      formData.append("file", imageFile);
 
-  formData.append(
-    "data",
-    JSON.stringify({
-      goalId: data.selectedGoal,
-      body: data.postText,
-      isPublic: !data.isPrivate,
-      commentSettings: data.selectedOption,
-    }),
-  );
-  formData.append("file", data.imageFile);
+      const { data } = await axios.post(`${API_URL}/posts`, formData, {
+        headers,
+      });
 
-  return await axios.post(`${API_URL}/posts`, formData, { headers });
+      console.log(data);
+      return data;
+    }
+  }
 };
 
 // Update _ post
@@ -706,12 +717,9 @@ export const createComment = async ({
 
 // Read _ comment
 export const readCommentsWithPage = async ({ postId, pageParam }: any) => {
-  const access_token = getCookie("access_token");
-  const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
       `${API_URL}/comments?page=${pageParam}&size=5&postId=${postId}`,
-      { headers },
     );
     return response.data.results;
   } catch (e) {
@@ -764,12 +772,9 @@ export const deleteComment = async ({
 
 // Search _ users
 export const getSearchUsers = async (name: string) => {
-  const access_token = getCookie("access_token");
-  const headers = { Authorization: `Bearer ${access_token}` };
   try {
     const response = await axios.get(
       `${API_URL}/search-users?searchTerm=${name}`,
-      { headers },
     );
     return response.data;
   } catch (e) {
@@ -782,14 +787,10 @@ export const getSearchGoals = async (
   goal: string | string[],
   posts: boolean,
 ) => {
-  const access_token = getCookie("access_token");
-  const headers = { Authorization: `Bearer ${access_token}` };
-
   if (posts === true) {
     try {
       const response = await axios.get(
         `${API_URL}/search-goals?searchTerm=${goal}&posts=true`,
-        { headers },
       );
       return response.data.searchedGoals[0];
     } catch (e) {
@@ -799,7 +800,6 @@ export const getSearchGoals = async (
     try {
       const response = await axios.get(
         `${API_URL}/search-goals?searchTerm=${goal}`,
-        { headers },
       );
       return response.data.searchedGoals;
     } catch (e) {
@@ -810,10 +810,8 @@ export const getSearchGoals = async (
 
 // Search > Read _ post
 export const getPost = async (postId: number) => {
-  const access_token = getCookie("access_token");
-  const headers = { Authorization: `Bearer ${access_token}` };
   try {
-    const response = await axios.get(`${API_URL}/posts/${postId}`, { headers });
+    const response = await axios.get(`${API_URL}/posts/${postId}`);
     return response.data.results;
   } catch (e) {
     console.error(e);
@@ -842,14 +840,25 @@ export const getSearchDiaries = async ({
 };
 
 // Read _ likeship
-export const getLikeship = async (postId: number) => {
-  const access_token = getCookie("access_token");
-  const headers = { Authorization: `Bearer ${access_token}` };
+export const getLikeship = async ({
+  postId,
+  all,
+}: {
+  postId: number;
+  all: boolean;
+}) => {
   try {
-    const response = await axios.get(`${API_URL}/posts/${postId}/likeship`, {
-      headers,
-    });
-    return response.data.results;
+    let url = `${API_URL}/posts/${postId}/likeship`;
+    if (all) {
+      url += "?all=true";
+      const response = await axios.get(url);
+      return response.data.results;
+    } else {
+      const access_token = getCookie("access_token");
+      const headers = { Authorization: `Bearer ${access_token}` };
+      const response = await axios.get(url, { headers });
+      return response.data.results;
+    }
   } catch (e) {
     console.error(e);
   }

@@ -10,17 +10,16 @@ import { usePathname, useRouter } from "next/navigation";
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function MeProfile({ me, route }: any) {
-  const router = useRouter();
   const pathname = usePathname();
 
   const [backGroundPhoto, setBackGroundPhoto] = useState<File | null>(null);
 
-  useEffect(() => {
-    if (!me) {
-      window.alert("Your token has expired. Please log in again.");
-      router.replace("/");
-    }
-  }, [me]);
+  // useEffect(() => {
+  //   if (!me) {
+  //     window.alert("Your token has expired. Please log in again.");
+  //     router.replace("/");
+  //   }
+  // }, [me]);
 
   return (
     <>
@@ -64,7 +63,7 @@ export default function MeProfile({ me, route }: any) {
           <div className="relative flex h-full w-full p-5">
             <MeProfileHeader
               me={me}
-              route={route}
+              route="edit"
               setBackGroundPhoto={setBackGroundPhoto}
             />
 

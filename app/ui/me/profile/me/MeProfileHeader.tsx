@@ -1,15 +1,12 @@
-import clsx from "clsx";
-import BackButton from "../../../backbutton";
-import Link from "next/link";
-import Image from "next/image";
-import { IconButton, Menu } from "@mui/material";
-import ShareIcon from "@/public/me/ShareIcon";
-import BackGroundIcon from "@/public/me/BackGroundIcon";
-import EditIcon from "@/public/me/EditIcon";
-
 import { ChangeEvent, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+import clsx from "clsx";
 import { useMutation } from "@tanstack/react-query";
-import { updateBackGroundPhoto, updateUserPhoto } from "@/store/api";
+
+import BackButton from "../../../backbutton";
+import { updateUserPhoto } from "@/store/api";
 import PencilIcon from "@/public/me/PencilIcon";
 import MeProfileHeaderMeatball from "./MeProfileHeaderMeatball";
 
@@ -27,10 +24,9 @@ export default function MeProfileHeader({
   // 유저 프로필 사진 바꾸기
   const { mutate: updateUserPhotoMutate } = useMutation({
     mutationKey: ["updateUserPhoto"],
-    mutationFn: (variables: { userId: number; selectedFile: File }) =>
-      updateUserPhoto(variables),
-    onSuccess: ({ message }: any) => {
-      window.alert(message);
+    mutationFn: updateUserPhoto,
+    onSuccess: (data: any) => {
+      window.alert(data.message);
     },
     onError: ({ response }: any) => {
       window.alert(response.data.error.message);
@@ -123,15 +119,16 @@ export default function MeProfileHeader({
             onChange={handleUserPhotoChange}
           />
           <div className="mt-4 flex items-center justify-between">
-            <div className="flex flex-col gap-1">
-              <span className="text-bg-800 text-xl font-semibold">
-                {(me as any)?.nickname}
+            <div className="flex flex-col items-start justify-center gap-1">
+              {me?.nickname ? (
+                <span className="rounded-md bg-white bg-opacity-50 px-2 text-xl font-semibold text-default-800 text-opacity-100">
+                  {me.nickname}
+                </span>
+              ) : null}
+              <span className="flex items-center justify-center rounded-md bg-white bg-opacity-50 px-2 text-default-800">
+                {(me as any)?.body}
               </span>
-              <span className="text-white">{(me as any)?.body}</span>
             </div>
-            {/* <button className="rounded-3xl bg-default-500 px-4 py-1 font-semibold text-white hover:bg-default-600 active:bg-default-700">
-            Follow
-          </button> */}
           </div>
         </div>
       )}

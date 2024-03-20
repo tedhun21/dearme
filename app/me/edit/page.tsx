@@ -17,7 +17,9 @@ import Withdrawal from "@/app/ui/me/edit/Withdrawal";
 
 export default function MeEdit() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
+  // 나의 기존 데이터 가져오기
   const { isSuccess, data: me } = useQuery({
     queryKey: ["getMe"],
     queryFn: getMe,
@@ -33,11 +35,25 @@ export default function MeEdit() {
     formState: { errors },
   } = useForm();
 
+  // 유저 프로필 업데이트
   const { mutate: updateProfileMutate } = useMutation({
     mutationFn: updateMe,
 
+    onMutate: async (data: any) => {
+      await queryClient.cancelQueries({ queryKey: ["getMe"] });
+
+      const prevMe = queryClient.getQueryData(["getMe"]);
+
+      queryClient.setQueryData(["getMe"], (old: any) => ({
+        ...old,
+        ...data.updateData,
+      }));
+
+      return { prevMe };
+    },
     onSuccess: ({ data }: any) => {
       window.alert(data.message);
+      router.push("/me");
     },
     onError: (err: any, _, context) => {
       setError(err.response.data.error.details.field, {

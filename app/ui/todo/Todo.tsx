@@ -72,7 +72,7 @@ export default function Todo({ date, todo }: any) {
 
   return (
     <div className="flex items-center justify-between px-4 py-2">
-      <div className="flex flex-grow gap-3">
+      <div className="flex flex-grow items-center gap-3">
         <button onClick={() => handleTodoCheck()}>
           {done ? (
             <TodoCheckTrueIcon className="h-6 w-6 fill-current text-default-600 hover:text-default-700" />
@@ -84,10 +84,10 @@ export default function Todo({ date, todo }: any) {
           <input
             {...register("todoBody")}
             defaultValue={todo.body}
-            className="text-semibold flex-grow bg-default-300 text-sm text-default-700 focus:bg-default-400 focus:outline-none"
+            className="flex-grow bg-default-300 text-sm font-medium text-default-700 focus:bg-default-400 focus:outline-none"
           />
         ) : (
-          <span className="text-semibold text-sm text-default-700">
+          <span className="text-sm font-medium text-default-700">
             {todo.body}
           </span>
         )}

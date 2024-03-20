@@ -16,9 +16,15 @@ export default function TodogoalHeader({ me }: any) {
   return (
     <section className="flex w-full items-center justify-between">
       {me && me?.nickname ? (
-        <span className="text-xl font-semibold">Hi! {me?.nickname}</span>
+        <div className="flex flex-col">
+          <span className="text-xl font-semibold">Hi!</span>
+          <span className="text-sm">{me?.nickname}</span>
+        </div>
       ) : (
-        <Link href="/me/edit">Set Nickname</Link>
+        <Link href="/me/edit" className="text-xs">
+          <span>Set</span>
+          <span>Nickname</span>
+        </Link>
       )}
       <div className="flex">
         <div className="relative rounded-3xl bg-default-800">

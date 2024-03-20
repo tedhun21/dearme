@@ -15,13 +15,7 @@ import AcceptButton from "./AcceptFollowButton";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function UserProfile({ user, me }: any) {
-  // 유저와 나와의 관계
-  const { data: friendshipData } = useQuery({
-    queryKey: ["getFriendship"],
-    queryFn: () => findFriendship(user.id),
-  });
-
+export default function UserProfile({ user, me, friendshipData }: any) {
   return (
     <section className="h-80 w-full">
       <div className="relative flex h-full p-5">
@@ -58,20 +52,35 @@ export default function UserProfile({ user, me }: any) {
                 </span>
                 <span className="text-white">{(user as any)?.body}</span>
               </div>
-              {friendshipData?.status === "NOTHING" ? (
-                <FollowButton userId={user?.id} />
-              ) : friendshipData?.status === "PENDING" &&
-                friendshipData?.follow_receiver?.id === me.id ? (
-                <AcceptButton userId={user?.id} />
-              ) : friendshipData?.status === "PENDING" &&
-                friendshipData?.follow_receiver?.id === user.id ? (
-                <CancelFollowButton userId={user?.id} />
-              ) : friendshipData?.status === "FRIEND" ? (
-                <BlockFriendButton userId={user?.id} />
-              ) : friendshipData?.status === "BLOCK_ONE" ||
-                friendshipData?.status === "BLOCK_BOTH" ? (
-                <UnblockButton userId={user?.id} />
-              ) : null}
+              {user?.id !== me?.id && (
+                <>
+                  {friendshipData?.status === "PENDING" && (
+                    <>
+                      {friendshipData?.follow_receiver?.id === me?.id && (
+                        <AcceptButton userId={user?.id} />
+                      )}
+                      {friendshipData?.follow_receiver?.id === user?.id && (
+                        <CancelFollowButton userId={user?.id} />
+                      )}
+                    </>
+                  )}
+                  {(friendshipData?.status === "FRIEND" ||
+                    (friendshipData?.status === "BLOCK_ONE" &&
+                      friendshipData?.blocked.every(
+                        (user: any) => user.id === me?.id,
+                      ))) && <BlockFriendButton userId={user?.id} />}
+                  {((friendshipData?.status === "BLOCK_ONE" &&
+                    friendshipData?.block.some(
+                      (user: any) => user.id === me?.id,
+                    )) ||
+                    friendshipData?.status === "BLOCK_BOTH") && (
+                    <UnblockButton meId={me?.id} userId={user?.id} />
+                  )}
+                  {friendshipData?.status === "NOTHING" && (
+                    <FollowButton userId={user?.id} />
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -103,9 +103,9 @@ export default function CustomCalendar() {
 
   // 데이터가 성공적으로 불러와지면 todos를 업데이트
   useEffect(() => {
-    if (isSuccessForMonthTodos) {
+    if (isSuccessForMonthTodos || !isTodosForMonthRefetching) {
       setTodos(
-        todosForMonth.filter(
+        todosForMonth?.filter(
           (todo: any) => todo.date === dayjs(date).format("YYYY-MM-DD"),
         ),
       );
@@ -113,7 +113,7 @@ export default function CustomCalendar() {
       setProcess((prev) => ({ ...prev, doReset: true }));
       setProcess((prev) => ({ ...prev, is100: false }));
     }
-  }, [date, isSuccessForMonthTodos]);
+  }, [date, isSuccessForMonthTodos, isTodosForMonthRefetching]);
 
   // 월별 todos
   useEffect(() => {

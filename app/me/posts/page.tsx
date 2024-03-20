@@ -40,7 +40,7 @@ export default function MePost() {
     <section className="mb-20 mt-4">
       <h1 className="mx-5 mb-3 text-base font-semibold">포스트</h1>
       <section>
-        {postData && postData.pages[0].results.length > 0 ? (
+        {postData && postData.pages[0]?.results.length > 0 ? (
           <div className="grid grid-cols-3 xs:grid-cols-4">
             {postData?.pages.map((page: any) =>
               page.results.map((post: any) => (
@@ -54,7 +54,7 @@ export default function MePost() {
             ) : null}
           </div>
         ) : (
-          <div className="flex justify-center">
+          <div className="flex justify-center p-4">
             <span>No Post</span>
           </div>
         )}

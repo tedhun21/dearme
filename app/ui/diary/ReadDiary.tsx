@@ -45,7 +45,7 @@ export default function ReadDiary({ date, diaryData }: any) {
   };
 
   /* feelings 문자열을 배열로 변환 */
-  const feelingsTags = diaryData ? diaryData.feelings.split(" ") : [];
+  const feelingsTags = diaryData ? diaryData.feelings?.split(" ") : [];
 
   return (
     <article className="relative">

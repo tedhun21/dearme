@@ -42,15 +42,9 @@ export default function MoodArrays({ remembers }: MoodCardsProps) {
     Array.isArray(remembers) &&
     Array.from(new Set(remembers.map((remember) => remember.mood)));
 
-  // mood Arrays
-  // a mood array
-  // diary Cards
-  // a diary card
-
-  // 네네
   return (
-    <section className="mb-10">
-      {Array.isArray(remembers) && Array.isArray(moods) ? (
+    <section className="flex flex-col gap-5">
+      {Array.isArray(remembers) && Array.isArray(moods) && moods.length > 0 ? (
         moods.map((mood: any, index: number) => (
           <MoodArray key={index} mood={mood} remembers={remembers} />
         ))
@@ -61,7 +55,4 @@ export default function MoodArrays({ remembers }: MoodCardsProps) {
       )}
     </section>
   );
-  // ({Array.isArray(remembers) ? (
-  //   Array.isArray(moods) &&
-  //     moods.map((mood: any) => <MoodCard key={mood.id} mood={mood} />)})
 }

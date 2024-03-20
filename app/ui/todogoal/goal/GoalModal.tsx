@@ -11,7 +11,6 @@ import XIcon from "@/public/todo/XIcon";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { createMyGoal, deleteMyGoal, updateMyGoal } from "@/store/api";
 import { goalListState } from "@/store/atoms";
-import { useState } from "react";
 
 export default function GoalModal({
   type,

@@ -1,21 +1,9 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import CreateDiaryButton from "./CreateDiaryButton";
 import { useParams } from "next/navigation";
-import CirclePlus from "@/public/diary/CirclePlus";
 
 export default function SentimentalQuotes() {
   const [imageSrc, setImageSrc] = useState("");
-  const params = useParams();
-
-  const handleClick = () => {
-    if (params.date) {
-      // 이동할 URL 생성
-      const newPath = `/${params.date}/diary/create`;
-      // 페이지 이동
-      window.location.href = newPath;
-    }
-  };
 
   useEffect(() => {
     // 사용할 이미지 목록

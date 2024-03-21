@@ -50,7 +50,7 @@ export default function MonthlyDiary() {
   //  월별 Diary
   const { data: diariesForMonth } = useQuery({
     queryKey: ["getDiariesForMonth"],
-    queryFn: () => getDiariesForMonth({ date: month, preview: true }),
+    queryFn: () => getDiariesForMonth(month),
   });
 
   // 검색 input focus
@@ -170,7 +170,7 @@ export default function MonthlyDiary() {
         />
 
         {/* 월별 일기 */}
-        <section className="m-5 grid h-[calc(100vh-172px)] grid-cols-2 gap-x-5 gap-y-8 overflow-scroll scrollbar-hide sm:grid-cols-2">
+        <section className="m-5 grid grid-cols-2 gap-x-5 gap-y-6 overflow-scroll scrollbar-hide sm:grid-cols-2">
           {Array.isArray(filteredDiaries) &&
             filteredDiaries.map((diary: any) => (
               // 일기 카드 컨테이너 (카드 + 날짜)
@@ -185,7 +185,9 @@ export default function MonthlyDiary() {
                       <div className="mr-2 text-xl font-semibold">
                         {getDate(diary.date, true)}
                       </div>
-                      <div className="text-sm font-medium">{diary.title}</div>
+                      <div className="whitespace-pre-wrap text-sm font-medium">
+                        {diary.title}
+                      </div>
                     </div>
                     <div className="pr-2 text-2xs">
                       {dayjs(diary.date).format("ddd")}
@@ -203,10 +205,11 @@ export default function MonthlyDiary() {
                       }}
                     >
                       <Image
-                        src={`${BUCKET_URL}${diary.photos}`}
+                        src={`${BUCKET_URL}${diary.photos?.[0].url}`}
                         alt="Diary Photo"
+                        sizes="172px"
                         fill
-                        objectFit="cover"
+                        priority
                         className="rounded-2xl group-hover:opacity-20"
                       />
                     </div>
@@ -235,7 +238,6 @@ export default function MonthlyDiary() {
                       {diary.title}
                     </span>
                   </div>
-                  {/*  */}
                 </div>
               </Link>
             ))}

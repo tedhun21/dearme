@@ -5,14 +5,11 @@ import ShareIcon from "@/public/me/ShareIcon";
 import BackGroundIcon from "@/public/me/BackGroundIcon";
 import EditIcon from "@/public/me/EditIcon";
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
-import { updateBackGroundPhoto } from "@/store/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteImage, updateBackGroundPhoto } from "@/store/api";
 
-export default function MeProfileHeaderMeatball({
-  me,
-  route,
-  setBackGroundPhoto,
-}: any) {
+export default function MeProfileHeaderMeatball({ me, route }: any) {
+  const queryClient = useQueryClient();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
@@ -29,6 +26,9 @@ export default function MeProfileHeaderMeatball({
     onError: ({ response }: any) => {
       window.alert(response.data.error.message);
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["getMe"] });
+    },
   });
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -39,6 +39,27 @@ export default function MeProfileHeaderMeatball({
     setAnchorEl(null);
   };
 
+  // 백그라운드 이미지 삭제
+  const { mutate: deleteBackGroundMutate } = useMutation({
+    mutationKey: ["deleteBackGroundImage"],
+    mutationFn: deleteImage,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["getMe"] });
+
+      const prevMe = queryClient.getQueryData(["getMe"]);
+
+      queryClient.setQueryData(["getMe"], (old: any) => ({
+        ...old,
+        background: null,
+      }));
+
+      return { prevMe };
+    },
+    onError: (err, _, context) => {
+      queryClient.setQueryData(["getMe"], context?.prevMe);
+    },
+  });
+
   // 백그라운드 사진 바꾸면서 업데이트 통신을 같이
   const handleUserBackGroundChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
@@ -46,12 +67,17 @@ export default function MeProfileHeaderMeatball({
     if (selectedFiles && selectedFiles.length > 0) {
       const selectedFile: File = selectedFiles[0];
       if (me) {
-        setBackGroundPhoto(selectedFile);
+        // setBackGroundPhoto(selectedFile);
 
         // 유저 백그라운드 사진 업데이트
         updateBackGroundMutate({ userId: me.id, selectedFile });
       }
     }
+  };
+
+  // 백그라운드 이미지 삭제 핸들러
+  const handleBackGroundDelete = () => {
+    deleteBackGroundMutate(me.background.id);
   };
 
   return (
@@ -83,6 +109,21 @@ export default function MeProfileHeaderMeatball({
               <ShareIcon className="h-5 w-5" />
             </div>
           </button>
+          {/* edit  버튼 */}
+          {route !== "edit" && (
+            <Link
+              href="/me/edit"
+              onClick={handleClose}
+              className="group flex items-center gap-2"
+            >
+              <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
+                Edit
+              </span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl hover:drop-shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
+                <EditIcon className="h-5 w-5" />
+              </div>
+            </Link>
+          )}
           {/* background 버튼 */}
           <button
             onClick={() => {
@@ -104,20 +145,14 @@ export default function MeProfileHeaderMeatball({
             ref={BackGroundfileInput}
             onChange={handleUserBackGroundChange}
           />
-          {route !== "edit" && (
-            <Link
-              href="/me/edit"
-              onClick={handleClose}
-              className="group flex items-center gap-2"
-            >
-              <span className="font-semibold text-default-800 group-hover:text-black group-active:text-default-900">
-                Edit
+          {/* background 삭제 버튼 */}
+          {me?.background?.url ? (
+            <button onClick={() => handleBackGroundDelete()}>
+              <span className="font-semibold text-default-800 hover:text-black active:text-default-900">
+                Background Delete
               </span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-default-300 shadow-xl hover:drop-shadow-xl group-hover:bg-default-400 group-active:bg-default-600">
-                <EditIcon className="h-5 w-5" />
-              </div>
-            </Link>
-          )}
+            </button>
+          ) : null}
         </div>
       </Menu>
     </div>

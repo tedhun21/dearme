@@ -4,7 +4,7 @@
 // TODO: 사진 배경 수정
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
@@ -13,7 +13,6 @@ import "swiper/css";
 import "swiper/css/scrollbar";
 import "swiper/css/effect-cards";
 
-import Background from "@/public/diary/Background";
 import Yellow from "@/public/diary/Yellow";
 import RememberIcon from "@/public/me/RememberIcon";
 import Remembered from "@/public/diary/Remembered";
@@ -24,24 +23,34 @@ import { updateDiaryRemember } from "@/store/api";
 import TagSection from "./TagSection";
 
 export default function ReadDiary({ date, diaryData }: any) {
-  // remembered
-  const [isRemember, setIsRemember] = useState(diaryData.remember);
+  const queryClient = useQueryClient();
 
   const { mutate: diaryRememberMutate } = useMutation({
     mutationKey: ["updateDiaryRemember"],
     mutationFn: updateDiaryRemember,
-    onSuccess: (data) => {
-      setIsRemember(data.remember);
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ["getDiaryForDay"] });
+
+      const prevDiary = queryClient.getQueryData(["getDiaryForDay"]);
+
+      queryClient.setQueryData(["getDiaryForDay"], (old: any) => ({
+        ...old,
+        remember: !old.remember,
+      }));
+
+      return { prevDiary };
+    },
+    onError: (err, _, context) => {
+      queryClient.setQueryData(["getDiaryForDay"], context?.prevDiary);
     },
   });
 
   /* Remember 버튼 클릭 시 */
   const handleRemember = () => {
-    if (isRemember) {
-      diaryRememberMutate({ diaryId: diaryData.id, remember: false });
-    } else if (!isRemember) {
-      diaryRememberMutate({ diaryId: diaryData.id, remember: true });
-    }
+    diaryRememberMutate({
+      diaryId: diaryData.id,
+      remember: true,
+    });
   };
 
   /* feelings 문자열을 배열로 변환 */
@@ -100,15 +109,15 @@ export default function ReadDiary({ date, diaryData }: any) {
         <div className="p-10">
           <div className="mb-3 mt-4 flex items-center">
             {/* 일기의 Remember */}
-            {isRemember ? (
+            {diaryData.remember ? (
               <Remembered
                 className="mr-2 h-5 w-5 cursor-pointer fill-current"
-                onClick={handleRemember}
+                onClick={() => handleRemember()}
               />
             ) : (
               <RememberIcon
                 className="mr-2 h-5 w-5 cursor-pointer fill-current"
-                onClick={handleRemember}
+                onClick={() => handleRemember()}
               />
             )}
             {/* 일기의 날짜 */}

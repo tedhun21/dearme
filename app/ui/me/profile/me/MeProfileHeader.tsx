@@ -3,33 +3,56 @@ import Image from "next/image";
 import Link from "next/link";
 
 import clsx from "clsx";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import BackButton from "../../../backbutton";
-import { updateUserPhoto } from "@/store/api";
+import { deleteImage, updateUserPhoto } from "@/store/api";
 import PencilIcon from "@/public/me/PencilIcon";
 import MeProfileHeaderMeatball from "./MeProfileHeaderMeatball";
+import UserWithNoImage from "@/public/social/UserWithNoImage";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-export default function MeProfileHeader({
-  me,
-  route,
-  setBackGroundPhoto,
-}: any) {
-  const [userPhoto, setUserPhoto] = useState<File | null>(null);
+export default function MeProfileHeader({ me, route }: any) {
+  const queryClient = useQueryClient();
 
+  const [deleteHover, setDeleteHover] = useState(false);
   const userfileInput = useRef(null);
 
   // 유저 프로필 사진 바꾸기
   const { mutate: updateUserPhotoMutate } = useMutation({
     mutationKey: ["updateUserPhoto"],
     mutationFn: updateUserPhoto,
+
     onSuccess: (data: any) => {
       window.alert(data.message);
     },
     onError: ({ response }: any) => {
       window.alert(response.data.error.message);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["getMe"] });
+    },
+  });
+
+  // 유저 이미지 삭제
+  const { mutate: deleteUserPhotoMutate } = useMutation({
+    mutationKey: ["deleteUserImage"],
+    mutationFn: deleteImage,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["getMe"] });
+
+      const prevMe = queryClient.getQueryData(["getMe"]);
+
+      queryClient.setQueryData(["getMe"], (old: any) => ({
+        ...old,
+        photo: null,
+      }));
+
+      return { prevMe };
+    },
+    onError: (err, _, context) => {
+      queryClient.setQueryData(["getMe"], context?.prevMe);
     },
   });
 
@@ -40,8 +63,6 @@ export default function MeProfileHeader({
     if (selectedFiles && selectedFiles.length > 0) {
       const selectedFile: File = selectedFiles[0];
       if (me) {
-        setUserPhoto(selectedFile);
-
         // 유저 프로필 사진 업데이트
         updateUserPhotoMutate({
           userId: me.id,
@@ -49,6 +70,10 @@ export default function MeProfileHeader({
         });
       }
     }
+  };
+
+  const handleDeleteUserPhoto = () => {
+    deleteUserPhotoMutate(me.photo.id);
   };
 
   return (
@@ -73,27 +98,25 @@ export default function MeProfileHeader({
             />
           </Link>
         )}
-        <MeProfileHeaderMeatball
-          me={me}
-          route={route}
-          setBackGroundPhoto={setBackGroundPhoto}
-        />
+        <MeProfileHeaderMeatball me={me} route={route} />
       </div>
       {route === "edit" ? (
         <div className="relative flex">
           <Image src="/me/Edit.svg" width={110} height={48} alt="edit" />
         </div>
       ) : (
+        // edit 상태가 아닐 때 유저 프로필 사진
         <div className="px-4">
           <button
-            className="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-default-300"
+            type="button"
+            className="relative flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-default-300"
             onClick={() => {
               (userfileInput.current as any).click();
             }}
           >
-            {userPhoto ? (
+            {me?.photo?.url ? (
               <Image
-                src={userPhoto && URL.createObjectURL(userPhoto)}
+                src={`${BUCKET_URL}${(me as any).photo.url}`}
                 alt="profile default image"
                 fill
                 sizes="80px"
@@ -101,15 +124,9 @@ export default function MeProfileHeader({
                 priority
                 className="z-0 object-cover object-center"
               />
-            ) : (me as any)?.photo ? (
-              <Image
-                src={`${BUCKET_URL}${(me as any).photo.url}`}
-                alt="userPhoto"
-                fill
-                sizes="80px"
-                className="object-cover"
-              />
-            ) : null}
+            ) : (
+              <UserWithNoImage className="h-full w-full" />
+            )}
           </button>
           <input
             hidden
@@ -132,35 +149,122 @@ export default function MeProfileHeader({
           </div>
         </div>
       )}
-      {route === "edit" ? (
-        <div className="absolute -bottom-10 right-10 z-10 h-48 w-48">
-          <div className="relative h-full w-full overflow-hidden rounded-full bg-default-300 shadow-2xl">
-            {userPhoto ? (
+      {/* edit에서의 유저 프로필 사진 */}
+      {route === "edit" && me?.photo?.url ? (
+        <div
+          className="absolute -bottom-10 right-10"
+          onMouseEnter={() => setDeleteHover(true)}
+          onMouseLeave={() => setDeleteHover(false)}
+        >
+          <div className="relative z-10 h-48 w-48 overflow-hidden rounded-full">
+            <Image
+              src={`${BUCKET_URL}${(me as any).photo.url}`}
+              alt="user photo"
+              fill
+              quality={80}
+              priority
+              className="z-0 object-cover"
+            />
+          </div>
+          <input
+            className="hidden"
+            type="file"
+            accept="image/jpg,image/png,image/jpeg"
+            ref={userfileInput}
+            onChange={handleUserPhotoChange}
+          />
+          {deleteHover ? (
+            <button
+              type="button"
+              className="absolute left-5 top-5 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 pb-[1.8px] text-white hover:bg-red-700"
+              onClick={() => handleDeleteUserPhoto()}
+            >
+              &times;
+            </button>
+          ) : null}
+          <button
+            onClick={() => {
+              (userfileInput.current as any).click();
+            }}
+            className="group absolute right-2 top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-default-900 shadow-2xl hover:bg-default-800"
+          >
+            <PencilIcon className="h-5 w-5 fill-current group-hover:text-default-100" />
+          </button>
+        </div>
+      ) : route === "edit" && !me?.photo?.url ? (
+        <div className="absolute -bottom-10 right-10">
+          <UserWithNoImage className=" z-10 h-48 w-48" />
+          <input
+            className="hidden"
+            type="file"
+            accept="image/jpg,image/png,image/jpeg"
+            ref={userfileInput}
+            onChange={handleUserPhotoChange}
+          />
+          <button
+            onClick={() => {
+              (userfileInput.current as any).click();
+            }}
+            className="group absolute right-2 top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-default-900 shadow-2xl hover:bg-default-800"
+          >
+            <PencilIcon className="h-5 w-5 fill-current group-hover:text-default-100" />
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+{
+  /* {deleteHover ? (
+              <button
+                type="button"
+                className="absolute top-0 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-700"
+                onClick={() => handleDeleteUserPhoto()}
+              >
+                &times;
+              </button>
+            ) : null} */
+}
+
+{
+  /* <div className="absolute -bottom-10 right-10 z-10 h-48 w-48">
+          {userPhoto ? (
+            <div className="relative h-full w-full overflow-hidden rounded-full bg-default-300 shadow-2xl">
               <Image
                 src={userPhoto && URL.createObjectURL(userPhoto)}
                 alt="user photo"
                 fill
                 quality={80}
                 priority
-                className="z-0 object-cover object-center"
+                className="z-0 object-cover"
               />
-            ) : (me as any)?.photo ? (
-              <Image
-                src={`${BUCKET_URL}${(me as any).photo.url}`}
-                alt="user photo"
-                fill
-                className="object-cover"
-              />
-            ) : null}
+              <div>hi</div>
+            </div>
+          ) : (me as any)?.photo ? (
+            <div className="h-full w-full">
+              <div className="h-full w-full overflow-hidden rounded-full bg-default-300 shadow-2xl">
+                <Image
+                  src={`${BUCKET_URL}${(me as any).photo.url}`}
+                  alt="user photo"
+                  fill
+                  className="object-z-0 object-cover"
+                />
+              </div>
+              <button>delete photo</button>
+            </div>
+          ) : (
+            <UserWithNoImage className="h-full w-full" />
+          )}
 
-            <input
-              className="hidden"
-              type="file"
-              accept="image/jpg,image/png,image/jpeg"
-              ref={userfileInput}
-              onChange={handleUserPhotoChange}
-            />
-          </div>
+          <input
+            className="hidden"
+            type="file"
+            accept="image/jpg,image/png,image/jpeg"
+            ref={userfileInput}
+            onChange={handleUserPhotoChange}
+          />
+
           <button
             onClick={() => {
               (userfileInput.current as any).click();
@@ -171,6 +275,5 @@ export default function MeProfileHeader({
           </button>
         </div>
       ) : null}
-    </div>
-  );
+    </div> */
 }

@@ -1,10 +1,9 @@
-import { Modal } from "@mui/material";
 import { useState } from "react";
 import AskModal from "../AskModal";
 import { deleteCookie } from "@/util/tokenCookie";
 import { useRouter } from "next/navigation";
 import { useSetRecoilState } from "recoil";
-import { diaryListState, meState, todoListState } from "@/store/atoms";
+import { diaryListState, settingState, todoListState } from "@/store/atoms";
 
 export default function SignOut() {
   const setTodos = useSetRecoilState(todoListState);
@@ -16,7 +15,8 @@ export default function SignOut() {
   const handleSignOut = async () => {
     setTodos([]);
     setDiaries([]);
-    deleteCookie("access_token");
+
+    await deleteCookie("access_token");
 
     router.push("/");
   };

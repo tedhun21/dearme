@@ -32,6 +32,12 @@ function removeAllEmptyStrings(obj: any) {
   }
   return obj;
 }
+interface Pick {
+  title: string;
+  date: Date;
+  contributors: string;
+  image: File;
+}
 
 export default function Create() {
   const router = useRouter();
@@ -48,7 +54,7 @@ export default function Create() {
   const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
-  const [selectedPicks, setSelectedPicks] = useState([]);
+  const [selectedPicks, setSelectedPicks] = useState<Pick[]>([]);
 
   const { register, watch, getValues, setValue, handleSubmit } = useForm({
     defaultValues: {
@@ -74,9 +80,11 @@ export default function Create() {
     onSuccess: async ({ diaryId }: any) => {
       if (selectedPicks.length > 0) {
         for (let i = 0; i < selectedPicks.length; i++) {
+          const { image, ...createData } = selectedPicks[i];
           await createTodayPickMutate({
-            createData: selectedPicks[i],
+            createData,
             diaryId,
+            image,
           });
         }
       }
@@ -123,7 +131,6 @@ export default function Create() {
     }
   }, [date]);
 
-  // console.log(watch());
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -196,8 +203,6 @@ export default function Create() {
               <UploadTodayPick
                 selectedPicks={selectedPicks}
                 setSelectedPicks={setSelectedPicks}
-                getValues={getValues}
-                setValue={setValue}
               />
             </section>
           </div>

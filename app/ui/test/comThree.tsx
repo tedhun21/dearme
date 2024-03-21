@@ -27,9 +27,7 @@ export default function Component3() {
       <span>Client Side</span>
       <div className="flex flex-col items-start">
         {todos.map((todo) => (
-          <button key={todo.id} onClick={() => console.log(todo.body)}>
-            {todo.body}
-          </button>
+          <button key={todo.id}>{todo.body}</button>
         ))}
       </div>
     </div>

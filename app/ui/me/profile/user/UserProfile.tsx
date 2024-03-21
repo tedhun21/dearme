@@ -63,12 +63,14 @@ export default function UserProfile({ user, me, friendshipData }: any) {
                   )}
                   {(friendshipData?.status === "FRIEND" ||
                     (friendshipData?.status === "BLOCK_ONE" &&
-                      friendshipData?.blocked.every(
-                        (user: any) => user.id === me?.id,
-                      ))) && <BlockFriendButton userId={user?.id} />}
+                      friendshipData?.blocked?.every(
+                        (blocked: any) => blocked.id === me?.id,
+                      ))) && (
+                    <BlockFriendButton meId={me?.id} userId={user?.id} />
+                  )}
                   {((friendshipData?.status === "BLOCK_ONE" &&
-                    friendshipData?.block.some(
-                      (user: any) => user.id === me?.id,
+                    friendshipData?.block?.some(
+                      (block: any) => block.id === me?.id,
                     )) ||
                     friendshipData?.status === "BLOCK_BOTH") && (
                     <UnblockButton meId={me?.id} userId={user?.id} />

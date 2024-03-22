@@ -3,7 +3,7 @@ import AskModal from "../AskModal";
 import { deleteCookie } from "@/util/tokenCookie";
 import { useRouter } from "next/navigation";
 import { useSetRecoilState } from "recoil";
-import { diaryListState, settingState, todoListState } from "@/store/atoms";
+import { diaryListState, todoListState } from "@/store/atoms";
 
 export default function SignOut() {
   const setTodos = useSetRecoilState(todoListState);

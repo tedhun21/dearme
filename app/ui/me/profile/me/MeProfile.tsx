@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import Image from "next/image";
 
 import MeProfileHeader from "./MeProfileHeader";
@@ -11,8 +9,6 @@ const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
 export default function MeProfile({ me, route }: any) {
   const pathname = usePathname();
-
-  // const [backGroundPhoto, setBackGroundPhoto] = useState<File | null>(null);
 
   return (
     <>

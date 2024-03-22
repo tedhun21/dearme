@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { acceptRequest, blockFriend, unblockFriend } from "@/store/api";
+import { blockFriend, unblockFriend } from "@/store/api";
 
 import AskModal from "../AskModal";
 import AcceptFollowButton from "./AcceptFollowButton";

@@ -1,4 +1,3 @@
-import { Modal } from "@mui/material";
 import AskModal from "../AskModal";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";

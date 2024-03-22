@@ -6,7 +6,6 @@ import {
   goalListState,
   meState,
   postListState,
-  settingState,
   todoListState,
 } from "./atoms";
 

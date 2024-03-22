@@ -44,10 +44,7 @@ export default function RememberModal({ remember, open, handleClose }: any) {
 
   const handleTogglephotos = () => {
     setShowPhotos((prev) => !prev);
-    console.log(showPhotos);
   };
-
-  // console.log(remember);
 
   return (
     <Modal
@@ -55,7 +52,7 @@ export default function RememberModal({ remember, open, handleClose }: any) {
       onClose={handleClose}
       sx={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
     >
-      <Box className="relative left-1/2 top-1/2 h-auto w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[16px]  bg-black ">
+      <Box className="relative left-1/2 top-1/2 h-auto -translate-x-1/2 -translate-y-1/2 rounded-[16px] bg-black xxs:w-[390px] xs:w-[460px] s:w-[550px] ">
         {/* 필름 디자인 */}
         <div className="flex justify-between px-2 text-[10px] text-default-700 ">
           <div className="">DEARME 5017 EPR</div>
@@ -64,7 +61,7 @@ export default function RememberModal({ remember, open, handleClose }: any) {
           <div className="">10</div>
         </div>
         <div className="flex w-full gap-5 px-1 ">
-          {Array.from({ length: 16 }, (_, index) => (
+          {Array.from({ length: 20 }, (_, index) => (
             <div
               key={index}
               className="h-3 w-2 rounded-[2px] bg-default-500"
@@ -115,17 +112,17 @@ onClick={handleClose}
               <Swiper
                 pagination={true}
                 modules={[Pagination]}
-                className=" mb-5 w-full flex-1 object-cover"
+                className="mb-5 w-full flex-1"
               >
-                {remember.photos.map((photo: any, index: any) => (
+                {remember.photos.map((photo: any, index: number) => (
                   <SwiperSlide
-                    key={index}
-                    className=" flex items-center justify-center "
+                    key={photo.id}
+                    className="flex items-center justify-center"
                   >
                     <img
                       src={`${BUCKET_URL}${photo.url}`}
                       alt={`Diary Images`}
-                      className=" h-[300px] w-full cursor-pointer object-cover"
+                      className=" h-[300px] w-full cursor-pointer object-contain"
                     />
                     <div className="flex items-center justify-end px-2 text-[10px] font-medium text-default-400">
                       {index + 1} / {remember.photos?.length}
@@ -140,9 +137,30 @@ onClick={handleClose}
               <h1 className="mb-1 text-base font-semibold text-white">
                 {'"' + remember.title + '"'}
               </h1>
-
-              {/* TODO emotion tags 수정 */}
               {remember.feelings
+                .split(" ")
+                .slice(
+                  0,
+                  showAllTags ? remember.feelings?.split(" ").length : 3,
+                )
+                .map((tag: string, index: number) => (
+                  <div
+                    key={index}
+                    className="border-1 mb-2 mr-3 inline-block rounded-full border-default-400 bg-default-300 px-2 py-0.5 text-sm font-semibold text-default-800"
+                  >
+                    {tag}
+                  </div>
+                ))}
+              {!showAllTags && remember.feelings?.split(" ").length > 3 && (
+                <div
+                  className="border-1 mr-3 mt-1 inline-block cursor-pointer rounded-full border-default-400 bg-default-300 px-2 py-0.5 text-sm font-semibold text-default-800 hover:bg-gray-300 focus:outline-none focus:ring-2"
+                  onClick={handleShowMoreTags}
+                >
+                  +{remember.feelings?.split(" ").length - 3}
+                </div>
+              )}
+              {/* TODO emotion tags 수정 */}
+              {/* {remember.feelings
                 ?.split(",")
                 .slice(
                   0,
@@ -163,7 +181,7 @@ onClick={handleClose}
                 >
                   +{remember.feelings?.split(",").length - 3}
                 </div>
-              )}
+              )} */}
             </section>
 
             {/* 일기 내용 */}
@@ -192,7 +210,7 @@ onClick={handleClose}
 
             {/* 필름 디자인 */}
             <div className="flex w-full gap-5 px-1 ">
-              {Array.from({ length: 16 }, (_, index) => (
+              {Array.from({ length: 20 }, (_, index) => (
                 <div
                   key={index}
                   className="h-3 w-2 rounded-[2px] bg-default-500"

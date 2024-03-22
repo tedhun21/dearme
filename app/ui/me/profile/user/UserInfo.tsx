@@ -14,13 +14,14 @@ export default function UserInfo({ me }: any) {
   const { data: userData } = useQuery({
     queryKey: ["getUser"],
     queryFn: () => getUser({ userId: profileId }),
+    enabled: !!profileId,
   });
 
   // 유저와 나와의 관계
   const { data: friendshipData } = useQuery({
     queryKey: ["getFriendship"],
     queryFn: () => findFriendship(userData.id),
-    enabled: !!userData,
+    enabled: !!userData && !!me,
   });
 
   return (

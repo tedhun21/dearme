@@ -66,8 +66,6 @@ export default function NewGoalModal({
     }
   };
 
-  // console.log(watch());
-
   return (
     <Modal
       className="flex items-center justify-center"

@@ -5,14 +5,14 @@ import { CircularProgress } from "@mui/joy";
 
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useCountUp } from "use-count-up";
 
 export default function HomeTodo() {
-  const [{ date }, setSetting] = useRecoilState(settingState);
+  const { date, isLogin } = useRecoilValue(settingState);
   const [{ is100, doReset }, setProcess] = useRecoilState(processState);
-  const [todos, setTodos] = useRecoilState(todoListState);
+  const todos = useRecoilValue(todoListState);
 
   const checkedTodos =
     todos?.length > 0 ? todos.filter((todo) => todo.done === true) : [];
@@ -22,14 +22,13 @@ export default function HomeTodo() {
     duration: 3,
     start: 0,
     end:
-      todos?.length !== 0
+      todos?.length > 0
         ? Math.round((checkedTodos?.length / todos?.length) * 100)
         : 0,
 
     onUpdate: (data) => {
       if (data === "100") {
         setProcess((prev) => ({ ...prev, is100: true }));
-        // setIs100(true);
       }
     },
   });
@@ -49,7 +48,7 @@ export default function HomeTodo() {
             Todo & Goal
           </span>
           <div className="flex justify-center p-6">
-            {todos?.length !== 0 ? (
+            {Array.isArray(todos) && todos.length > 0 ? (
               <CircularProgress
                 size="lg"
                 determinate

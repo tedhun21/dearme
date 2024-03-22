@@ -15,7 +15,6 @@ export default function UnblockButton({ meId, userId }: any) {
 
       const prevFriendship = queryClient.getQueryData(["getFriendship"]);
 
-      console.log(prevFriendship);
       if ((prevFriendship as any)?.status === "BLOCK_ONE") {
         queryClient.setQueryData(["getFriendship"], (old: any) => ({
           ...old,

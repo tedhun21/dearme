@@ -9,13 +9,25 @@ import Footer from "./ui/footer";
 import CustomCalendar from "./ui/home/CustomCalendar";
 import MeGoal from "./ui/me/plans/MeGoal";
 import HomeTodoAndDiary from "./ui/home/HomeTodoAndDiary";
+import { useEffect } from "react";
+import { useRecoilState } from "recoil";
+import { settingState } from "@/store/atoms";
 
 export default function Home() {
+  const [{ isLogin }, setSetting] = useRecoilState(settingState);
   // 내 정보 가져오기
-  const { data: meData } = useQuery({
+  const { isSuccess, data: meData } = useQuery({
     queryKey: ["getMe"],
-    queryFn: getMe,
+    queryFn: () => getMe(),
   });
+
+  useEffect(() => {
+    if (isSuccess && meData) {
+      setSetting((prev: any) => ({ ...prev, isLogin: true }));
+    } else if (!meData) {
+      setSetting((prev: any) => ({ ...prev, isLogin: false }));
+    }
+  }, [isSuccess, meData]);
 
   return (
     <main className="flex min-h-screen justify-center">

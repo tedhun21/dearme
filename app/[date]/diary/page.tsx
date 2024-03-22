@@ -8,7 +8,7 @@ import Header from "@/app/ui/header";
 import ReadDiary from "@/app/ui/diary/ReadDiary";
 
 import SentimentalQuotes from "@/app/ui/diary/Sentimental Quotes";
-import CreateDiaryButton from "@/app/ui/diary/CreateDiaryButton";
+
 import MonthlyDiary from "@/app/ui/diary/MonthlyDiary";
 import DiaryActionButton from "@/app/ui/diary/DiaryActionButton";
 
@@ -69,7 +69,6 @@ export default function Diary() {
             <article className="absolute flex flex-col">
               <SentimentalQuotes />
               <section className="relative top-[-120px]">
-                {/* <CreateDiaryButton currentPage="Diary" /> */}
                 <div className="p-4">
                   <button
                     onClick={() => handleClick()}

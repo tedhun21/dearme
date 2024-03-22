@@ -11,7 +11,7 @@ export default function TodayPicks({ picks }: any) {
             Today&#39;s PICK
           </h1>
           {picks.length > 0 && (
-            <div className="flex overflow-x-scroll whitespace-nowrap scrollbar-hide">
+            <div className="flex gap-4 overflow-x-scroll whitespace-nowrap scrollbar-hide">
               {picks.map((pick: any) => (
                 <TodayPick key={pick.id} pick={pick} />
               ))}

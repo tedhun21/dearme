@@ -102,6 +102,8 @@ export default function UploadPhoto({
                 src={`${BUCKET_URL}${image.url}`}
                 alt={`Preview ${image.id}`}
                 className="rounded-md object-cover"
+                width={128}
+                height={128}
                 fill
               />
               <button

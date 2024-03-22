@@ -208,7 +208,6 @@ export default function Signup() {
         router.push("/login");
       }
     } catch (error) {
-      console.log(error);
       alert("회원 가입에 실패하였습니다. 다시 시도해 주세요.");
     }
   };

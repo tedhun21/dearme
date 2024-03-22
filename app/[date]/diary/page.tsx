@@ -68,7 +68,6 @@ export default function Diary() {
             <article className="absolute flex flex-col">
               <SentimentalQuotes />
               <section className="relative top-[-120px]">
-                {/* <CreateDiaryButton currentPage="Diary" /> */}
                 <div className="p-4">
                   <button
                     onClick={() => handleClick()}

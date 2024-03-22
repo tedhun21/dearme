@@ -28,8 +28,6 @@ export default function AutoComplete({
   //     return friendNickname.includes(regexKeyword.toLowerCase());
   //   });
 
-  //   console.log(filteredFriends);
-
   const friends = [
     { nickname: "굽네치킨" },
     { nickname: "지코바 치킨" },

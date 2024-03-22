@@ -86,7 +86,6 @@ export default function EditPost({
   const [postText, setPostText] = useState(postData ? postData.body : "");
   const handlePostTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPostText(e.target.value);
-    // console.log(postText);
   };
 
   // Select 댓글 옵션 선택

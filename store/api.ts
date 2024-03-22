@@ -7,12 +7,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // 유저
 /// 로그인
 export const signIn = async ({ email, password }: any) => {
-  const { data } = await axios.post(`${API_URL}/auth/local`, {
-    identifier: email,
-    password,
-  });
+  try {
+    const { data } = await axios.post(`${API_URL}/auth/local`, {
+      identifier: email,
+      password,
+    });
 
-  return data;
+    return data;
+  } catch (e) {
+    return null;
+  }
 };
 
 /// 내 정보 가져오기
@@ -290,22 +294,20 @@ export const createDiary = async ({ date, createData, photos }: any) => {
   }
 };
 
-export const createTodayPick = async ({ createData, photos, diaryId }: any) => {
+export const createTodayPick = async ({ createData, image, diaryId }: any) => {
   const access_token = getCookie("access_token");
   if (access_token) {
     if (createData && diaryId) {
       const formData = new FormData();
-      const { title, date, contributors } = createData;
-      formData.append(
-        "data",
-        JSON.stringify({ title, date, contributors, diaryId }),
-      );
-      if (photos) {
-        formData.append("photos", photos);
+
+      formData.append("data", JSON.stringify({ ...createData, diaryId }));
+      if (image) {
+        formData.append("image", image);
       }
       const { data } = await axios.post(`${API_URL}/today-picks`, formData, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
+
       return data;
     }
   }
@@ -356,7 +358,7 @@ export const deleteDiary = async (diaryId: string) => {
     const { data } = await axios.delete(`${API_URL}/diaries/${diaryId}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
-    console.log(data);
+
     return data;
   } else {
     return [];
@@ -719,7 +721,7 @@ export const updateComment = async ({
 }) => {
   const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
-  console.log(postId, commentId, comment);
+
   if (access_token) {
     await axios.put(
       `${API_URL}/comments/${commentId}?postId=${postId}`,

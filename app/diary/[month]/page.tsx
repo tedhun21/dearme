@@ -48,7 +48,6 @@ export default function MonthlyDiary() {
     queryKey: ["getDiariesForMonth"],
     queryFn: () => getDiariesForMonth(month),
   });
-  console.log(diariesForMonth);
 
   // 검색 input focus
   const [isInputFocused, setIsInputFocused] = useState(false);

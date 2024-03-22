@@ -78,7 +78,7 @@ export default function GoalList({ date, route, goal }: any) {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {route !== "home" && (
+          {route !== "home" && Dday !== "D-Day" ? (
             <div className="flex gap-1 text-sm">
               <span>Duration:</span>
               <span>
@@ -88,7 +88,7 @@ export default function GoalList({ date, route, goal }: any) {
                 })}
               </span>
             </div>
-          )}
+          ) : null}
           <div className="flex items-center justify-center">
             <span
               className={clsx(

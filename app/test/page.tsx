@@ -66,10 +66,7 @@ export default function Test() {
   }, [isSuccess]);
 
   // update submit
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
-  console.log(watch());
+  const onSubmit = (data: any) => {};
 
   return (
     <main className="flex min-h-screen justify-center">

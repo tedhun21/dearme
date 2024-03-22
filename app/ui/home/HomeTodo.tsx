@@ -5,14 +5,14 @@ import { CircularProgress } from "@mui/joy";
 
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useCountUp } from "use-count-up";
 
 export default function HomeTodo() {
-  const [{ date }, setSetting] = useRecoilState(settingState);
+  const { date, isLogin } = useRecoilValue(settingState);
   const [{ is100, doReset }, setProcess] = useRecoilState(processState);
-  const [todos, setTodos] = useRecoilState(todoListState);
+  const todos = useRecoilValue(todoListState);
 
   const checkedTodos =
     todos?.length > 0 ? todos.filter((todo) => todo.done === true) : [];
@@ -22,14 +22,13 @@ export default function HomeTodo() {
     duration: 3,
     start: 0,
     end:
-      todos?.length !== 0
+      todos?.length > 0
         ? Math.round((checkedTodos?.length / todos?.length) * 100)
         : 0,
 
     onUpdate: (data) => {
       if (data === "100") {
         setProcess((prev) => ({ ...prev, is100: true }));
-        // setIs100(true);
       }
     },
   });
@@ -43,36 +42,49 @@ export default function HomeTodo() {
 
   return (
     <section className="mt-4">
-      <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todogoal`}>
-        <div className="group flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl text-default-800 shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-800">
-          <span className="text-3xl font-semibold group-hover:text-default-100">
-            Todo & Goal
-          </span>
-          <div className="flex justify-center p-6">
-            {todos?.length !== 0 ? (
-              <CircularProgress
-                size="lg"
-                determinate
-                variant="soft"
-                value={parseInt(value as string)}
-                color={is100 ? "success" : "primary"}
-                sx={{
-                  "--CircularProgress-size": "200px",
-                  "--CircularProgress-trackThickness": "20px",
-                  "--CircularProgress-progressThickness": "20px",
-                }}
-              >
-                <div>{value}%</div>
-              </CircularProgress>
-            ) : (
-              <div className="flex flex-col items-center text-default-800 group-hover:text-default-100">
-                <span>No Registerd Todo.</span>
-                <span>Click to register Todo & Goal.</span>
-              </div>
-            )}
+      {isLogin ? (
+        <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/todogoal`}>
+          <div className="group flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl text-default-800 shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-800">
+            <span className="text-3xl font-semibold group-hover:text-default-100">
+              Todo & Goal
+            </span>
+            <div className="flex justify-center p-6">
+              {todos?.length !== 0 ? (
+                <CircularProgress
+                  size="lg"
+                  determinate
+                  variant="soft"
+                  value={parseInt(value as string)}
+                  color={is100 ? "success" : "primary"}
+                  sx={{
+                    "--CircularProgress-size": "200px",
+                    "--CircularProgress-trackThickness": "20px",
+                    "--CircularProgress-progressThickness": "20px",
+                  }}
+                >
+                  <div>{value}%</div>
+                </CircularProgress>
+              ) : (
+                <div className="flex flex-col items-center text-default-800 group-hover:text-default-100">
+                  <span>No Registerd Todo.</span>
+                  <span>Click to register Todo & Goal.</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      ) : (
+        <Link href="/login">
+          <div className="group flex flex-col items-center rounded-xl border-2 border-default-300 bg-default-100 p-5 text-xl text-default-800 shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-800">
+            <span className="text-2xl font-semibold group-hover:text-default-100">
+              Would you like to write yourself?
+            </span>
+            <span className="text-xl group-hover:text-default-100">
+              Let&#39;s login first
+            </span>
+          </div>
+        </Link>
+      )}
     </section>
   );
 }

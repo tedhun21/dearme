@@ -23,9 +23,18 @@ import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 
 function ServerDay(
-  props: PickersDayProps<Dayjs> & { highlightedDays?: number[] },
+  props: PickersDayProps<Dayjs> & {
+    highlightedDays?: number[];
+    isDiary: boolean;
+  },
 ) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+  const {
+    highlightedDays = [],
+    isDiary,
+    day,
+    outsideCurrentMonth,
+    ...other
+  } = props;
 
   const isSelected =
     !props.outsideCurrentMonth &&
@@ -35,7 +44,9 @@ function ServerDay(
     <Badge
       key={props.day.toString()}
       overlap="circular"
-      badgeContent={isSelected ? "🤬" : undefined}
+      badgeContent={
+        isSelected && !isDiary ? "📘" : isSelected && isDiary ? "📔" : undefined
+      }
     >
       <PickersDay
         {...other}
@@ -257,7 +268,9 @@ export default function CustomCalendar() {
           onMonthChange={handleMonthChange}
           renderLoading={() => <DayCalendarSkeleton />}
           dayOfWeekFormatter={(_day, weekday) => `${weekday.format("ddd")}`}
-          slots={{ day: ServerDay }}
+          slots={{
+            day: (props) => <ServerDay {...props} isDiary={isDiary} />,
+          }}
           slotProps={{ day: { highlightedDays } as any }}
         />
       </LocalizationProvider>

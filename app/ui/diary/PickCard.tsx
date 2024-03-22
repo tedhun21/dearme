@@ -4,7 +4,12 @@ import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
-export default function PickCard({ type, pick, setPicks }: any) {
+export default function PickCard({
+  type,
+  pick,
+  setPicks,
+  setSelectedPicks,
+}: any) {
   const { mutate: deleteTodayPickMutate } = useMutation({
     mutationKey: ["deleteTodayPick"],
     mutationFn: deleteTodayPick,
@@ -14,7 +19,13 @@ export default function PickCard({ type, pick, setPicks }: any) {
   });
 
   const handleRemovePick = (index: number) => {
-    deleteTodayPickMutate(index);
+    if (type === "url") {
+      deleteTodayPickMutate(index);
+    } else if (type === "blob") {
+      setSelectedPicks((prev: any) =>
+        prev.filter((pick: any) => pick.id !== index),
+      );
+    }
   };
   return (
     <article className="relative text-white">

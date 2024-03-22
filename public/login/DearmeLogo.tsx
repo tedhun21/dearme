@@ -1,6 +1,6 @@
-export default function DearmeLogo() {
+export default function DearmeLogo({ link }: any) {
   return (
-    <a href="/">
+    <a href={link && "/"}>
       <svg
         width="140"
         height="80"

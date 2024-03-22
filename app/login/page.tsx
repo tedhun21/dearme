@@ -55,7 +55,7 @@ export default function Login() {
       await setCookie(jwt);
       router.push("/");
     },
-    onError: () => alert("Please check your password"),
+    onError: () => window.alert("Please check your password"),
   });
 
   const handleGoogleLogin = () => {

@@ -2,11 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-// TODO Footer
-// TODO: 요일 넣기
-// TODO: select 태그 위치 수정
-// TODO: 이미지 코너
-
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRemembersForMonth } from "@/store/api";

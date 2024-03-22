@@ -55,6 +55,7 @@ export interface Post {
 
 export default function Social() {
   const router = useRouter();
+
   // me
   const { isSuccess, data: me } = useQuery({
     queryKey: ["getMe"],
@@ -65,7 +66,7 @@ export default function Social() {
   const [selectedTab, setSelectedTab] = useState<string>("all");
 
   useEffect(() => {
-    if (isSuccess && !me && selectedTab === "friends") {
+    if (!me && selectedTab === "friends") {
       window.alert("Please log in first.");
       router.replace("/login");
     }

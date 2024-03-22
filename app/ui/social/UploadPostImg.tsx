@@ -1,7 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from "react";
-
 import SelectPhotos from "@/public/social/SelectPhotos";
 
 export default function UploadPostImg({ setImageFile, currentImageUrl }: any) {
@@ -38,8 +39,6 @@ export default function UploadPostImg({ setImageFile, currentImageUrl }: any) {
       setPreviewImage(imageUrl);
       setImageOnServer(true);
     } else {
-      // TODO default image
-      //   setPreviewImage();
       setImageOnServer(false);
     }
   }, [currentImageUrl]);

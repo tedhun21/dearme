@@ -19,6 +19,7 @@ import EmptyHeart from "@/public/social/EmptyHeart";
 import FullHeart from "@/public/social/FullHeart";
 import Comments from "@/public/social/Comments";
 import UserWithNoImage from "@/public/social/UserWithNoImage";
+import Link from "next/link";
 
 interface SocialPostProps {
   post: Post;
@@ -101,31 +102,37 @@ export default function SocialPost({ post }: SocialPostProps) {
       <section className="mb-5 flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 ">
         {/* 유저 프로필 & 목표 & 설정 */}
         <div className="relative mb-2 flex  items-center px-5">
-          <div className="h-10 w-10 rounded-full">
-            {post.user?.photo?.url ? (
-              <img
-                src={`${BUCKET_URL}${post?.user?.photo?.url}`}
-                alt="User Image"
-                className="h-10  w-10 rounded-full object-cover"
-                width={10}
-                height={10}
-              />
-            ) : (
-              <UserWithNoImage className="mr-4 h-10 w-10 " />
-            )}
-          </div>
+          <Link
+            key={post.user.id}
+            href={`/profile/${post.user.id}`}
+            className="flex cursor-pointer"
+          >
+            <div className="h-10 w-10 rounded-full">
+              {post.user?.photo?.url ? (
+                <img
+                  src={`${BUCKET_URL}${post?.user?.photo?.url}`}
+                  alt="User Image"
+                  className="h-10  w-10 rounded-full object-cover"
+                  width={10}
+                  height={10}
+                />
+              ) : (
+                <UserWithNoImage className="mr-4 h-10 w-10 " />
+              )}
+            </div>
 
-          <div className="flex-col pl-3">
-            <div className=" text-base font-bold text-default-700">
-              {post.user?.nickname || "Unknown User"}
+            <div className="flex-col pl-3">
+              <div className=" text-base font-bold text-default-700">
+                {post.user?.nickname || "Unknown User"}
+              </div>
+              <div
+                className="text-xs font-semibold text-default-500"
+                style={{ marginTop: "-4px" }}
+              >
+                {post.goal ? `#${post.goal.title}` : ""}
+              </div>
             </div>
-            <div
-              className="text-xs font-semibold text-default-500"
-              style={{ marginTop: "-4px" }}
-            >
-              {post.goal ? `#${post.goal.title}` : ""}
-            </div>
-          </div>
+          </Link>
 
           <div className="ml-auto ">
             <PostSettings isMyPost={isMe} postId={post.id} postData={post} />

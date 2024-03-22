@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import ClearWeather from "@/public/diary/ClearWeather";
 import CloudsWeather from "@/public/diary/CloudsWeather";
 import RainWeather from "@/public/diary/RainWeather";

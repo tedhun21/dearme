@@ -1,5 +1,4 @@
 import { LinearProgress } from "@mui/material";
-import UserGoal from "./UserGoal";
 
 export default function Blur() {
   return (

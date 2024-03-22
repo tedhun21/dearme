@@ -136,6 +136,7 @@ export default function Signup() {
   const debounce = (func: any, delay: any) => {
     let inDebounce: any;
     return function (...args: any) {
+      //@ts-ignore
       const context = this;
       clearTimeout(inDebounce);
       inDebounce = setTimeout(() => func.apply(context, args), delay);

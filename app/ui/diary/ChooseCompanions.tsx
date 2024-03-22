@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import Companions from "@/public/diary/Companions";
 
 export default function ChooseCompanions({

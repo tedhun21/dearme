@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import HappyEmoji from "@/public/diary/HappyEmoji";
 import JoyfulEmoji from "@/public/diary/JoyfulEmoji";
 import NeutralEmoji from "@/public/diary/NeutralEmoji";

@@ -4,13 +4,8 @@ import { useEffect, useState } from "react";
 import { Transition } from "react-transition-group";
 import axios from "axios";
 
-import Button from "@mui/joy/Button";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
-import DialogTitle from "@mui/joy/DialogTitle";
-import DialogContent from "@mui/joy/DialogContent";
-import Input from "@mui/joy/Input";
-import Textarea from "@mui/joy/Textarea";
 
 import CirclePlus from "../../../public/diary/CirclePlus";
 import WeatherIcons from "@/app/ui/diary/WeatherIcons";

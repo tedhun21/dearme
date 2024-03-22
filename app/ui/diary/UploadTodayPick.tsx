@@ -1,21 +1,14 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
+
+import Image from "next/image";
 
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
-import DialogTitle from "@mui/joy/DialogTitle";
-import DialogContent from "@mui/joy/DialogContent";
-import Input from "@mui/joy/Input";
-import { Box } from "@mui/joy";
-import Button from "@mui/joy/Button";
 
+import PickCard from "./PickCard";
 import BlackPlus from "@/public/diary/BlackPlus";
 import AddPhoto from "@/public/diary/AddPhoto";
 import CirclePlus from "@/public/diary/CirclePlus";
-import DearmeLogo from "@/public/login/DearmeLogo";
-import Image from "next/image";
-import PickCard from "./PickCard";
-import { deleteImage } from "@/store/api";
-import { useMutation } from "@tanstack/react-query";
 
 export default function UploadTodayPick({
   picks,

@@ -93,7 +93,7 @@ export default function DiaryModal({ type, getValues, setValue }: any) {
           >
             <div className="flex flex-col items-start gap-4 py-8">
               <h3 className="text-lg font-bold">{getValues().title}</h3>
-              <p className="pl-1 text-left">{getValues().body}</p>
+              <p className="break-all pl-1 text-left">{getValues().body}</p>
             </div>
           </button>
           <div className="absolute bottom-4 right-8 flex items-center gap-2 text-default-800">

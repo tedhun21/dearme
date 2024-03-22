@@ -27,6 +27,8 @@ export default function SearchBar() {
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
 
+  console.log(search);
+
   useEffect(() => {
     const delay = setTimeout(() => {
       if (search !== "") {

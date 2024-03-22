@@ -2,7 +2,7 @@
 "use client";
 import "../../globals.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 
@@ -20,14 +20,14 @@ import GoalTag from "@/public/search/GoalTag";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
-const SearchResults = () => {
-  const params = useParams();
-  const searchTerm = params.tag;
+export default function SearchResults({ params }: { params: { tag: string } }) {
+  const [searchTerm, setSearchTerm] = useState("");
 
   // # 목표 검색
   const { data: getGoalSearchResult } = useQuery({
     queryKey: ["geGoalSearchResult"],
     queryFn: () => getPostsByGoals(searchTerm),
+    enabled: searchTerm !== "",
     staleTime: 0,
   });
   const searchedPosts = getGoalSearchResult || [];
@@ -42,6 +42,13 @@ const SearchResults = () => {
     setSetlectedPost(postId);
   };
   const handleClose = () => setOpen(false);
+
+  useEffect(() => {
+    try {
+      const decoded = decodeURI(params.tag);
+      setSearchTerm(decoded);
+    } catch (e) {}
+  }, []);
 
   return (
     <main className="relative flex min-h-screen justify-center">
@@ -126,6 +133,4 @@ const SearchResults = () => {
       </div>
     </main>
   );
-};
-
-export default SearchResults;
+}

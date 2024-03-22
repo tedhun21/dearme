@@ -25,16 +25,9 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 function ServerDay(
   props: PickersDayProps<Dayjs> & {
     highlightedDays?: number[];
-    isDiary: boolean;
   },
 ) {
-  const {
-    highlightedDays = [],
-    isDiary,
-    day,
-    outsideCurrentMonth,
-    ...other
-  } = props;
+  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 
   const isSelected =
     !props.outsideCurrentMonth &&
@@ -44,9 +37,7 @@ function ServerDay(
     <Badge
       key={props.day.toString()}
       overlap="circular"
-      badgeContent={
-        isSelected && !isDiary ? "📘" : isSelected && isDiary ? "📔" : undefined
-      }
+      badgeContent={isSelected ? "📘" : undefined}
     >
       <PickersDay
         {...other}
@@ -106,7 +97,7 @@ export default function CustomCalendar() {
     isRefetching: isDiariesForMonthRefetching,
   } = useQuery({
     queryKey: ["getDiariesForMonth"],
-    queryFn: () => getDiariesForMonth({ date: month }),
+    queryFn: () => getDiariesForMonth(month),
   });
 
   // 기록된 데이터가 있는 날짜 표시
@@ -268,9 +259,7 @@ export default function CustomCalendar() {
           onMonthChange={handleMonthChange}
           renderLoading={() => <DayCalendarSkeleton />}
           dayOfWeekFormatter={(_day, weekday) => `${weekday.format("ddd")}`}
-          slots={{
-            day: (props) => <ServerDay {...props} isDiary={isDiary} />,
-          }}
+          slots={{ day: ServerDay }}
           slotProps={{ day: { highlightedDays } as any }}
         />
       </LocalizationProvider>

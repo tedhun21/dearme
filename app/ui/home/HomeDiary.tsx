@@ -21,13 +21,7 @@ export default function HomeDiary() {
   return (
     <section className="mt-4">
       {isLogin ? (
-        <Link
-          href={
-            diaryOfDay
-              ? `/${dayjs(date).format("YYYY-MM-DD")}/diary`
-              : `/${dayjs(date).format("YYYY-MM-DD")}/diary/create`
-          }
-        >
+        <Link href={`/${dayjs(date).format("YYYY-MM-DD")}/diary`}>
           <div className="group flex flex-col rounded-xl border-2 border-default-300 bg-default-100 p-3 text-xl shadow-xl transition-colors duration-150 hover:border-default-400 hover:bg-default-900">
             {diaryOfDay ? (
               <div className="flex flex-col">

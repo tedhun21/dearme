@@ -5,21 +5,10 @@ import IconButton from "@mui/joy/IconButton";
 import { useParams } from "next/navigation";
 
 export default function MonthlyDiary() {
-  const params = useParams();
-  const [monthlyDiaryLink, setMonthlyDiaryLink] = useState("");
-
-  useEffect(() => {
-    if (params.date) {
-      // URL에서 받은 날짜 파싱
-      const [year, month] = (params.date as string).split("-");
-
-      // 해당 월의 일기 페이지 링크 설정
-      setMonthlyDiaryLink(`/diary/${year}-${month}`);
-    }
-  }, [params]);
+  const { date } = useParams();
 
   return (
-    <Link href={monthlyDiaryLink}>
+    <Link href={`/diary/${date}`}>
       <IconButton
         variant="solid"
         className="fixed bottom-24 flex rounded-full bg-default-300 p-4 shadow-lg hover:bg-default-400"

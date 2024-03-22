@@ -18,7 +18,7 @@ export default function TodayPick({ pick }: any) {
         </div>
       ) : (
         <div className="flex h-[180px] w-[140px] items-center justify-center">
-          <DearmeLogo link={false} />
+          <DearmeLogo />
         </div>
       )}
 

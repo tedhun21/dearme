@@ -27,14 +27,13 @@ export default function GoalModal({
     handleSubmit,
     getValues,
     reset,
-    watch,
   } = useForm({
     defaultValues: {
       title: goal && type === "edit" ? goal.title : "",
       body: goal && type === "edit" ? goal.body : "",
       startDate: goal && type === "edit" ? dayjs(goal.startDate) : dayjs(date),
       endDate: goal && type === "edit" ? dayjs(goal.endDate) : dayjs(date),
-      isPublic: goal && type === "edit" ? goal.isPublic : true,
+      isPrivate: goal && type === "edit" ? goal.isPrivate : false,
     },
   });
 
@@ -50,7 +49,7 @@ export default function GoalModal({
         body: "",
         startDate: dayjs(date),
         endDate: dayjs(date),
-        isPublic: true,
+        isPrivate: false,
       });
 
       setGoals((prev) => {
@@ -261,11 +260,11 @@ export default function GoalModal({
 
           <div className="flex items-end justify-between">
             <div className="flex items-center gap-2">
-              <label htmlFor="isPublic" className="font-semibold">
-                PUBLIC
+              <label htmlFor="isPrivate" className="font-semibold">
+                PRIVATE
               </label>
               <Controller
-                name="isPublic"
+                name="isPrivate"
                 control={control}
                 render={({ field }) => (
                   <Switch

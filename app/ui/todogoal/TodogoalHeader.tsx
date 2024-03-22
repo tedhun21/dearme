@@ -27,7 +27,7 @@ export default function TodogoalHeader({ me }: any) {
           <span>Set Nickname</span>
         </Link>
       ) : (
-        <div></div>
+        <div className="w-32"></div>
       )}
       <div className="flex">
         <div className="relative rounded-3xl bg-default-800">

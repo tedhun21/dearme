@@ -118,9 +118,9 @@ export default function ReadDiary({ date, diaryData }: any) {
             {diaryData ? diaryData.title : ""}
           </h1>
           {/* 일기의 내용 */}
-          <div className="mb-5 text-base font-medium text-default-700">
+          <p className="mb-5 break-all text-base font-medium text-default-700">
             {diaryData ? diaryData.body : ""}
-          </div>
+          </p>
           {/* 일기의 날씨정보 */}
           <div className="flex w-full items-center justify-end gap-1">
             <WeatherIcons

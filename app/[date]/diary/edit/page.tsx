@@ -67,6 +67,7 @@ export default function Edit() {
             image,
           });
         }
+        router.push(`/${date}/diary`);
       }
       router.push(`/${date}/diary`);
     },

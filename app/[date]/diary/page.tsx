@@ -13,7 +13,7 @@ import DiaryActionButton from "@/app/ui/diary/DiaryActionButton";
 
 import Footer from "@/app/ui/footer";
 
-import { getDiaryForDay } from "@/store/api";
+import { getDiaryForDay, getMe } from "@/store/api";
 import TodayPicks from "@/app/ui/diary/TodayPicks";
 import CirclePlus from "@/public/diary/CirclePlus";
 import { useRouter } from "next/navigation";
@@ -22,11 +22,16 @@ export default function Diary() {
   const { date } = useParams();
   const router = useRouter();
 
+  // 내 정보 가져오기
+  const { isSuccess, data: meData } = useQuery({
+    queryKey: ["getMe"],
+    queryFn: () => getMe(),
+  });
+
   const { data: diaryData } = useQuery({
     queryKey: ["getDiaryForDay"],
     queryFn: () => getDiaryForDay({ date }),
   });
-  console.log(diaryData);
 
   const handleClick = () => {
     if (date) {
@@ -39,7 +44,7 @@ export default function Diary() {
       <div className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
         <Header />
         {diaryData ? (
-          <div className="flex h-full flex-col justify-between">
+          <div className="flex h-full flex-col">
             {/* 일기 데이터가 있을 경우 렌더링 */}
             <div>
               <ReadDiary date={date} diaryData={diaryData} />
@@ -47,7 +52,7 @@ export default function Diary() {
                 <TodayPicks picks={diaryData?.today_picks} />
               ) : null}
             </div>
-            <section className="p-5">
+            <section className="mb-52 p-5">
               <div className="flex justify-end gap-2">
                 <DiaryActionButton
                   date={date}
@@ -61,6 +66,10 @@ export default function Diary() {
                 />
               </div>
             </section>
+            <section className="relative right-20 flex justify-end">
+              <MonthlyDiary />
+            </section>
+            <Footer me={meData} />
           </div>
         ) : (
           // 일기 데이터가 없을 경우 렌더링
@@ -82,7 +91,7 @@ export default function Diary() {
                 <MonthlyDiary />
               </section>
             </article>
-            <Footer />
+            <Footer me={meData} />
           </>
         )}
       </div>

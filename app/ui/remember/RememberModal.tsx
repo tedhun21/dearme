@@ -192,9 +192,9 @@ onClick={handleClose}
                   : `mx-5 mb-3 max-h-[500px] flex-1 overflow-scroll scrollbar-hide`
               }
             >
-              <div className="mb-5 text-sm font-light text-white">
+              <p className="mb-5 break-all text-sm font-light text-white">
                 {remember.body}
-              </div>
+              </p>
 
               <div className="mb-5 flex w-full items-center justify-end">
                 <WeatherIcons

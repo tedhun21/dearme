@@ -19,6 +19,13 @@ import UploadTodayPick from "@/app/ui/diary/UploadTodayPick";
 import { CircularProgress } from "@mui/material";
 import Exit from "@/public/diary/Exit";
 
+interface Pick {
+  title: string;
+  date: Date;
+  contributors: string;
+  image: File;
+}
+
 export default function Edit() {
   const { date } = useParams<any>();
   const router = useRouter();
@@ -38,7 +45,7 @@ export default function Edit() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const [picks, setPicks] = useState([]);
-  const [selectedPicks, setSelectedPicks] = useState([]);
+  const [selectedPicks, setSelectedPicks] = useState<Pick[]>([]);
 
   // fetch the diary
   const { isSuccess, data: diaryData } = useQuery({
@@ -53,9 +60,11 @@ export default function Edit() {
     onSuccess: async ({ diaryId }) => {
       if (selectedPicks.length > 0) {
         for (let i = 0; i < selectedPicks.length; i++) {
+          const { image, ...createData } = selectedPicks[i];
           await createTodayPickMutate({
-            createData: selectedPicks[i],
+            createData,
             diaryId,
+            image,
           });
         }
       }
@@ -113,7 +122,6 @@ export default function Edit() {
     }
   }, [isSuccess, diaryData]);
 
-  // console.log(watch());
   return (
     <main className="flex min-h-screen justify-center">
       <article className="flex w-full min-w-[360px] max-w-[600px] flex-col bg-default-200 shadow-lg">
@@ -194,8 +202,6 @@ export default function Edit() {
                 setPicks={setPicks}
                 selectedPicks={selectedPicks}
                 setSelectedPicks={setSelectedPicks}
-                getValues={getValues}
-                setValue={setValue}
               />
             </section>
           </div>

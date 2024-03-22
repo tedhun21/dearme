@@ -26,10 +26,10 @@ export default function UploadTodayPick({
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [pickImage, setPickImage] = useState<File | null>(null);
   const [pickTitle, setPickTitle] = useState("");
   const [pickDate, setPickDate] = useState("");
   const [pickContributors, setPickContributors] = useState("");
+  const [pickImage, setPickImage] = useState<File | null>(null);
 
   // const [hovered, setHovered] = useState<{ [key: number]: boolean }>({});
 
@@ -56,13 +56,16 @@ export default function UploadTodayPick({
     setSelectedPicks((prev: any) => [
       ...prev,
       {
-        id: new Date().getTime(),
         title: pickTitle,
         date: pickDate,
         contributors: pickContributors,
         image: pickImage,
       },
     ]);
+    setPickTitle("");
+    setPickDate("");
+    setPickContributors("");
+    setPickImage(null);
 
     setOpen(false);
   };
@@ -85,12 +88,6 @@ export default function UploadTodayPick({
     }
   };
 
-  const handleRemoveSelectedPick = (index: number) => {
-    setSelectedPicks((prev: any) =>
-      prev.filter((pick: any) => pick.id !== index),
-    );
-  };
-
   return (
     <section>
       {(picks?.length ?? 0) > 0 || (selectedPicks?.length ?? 0) > 0 ? (
@@ -103,15 +100,19 @@ export default function UploadTodayPick({
               setPicks={setPicks}
             />
           ))}
-          {selectedPicks?.map((pick: any, index: number) => (
+          {selectedPicks?.map((selectedPick: any, index: number) => (
             <PickCard
               key={index}
               type="blob"
-              pick={pick}
-              handleRemovePick={handleRemoveSelectedPick}
+              pick={selectedPick}
+              setSelectedPicks={setSelectedPicks}
             />
           ))}
-          <button className="group m-10" onClick={() => setOpen(true)}>
+          <button
+            type="button"
+            className="group m-10"
+            onClick={() => setOpen(true)}
+          >
             <CirclePlus className="h-10 w-10 fill-current text-white group-hover:text-default-900" />
           </button>
         </div>

@@ -210,17 +210,15 @@ export default function DailyTodoGoal() {
               goals.length > 0 && <TodogoalGoalList date={date} />
             )}
             {/* 섹션 4: plus button  */}
-            {todogoalTitle === "Todo" ? (
-              // Create Todo
-              <TodogoalCreateTodo
-                date={date}
-                createInput={createInput}
-                setCreateInput={setCreateInput}
-                createTodoMutate={createTodoMutate}
-              />
-            ) : (
-              <div className="flex w-full flex-col items-center gap-4">
-                {/* plus button */}
+            <div className="flex justify-center">
+              {todogoalTitle === "Todo" && meData ? (
+                <TodogoalCreateTodo
+                  date={date}
+                  createInput={createInput}
+                  setCreateInput={setCreateInput}
+                  createTodoMutate={createTodoMutate}
+                />
+              ) : todogoalTitle === "Goal" && meData ? (
                 <div className="group flex h-12 w-12 items-center justify-center p-1 transition-all duration-200 hover:p-0 active:p-2">
                   <button
                     onClick={() => setModalCreateGoalOpen(true)}
@@ -232,16 +230,20 @@ export default function DailyTodoGoal() {
                       <PlusIcon />
                     )}
                   </button>
+                  {/* Create Goal */}
+                  <GoalModal
+                    type="create"
+                    date={date}
+                    modalOpen={modalCreateGoalOpen}
+                    setModalOpen={setModalCreateGoalOpen}
+                  />
                 </div>
-                {/* Create Goal */}
-                <GoalModal
-                  type="create"
-                  date={date}
-                  modalOpen={modalCreateGoalOpen}
-                  setModalOpen={setModalCreateGoalOpen}
-                />
-              </div>
-            )}
+              ) : todogoalTitle === "Todo" ? (
+                <div>Login to Create Todo</div>
+              ) : todogoalTitle === "Goal" ? (
+                <div>Login to Create Goal</div>
+              ) : null}
+            </div>
           </section>
         </article>
 

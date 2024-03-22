@@ -358,7 +358,6 @@ export const deleteDiary = async (diaryId: string) => {
     const { data } = await axios.delete(`${API_URL}/diaries/${diaryId}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
-
     return data;
   } else {
     return [];
@@ -610,6 +609,7 @@ export const createPost = async ({
     const { data } = await axios.post(`${API_URL}/posts`, formData, {
       headers,
     });
+
     return data;
   }
 };
@@ -721,14 +721,14 @@ export const updateComment = async ({
 }) => {
   const access_token = getCookie("access_token");
   const headers = { Authorization: `Bearer ${access_token}` };
-
-  if (access_token) {
+  console.log(postId, commentId, comment);
+  try {
     await axios.put(
       `${API_URL}/comments/${commentId}?postId=${postId}`,
       { body: comment },
       { headers },
     );
-  }
+  } catch (e) {}
 };
 
 // Delete _ comment

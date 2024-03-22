@@ -16,15 +16,18 @@ export default function TodogoalHeader({ me }: any) {
   return (
     <section className="flex w-full items-center justify-between">
       {me && me?.nickname ? (
-        <div className="flex flex-col">
-          <span className="text-xl font-semibold">Hi!</span>
-          <span className="text-sm">{me?.nickname}</span>
+        <div className="flex w-32 flex-col">
+          <span className="text-xl font-semibold">Hi</span>
+          <span className="truncate whitespace-nowrap text-sm">
+            {me?.nickname}
+          </span>
         </div>
-      ) : (
+      ) : me ? (
         <Link href="/me/edit" className="text-xs">
-          <span>Set</span>
-          <span>Nickname</span>
+          <span>Set Nickname</span>
         </Link>
+      ) : (
+        <div></div>
       )}
       <div className="flex">
         <div className="relative rounded-3xl bg-default-800">
@@ -70,18 +73,22 @@ export default function TodogoalHeader({ me }: any) {
           </Button>
         </div>
       </div>
-      <div className="relative h-12 w-12 overflow-hidden rounded-full">
+      <div className="flex w-32 justify-end">
         {me && me.photo?.url ? (
-          <Image
-            src={`${BUCKET_URL}${me?.photo?.url}`}
-            alt="user profile"
-            fill
-            className="object-cover object-center"
-          />
-        ) : (
+          <div className="relative h-12 w-12 overflow-hidden rounded-full">
+            <Image
+              src={`${BUCKET_URL}${me?.photo?.url}`}
+              alt="user profile"
+              fill
+              className="object-cover object-center"
+            />
+          </div>
+        ) : me ? (
           <Link href="/me/edit">
             <div className="h-full w-full bg-default-400"></div>
           </Link>
+        ) : (
+          <div></div>
         )}
       </div>
     </section>

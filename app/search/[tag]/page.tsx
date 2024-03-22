@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 
 import { useQuery } from "@tanstack/react-query";
-import { getSearchGoals } from "@/store/api";
+import { getPostsByGoals } from "@/store/api";
 
 import Header from "@/app/ui/header";
 import BackButton from "@/app/ui/backbutton";
@@ -27,10 +27,10 @@ const SearchResults = () => {
   // # 목표 검색
   const { data: getGoalSearchResult } = useQuery({
     queryKey: ["geGoalSearchResult"],
-    queryFn: () => getSearchGoals(searchTerm, true),
+    queryFn: () => getPostsByGoals(searchTerm),
     staleTime: 0,
   });
-  const searchedGoals = getGoalSearchResult || [];
+  const searchedPosts = getGoalSearchResult || [];
 
   // 포스트 조회 모달
   const [open, setOpen] = useState(false);
@@ -56,17 +56,17 @@ const SearchResults = () => {
           <GoalTag className="h-10 w-10" />
           <div className="flex flex-col">
             <span className="ml-2 text-base font-semibold text-default-700">
-              #{searchedGoals.title}
+              #{searchTerm}
             </span>
             <span className="ml-2 text-xs font-medium text-default-500">
-              {searchedGoals.postsCount}{" "}
-              {searchedGoals.postsCount <= 1 ? " post" : " posts"}
+              {searchedPosts.length}{" "}
+              {searchedPosts.length <= 1 ? " post" : " posts"}
             </span>
           </div>
         </section>
 
         {/* #목표 관련 포스트 */}
-        {searchedGoals.postsCount > 0 ? (
+        {searchedPosts.length > 0 ? (
           <section>
             <Divider
               sx={{
@@ -79,10 +79,10 @@ const SearchResults = () => {
               Recent posts
             </h1>
             <div className="grid grid-cols-3 gap-0.5">
-              {Array.isArray(searchedGoals.postsData) &&
-                searchedGoals.postsData.map((post: any) => (
+              {Array.isArray(searchedPosts) &&
+                searchedPosts.map((post: any) => (
                   <div
-                    key={post.postId}
+                    key={post.id}
                     className="flex cursor-pointer items-center justify-center"
                   >
                     <div
@@ -91,10 +91,10 @@ const SearchResults = () => {
                         width: "100%",
                         paddingBottom: "100%",
                       }}
-                      onClick={() => handleOpen(post.postId)}
+                      onClick={() => handleOpen(post.id)}
                     >
                       <Image
-                        src={`${BUCKET_URL}${post.photo}`}
+                        src={`${BUCKET_URL}${post.photo.url}`}
                         alt="Post Image"
                         fill
                         sizes="160px"

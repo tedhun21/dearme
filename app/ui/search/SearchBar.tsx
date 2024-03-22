@@ -52,7 +52,7 @@ export default function SearchBar() {
   // # 목표 검색
   const { data: getGoalSearchResult } = useQuery({
     queryKey: ["getGoalSearchResult", debouncedSearch],
-    queryFn: () => getSearchGoals(debouncedSearch.substring(1), false),
+    queryFn: () => getSearchGoals(debouncedSearch.substring(1)),
     enabled: Boolean(search) && search.startsWith("#"),
     staleTime: 0,
   });
@@ -168,7 +168,7 @@ export default function SearchBar() {
                             {goal.title}
                           </div>
                           <div className="ml-3 text-xs font-medium">
-                            {goal.postsCount.toLocaleString() +
+                            {goal.postsCount?.toLocaleString() +
                               (goal.postsCount <= 1 ? " post" : " posts")}
                           </div>
                         </div>
@@ -190,7 +190,7 @@ export default function SearchBar() {
               </div>
               {Array.isArray(users) && users.length > 0 ? (
                 users.map((user) => (
-                  <a
+                  <Link
                     key={user.id}
                     href={`/profile/${user.id}`}
                     onClick={() => {
@@ -212,7 +212,7 @@ export default function SearchBar() {
                         {user.nickname}
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 ))
               ) : (
                 <div className="mb-5 flex w-full justify-center  text-xs font-normal text-default-300">

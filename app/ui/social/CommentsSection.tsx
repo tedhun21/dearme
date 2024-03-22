@@ -26,6 +26,7 @@ import InputBase from "@mui/material/InputBase";
 
 import Send from "@/public/social/Send";
 import UserWithNoImage from "@/public/social/UserWithNoImage";
+import Link from "next/link";
 
 const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 
@@ -119,26 +120,33 @@ export default function CommentsSection({
           {data?.pages.map((comments: any) =>
             comments.map((comment: any) => (
               <div key={comment.id} className="mb-3 flex  w-full gap-2 px-5">
-                {/* 이미지*/}
-                {(comment.user as any).photo ? (
-                  <div className="relative h-8 w-8  overflow-hidden rounded-full px-2">
-                    <Image
-                      src={`${BUCKET_URL}${(comment.user as any).photo.url}`}
-                      alt="User Image"
-                      fill
-                      sizes="24px"
-                    />
-                  </div>
-                ) : (
-                  <UserWithNoImage className="h-8 w-8 " />
-                )}
-
                 <div className="flex w-full flex-col justify-center">
                   {/* 작성자 & 댓글 */}
                   <div className="flex gap-2">
-                    <span className="text-sm font-semibold">
-                      {comment.user.nickname}
-                    </span>
+                    <Link
+                      key={comment.user.id}
+                      href={`/profile/${comment.user.id}`}
+                      className="flex cursor-pointer gap-2"
+                    >
+                      {/* 이미지*/}
+                      {(comment.user as any).photo ? (
+                        <div className="relative h-8 w-8  overflow-hidden rounded-full px-2">
+                          <Image
+                            src={`${BUCKET_URL}${
+                              (comment.user as any).photo.url
+                            }`}
+                            alt="User Image"
+                            fill
+                            sizes="24px"
+                          />
+                        </div>
+                      ) : (
+                        <UserWithNoImage className="h-8 w-8 " />
+                      )}
+                      <span className="text-sm font-semibold">
+                        {comment.user.nickname}
+                      </span>
+                    </Link>
                     <span className="w-full flex-auto whitespace-normal break-all text-sm  font-normal text-default-700">
                       {isEditing && editingCommentId === comment.id ? (
                         <InputBase
@@ -214,6 +222,7 @@ export default function CommentsSection({
                 src={`${BUCKET_URL}${(me as any).photo.url}`}
                 alt="User Image"
                 fill
+                sizes="24px"
               />
             </div>
           ) : (

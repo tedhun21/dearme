@@ -141,7 +141,7 @@ onClick={handleClose}
                 {'"' + remember.title + '"'}
               </h1>
 
-              {/* TODO emotion tags 수정 */}
+              {/* emotion tags 수정 */}
               {remember.feelings
                 ?.split(",")
                 .slice(

@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-// TODO: 사진 배경 수정
-
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 

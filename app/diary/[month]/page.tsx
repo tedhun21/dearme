@@ -1,10 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-// TODO new
-// TODO 호버링
-// TODO 일기 Link 확인
-
 import "../../globals.css";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";

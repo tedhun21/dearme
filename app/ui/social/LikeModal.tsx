@@ -1,4 +1,3 @@
-// TODO like 무한 스크롤
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";

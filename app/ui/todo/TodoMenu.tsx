@@ -20,7 +20,7 @@ export default function TodoMenu({ date, todo, setCanEdit }: any) {
   const { mutate: deleteTodoMutate, data } = useMutation({
     mutationKey: ["deleteMyTodo"],
     mutationFn: deleteMyTodo,
-    onSuccess: ({ data }) => {
+    onSuccess: ({ data }: any) => {
       setAnchorEl(null);
       setTodos((prev) =>
         prev.filter((prevTodo) => prevTodo.id !== data.todoId),

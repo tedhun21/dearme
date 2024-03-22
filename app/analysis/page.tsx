@@ -106,8 +106,7 @@ const chartSleepData = {
     },
     yaxis: {
       type: "datetime",
-      formatter: (value) => {
-        console.log(value);
+      formatter: (value: any) => {
         return value;
       },
     },
@@ -177,7 +176,7 @@ export default function Analysis() {
             </div>
             <div className="w-full bg-default-100">
               <Chart
-                options={chartFeelingData.options}
+                options={chartFeelingData.options as any}
                 series={chartFeelingData.series}
                 type="line"
                 width="100%"
@@ -195,7 +194,10 @@ export default function Analysis() {
               <div className="text-default-700">
                 많이 기록한 태그와 기록 횟수를 볼 수 있어요
               </div>
-              <Select value={tag} onChange={(e, newValue) => setTag(newValue)}>
+              <Select
+                value={tag}
+                onChange={(e, newValue: any) => setTag(newValue)}
+              >
                 <Option value="전체">전체</Option>
                 <Option value="사람">사람</Option>
                 <Option value="감정">감정</Option>
@@ -252,7 +254,7 @@ export default function Analysis() {
               </div>
             </div>
             <Chart
-              options={chartSleepData.options}
+              options={chartSleepData.options as any}
               series={chartSleepData.series}
               type="rangeBar"
               width="100%"

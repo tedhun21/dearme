@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: "dearme-sepia.vercel.app",
         port: "1337",
       },
+      {
+        protocol: "https",
+        hostname: "port-0-dearme-api-32updzt2alpuq8w3u.sel4.cloudtype.app",
+        port: "1337",
+      },
     ],
   },
 };

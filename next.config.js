@@ -14,7 +14,7 @@ const nextConfig = {
         port: "1337",
       },
     ],
-    unoptimize: true,
+    unoptimized: true,
   },
 };
 

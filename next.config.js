@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "dearme-sepia.vercel.app",
+        hostname: "dearme-gjn80cho8-jihunsong94.vercel.app",
         port: "1337",
       },
     ],

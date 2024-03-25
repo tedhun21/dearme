@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "port-0-dearme-api-32updzt2alpuq8w3u.sel4.cloudtype.app",
+        hostname: "dearme-gjn80cho8-jihunsong94.vercel.app",
         port: "1337",
       },
     ],
